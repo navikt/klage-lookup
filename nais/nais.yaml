@@ -1,0 +1,86 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: klage-lookup
+  namespace: klage
+  labels:
+    team: klage
+spec:
+  image: {{image}}
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+  azure:
+    application:
+      enabled: true
+      tenant: {{tenant}}
+      claims:
+        groups:
+        {{#each adRoles}}
+          - id: {{value}}
+        {{/each}}
+        extra:
+          - NAVident
+  port: 8080
+  startup:
+    failureThreshold: 5
+    initialDelay: 10
+    path: /internal/health
+    periodSeconds: 10
+    timeout: 3
+  liveness:
+    path: /internal/health
+    timeout: 3
+    periodSeconds: 5
+    failureThreshold: 3
+  readiness:
+    path: /internal/health
+    timeout: 3
+    periodSeconds: 5
+    failureThreshold: 3
+  resources:
+    limits:
+      memory: 1500Mi
+    requests:
+      cpu: 40m
+      memory: 1300Mi
+  ingresses:
+  {{#each ingresses as |ingress|}}
+    - {{ingress}}
+  {{/each}}
+  replicas:
+    min: {{replicasMin}}
+    max: {{replicasMax}}
+    cpuThresholdPercentage: 90
+  prometheus:
+    enabled: true
+    path: /internal/prometheus
+  accessPolicy:
+    inbound:
+      rules:
+        - application: kabal-innstillinger
+        - application: kabal-api
+    outbound:
+      rules:
+        - application: populasjonstilgangskontroll
+          namespace: tilgangsmaskin
+        - application: logging
+          namespace: nais-system
+      external:
+        - host: login.microsoftonline.com
+  valkey:
+    - instance: lookup
+      access: readwrite
+  envFrom:
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: {{springProfile}}
+  {{#each envs}}
+    - name: {{name}}
+      value: {{value}}
+  {{/each}}
+  {{#each adRoles}}
+    - name: {{name}}
+      value: {{value}}
+  {{/each}}

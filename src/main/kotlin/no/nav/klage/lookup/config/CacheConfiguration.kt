@@ -1,0 +1,32 @@
+package no.nav.klage.lookup.config
+
+
+import org.springframework.cache.annotation.EnableCaching
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.data.redis.cache.RedisCacheConfiguration
+import org.springframework.data.redis.cache.RedisCacheManager
+import org.springframework.data.redis.connection.RedisConnectionFactory
+import java.time.Duration
+
+@EnableCaching
+@Configuration
+class CacheConfiguration {
+
+    companion object {
+        const val ACCESS_TO_PERSON = "accessToPerson"
+    }
+
+    @Bean
+    fun cacheManager(redisConnectionFactory: RedisConnectionFactory): RedisCacheManager {
+        val defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+
+        val accessToPersonConfig = RedisCacheConfiguration.defaultCacheConfig()
+            .entryTtl(Duration.ofMinutes(10))
+
+        return RedisCacheManager.builder(redisConnectionFactory)
+            .cacheDefaults(defaultConfig)
+            .withCacheConfiguration(ACCESS_TO_PERSON, accessToPersonConfig)
+            .build()
+    }
+}
