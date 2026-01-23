@@ -3,3 +3,5 @@ springdoc:
     enabled: false
   api-docs:
     enabled: false
+
+TILGANGSMASKINEN_SCOPE: prod-gcp.tilgangsmaskin.populasjonstilgangskontroll
