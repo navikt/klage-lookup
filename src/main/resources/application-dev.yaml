@@ -5,3 +5,5 @@ springdoc:
     enabled: true
 
 TILGANGSMASKINEN_SCOPE: dev-gcp.tilgangsmaskin.populasjonstilgangskontroll
+
+TENANT_ID: 966ac572-f5b7-4bbe-aa88-c76419c0f851

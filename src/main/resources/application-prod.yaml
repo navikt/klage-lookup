@@ -5,3 +5,5 @@ springdoc:
     enabled: false
 
 TILGANGSMASKINEN_SCOPE: prod-gcp.tilgangsmaskin.populasjonstilgangskontroll
+
+TENANT_ID: 62366534-1ec3-4962-8869-9b5535279d0b
