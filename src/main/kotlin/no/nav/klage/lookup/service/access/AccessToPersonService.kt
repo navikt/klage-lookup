@@ -8,6 +8,7 @@ import no.nav.klage.lookup.config.tilgangsmaskinen.TilgangsmaskinenService
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Service
@@ -19,6 +20,7 @@ class AccessToPersonService(
     private val tilgangsmaskinenService: TilgangsmaskinenService,
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
+    private val environment: Environment,
 ) {
 
     companion object {
@@ -37,7 +39,7 @@ class AccessToPersonService(
             if (tokenUtil.getIdent() != null) {
                 timedCall("validateAccess") {
                     tilgangsmaskinenService.validateAccess(
-                        clientBearerToken = "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithTilgangsmaskinenScope()}",
+                        clientBearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithTilgangsmaskinenScope()}",
                         brukerId = brukerId,
                         navIdent = navIdent,
                     )
@@ -45,7 +47,7 @@ class AccessToPersonService(
             } else {
                 timedCall("validateAccessWithObo") {
                     tilgangsmaskinenService.validateAccessWithObo(
-                        oboBearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithTilgangsmaskinenScope()}",
+                        oboBearerToken = "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithTilgangsmaskinenScope()}",
                         brukerId = brukerId,
                     )
                 }
@@ -56,13 +58,22 @@ class AccessToPersonService(
             )
         } catch (ex: RestClientResponseException) {
             if (ex.statusCode == HttpStatus.FORBIDDEN) {
-                val errorResponse = jacksonObjectMapper().readValue(
-                    ex.responseBodyAsString,
-                    TilgangsmaskinenErrorResponse::class.java
-                )
+                if (environment.activeProfiles.contains("dev")) {
+                    logger.debug("response body from Tilgangsmaskinen when forbidden: ${ex.responseBodyAsString}")
+                }
+                val reason = try {
+                    val errorResponse = jacksonObjectMapper().readValue(
+                        ex.responseBodyAsString,
+                        TilgangsmaskinenErrorResponse::class.java
+                    )
+                    errorResponse.begrunnelse
+                } catch (parseEx: Exception) {
+                    logger.warn("Could not parse Tilgangsmaskinen error")
+                    "Access denied"
+                }
                 Access(
                     access = false,
-                    reason = errorResponse.begrunnelse
+                    reason = reason
                 )
             } else {
                 logger.error("Error while calling Tilgangsmaskinen: ${ex.statusCode} - ${ex.responseBodyAsString}")
