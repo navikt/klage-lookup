@@ -8,8 +8,6 @@ import org.springframework.web.service.annotation.PostExchange
 
 interface TilgangsmaskinenService {
 
-    //TODO make contenttype be default application/json in some global config
-
     @PostExchange("/api/v1/komplett")
     fun validateAccessWithObo(
         @RequestHeader(AUTHORIZATION) oboBearerToken: String,

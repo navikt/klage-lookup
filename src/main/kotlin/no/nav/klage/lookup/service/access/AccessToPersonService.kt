@@ -7,8 +7,8 @@ import no.nav.klage.lookup.config.tilgangsmaskinen.TilgangsmaskinenErrorResponse
 import no.nav.klage.lookup.config.tilgangsmaskinen.TilgangsmaskinenService
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
+import no.nav.klage.lookup.util.getTeamLogger
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Service
@@ -20,12 +20,12 @@ class AccessToPersonService(
     private val tilgangsmaskinenService: TilgangsmaskinenService,
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
-    private val environment: Environment,
 ) {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+        private val teamLogger = getTeamLogger()
         private const val TILGANGSMASKINEN_TIMER = "tilgangsmaskinen.response.time"
     }
 
@@ -58,9 +58,6 @@ class AccessToPersonService(
             )
         } catch (ex: RestClientResponseException) {
             if (ex.statusCode == HttpStatus.FORBIDDEN) {
-                if (environment.activeProfiles.contains("dev")) {
-                    logger.debug("response body from Tilgangsmaskinen when forbidden: ${ex.responseBodyAsString}")
-                }
                 val reason = try {
                     val errorResponse = jacksonObjectMapper().readValue(
                         ex.responseBodyAsString,
@@ -68,15 +65,17 @@ class AccessToPersonService(
                     )
                     errorResponse.begrunnelse
                 } catch (parseEx: Exception) {
-                    logger.warn("Could not parse Tilgangsmaskinen error")
-                    "Access denied"
+                    logger.warn("Could not parse Tilgangsmaskinen error. See team-logs for details.")
+                    teamLogger.warn("Could not parse Tilgangsmaskinen error.", parseEx)
+                    "Kunne ikke verifisere tilgang - kontakt Team Klage."
                 }
                 Access(
                     access = false,
                     reason = reason
                 )
             } else {
-                logger.error("Error while calling Tilgangsmaskinen: ${ex.statusCode} - ${ex.responseBodyAsString}")
+                logger.error("Unexpected error while calling Tilgangsmaskinen: ${ex.statusCode}")
+                teamLogger.error("Unexpected error while calling Tilgangsmaskinen.", ex)
                 throw ex
             }
         }
