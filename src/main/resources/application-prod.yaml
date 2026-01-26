@@ -6,4 +6,7 @@ springdoc:
 
 TILGANGSMASKINEN_SCOPE: prod-gcp.tilgangsmaskin.populasjonstilgangskontroll
 
+FPSAK_SCOPE: prod-fss.teamforeldrepenger.fpsak
+FPSAK_BASE_URL: https://fpsak-api.prod-fss-pub.nais.io
+
 TENANT_ID: 62366534-1ec3-4962-8869-9b5535279d0b

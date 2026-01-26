@@ -2,6 +2,8 @@ ingresses:
   - https://klage-lookup.intern.dev.nav.no
 springProfile: dev
 tenant: trygdeetaten.no
+externalHosts:
+  - host: fpsak-api.dev-fss-pub.nais.io
 
 replicasMin: 2
 replicasMax: 2
