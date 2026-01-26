@@ -36,7 +36,7 @@ class AccessToPersonService(
         navIdent: String,
     ): Access {
         return try {
-            if (tokenUtil.getIdent() != null) {
+            if (tokenUtil.getIdent() == null) {
                 timedCall("validateAccess") {
                     tilgangsmaskinenService.validateAccess(
                         clientBearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithTilgangsmaskinenScope()}",
