@@ -30,6 +30,12 @@ class TokenUtil(
         return response.access_token!!
     }
 
+    fun getAppAccessTokenWithFpsakScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["fpsak-maskintilmaskin"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
     fun getIdent(): String? =
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("NAVident")?.toString()

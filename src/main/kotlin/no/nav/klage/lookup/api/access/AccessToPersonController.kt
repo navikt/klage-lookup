@@ -29,6 +29,7 @@ class AccessToPersonController(
         return accessToPersonService.getNavIdentAccessToUser(
             brukerId = input.brukerId,
             navIdent = input.navIdent ?: tokenUtil.getIdent() ?: throw IllegalArgumentException("navIdent must be provided if no innlogget ident is found"),
+            sak = input.sak,
         )
     }
 }

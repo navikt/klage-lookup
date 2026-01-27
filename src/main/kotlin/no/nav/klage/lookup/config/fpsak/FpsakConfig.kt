@@ -13,7 +13,7 @@ class FpsakConfig {
 
     @Bean
     fun fpsakService(
-        @Value("\${FPSAK_BASE_URL}")
+        @Value($$"${FPSAK_BASE_URL}")
         fpsakUrl: String
     ): FpsakService {
         val restClient = RestClient.create(fpsakUrl)
