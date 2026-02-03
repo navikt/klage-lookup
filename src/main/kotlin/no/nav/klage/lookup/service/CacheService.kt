@@ -16,7 +16,7 @@ class CacheService(
 
     fun evictSingleCacheValue(cacheName: String, cacheKey: String) {
         if (!cacheManager.cacheNames.contains(cacheName)) {
-            throw RuntimeException("Cache $cacheName not found in cache")
+            throw RuntimeException("Cache $cacheName not found")
         }
         logger.debug("Evicting value $cacheKey in cache $cacheName")
         cacheManager.getCache(cacheName)?.evict(cacheKey)
