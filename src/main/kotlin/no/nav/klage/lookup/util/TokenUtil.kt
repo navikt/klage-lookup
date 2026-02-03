@@ -36,6 +36,12 @@ class TokenUtil(
         return response.access_token!!
     }
 
+    fun getSaksbehandlerAccessTokenWithEntraProxyScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["entraproxy-onbehalfof"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
     fun getIdent(): String? =
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("NAVident")?.toString()
