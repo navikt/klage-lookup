@@ -1,7 +1,5 @@
 package no.nav.klage.lookup.config.entraproxy
 
-import no.nav.klage.lookup.util.getLogger
-import no.nav.klage.lookup.util.getTeamLogger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

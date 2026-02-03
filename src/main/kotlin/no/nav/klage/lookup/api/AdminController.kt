@@ -25,7 +25,7 @@ class AdminController(
     ) {
         requireAdminAccess()
         if (cacheKey != null && cacheName == null) {
-            throw RuntimeException("If cacheKey is provided, cacheName must also be provided")
+            throw IllegalArgumentException("If cacheKey is provided, cacheName must also be provided")
         }
 
         if (cacheKey != null) {
@@ -39,7 +39,7 @@ class AdminController(
 
 
     private fun requireAdminAccess() {
-        if (!saksbehandlerService.loggedInUserIsKabalAdmin()) {
+        if (!saksbehandlerService.loggedInUserIsKlageAdmin()) {
             throw RuntimeException("Not an admin")
         }
     }

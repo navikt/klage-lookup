@@ -24,7 +24,7 @@ class DevAdminController(
         @RequestParam(value = "cacheKey", required = false) cacheKey: String?,
     ) {
         if (cacheKey != null && cacheName == null) {
-            throw RuntimeException("If cacheKey is provided, cacheName must also be provided")
+            throw IllegalArgumentException("If cacheKey is provided, cacheName must also be provided")
         }
 
         if (cacheKey != null) {

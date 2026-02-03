@@ -24,13 +24,18 @@ class SaksbehandlerService(
         private const val ENTRAPROXY_TIMER = "entraproxy.response.time"
     }
 
-    fun loggedInUserIsKabalAdmin(): Boolean {
+    fun loggedInUserIsKlageAdmin(): Boolean {
         val navIdent = tokenUtil.getIdent()
-        val adminRoleMembers = timedCall(ENTRAPROXY_TIMER, "getGroupMembersWithObo") {
-            entraProxyService.getGroupMembersWithObo(
-                bearerToken = "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}",
-                gruppeNavn = klageAdminGroupName
-            )
+        val adminRoleMembers = try {
+            timedCall(ENTRAPROXY_TIMER, "getGroupMembersWithObo") {
+                entraProxyService.getGroupMembersWithObo(
+                    bearerToken = "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}",
+                    gruppeNavn = klageAdminGroupName
+                )
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to retrieve members of admin group '$klageAdminGroupName'", e)
+            return false
         }
         logger.debug("Got ${adminRoleMembers.size} members of admin group '$klageAdminGroupName'")
         return adminRoleMembers.map { it.navIdent }.contains(navIdent)
