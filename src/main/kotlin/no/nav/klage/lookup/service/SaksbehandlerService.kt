@@ -14,7 +14,7 @@ class SaksbehandlerService(
     private val tokenUtil: TokenUtil,
     private val entraProxyService: EntraProxyService,
     private val meterRegistry: MeterRegistry,
-    @Value("\${KLAGE_ADMIN_GROUP_NAME}")
+    @Value($$"${KLAGE_ADMIN_GROUP_NAME}")
     private val klageAdminGroupName: String,
 ) {
     companion object {
