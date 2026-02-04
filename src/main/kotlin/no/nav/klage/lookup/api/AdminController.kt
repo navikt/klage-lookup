@@ -37,7 +37,6 @@ class AdminController(
         }
     }
 
-
     private fun requireAdminAccess() {
         if (!saksbehandlerService.loggedInUserIsKlageAdmin()) {
             throw RuntimeException("Not an admin")
