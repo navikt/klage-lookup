@@ -2,6 +2,7 @@ package no.nav.klage.lookup.service.access
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
+import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.ytelse.Ytelse.*
 import no.nav.klage.lookup.api.access.AccessRequest.Sak
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.ACCESS_TO_PERSON
@@ -41,7 +42,7 @@ class AccessToPersonService(
         navIdent: String,
         sak: Sak?,
     ): Access {
-        val usersToCheck = if (sak != null && sak.ytelse in listOf(FOR_FOR, FOR_ENG, FOR_SVA)) {
+        val usersToCheck = if (sak != null && sak.ytelse in listOf(FOR_FOR, FOR_ENG, FOR_SVA) && sak.fagsystem == Fagsystem.FS36) {
             val aktoerIds = timedCall(FPSAK_TIMER, "getAktoerForSak") {
                 fpsakService.getAktoerForSak(
                     bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithFpsakScope()}",
