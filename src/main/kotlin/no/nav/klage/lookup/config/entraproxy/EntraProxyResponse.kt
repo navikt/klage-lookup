@@ -6,3 +6,7 @@ data class EntraProxyAnsatt(
     val fornavn: String,
     val etternavn: String
 )
+
+data class EntraProxyRolle(
+    val rolle: String,
+)

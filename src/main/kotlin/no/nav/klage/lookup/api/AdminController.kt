@@ -3,6 +3,7 @@ package no.nav.klage.lookup.api
 import no.nav.klage.lookup.config.SecurityConfiguration
 import no.nav.klage.lookup.service.CacheService
 import no.nav.klage.lookup.service.SaksbehandlerService
+import no.nav.klage.lookup.util.TokenUtil
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 class AdminController(
     private val saksbehandlerService: SaksbehandlerService,
     private val cacheService: CacheService,
+    private val tokenUtil: TokenUtil,
 ) {
 
     @GetMapping("/evict-cache")
@@ -35,6 +37,12 @@ class AdminController(
         } else {
             cacheService.evictAllCaches()
         }
+    }
+
+    @GetMapping("/myroles")
+    fun getUserRoles() {
+        requireAdminAccess()
+        saksbehandlerService.getUsersRoles(navIdent = tokenUtil.getIdent()!!)
     }
 
     private fun requireAdminAccess() {

@@ -3,6 +3,7 @@ package no.nav.klage.lookup.service
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import no.nav.klage.lookup.config.entraproxy.EntraProxyService
+import no.nav.klage.lookup.service.SaksbehandlerService.Companion.teamLogger
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
@@ -28,7 +29,7 @@ class SaksbehandlerService(
         val navIdent = tokenUtil.getIdent()
         val adminRoleMembers = try {
             timedCall(ENTRAPROXY_TIMER, "getGroupMembersWithObo") {
-                entraProxyService.getGroupMembersWithObo(
+                entraProxyService.getGroupMembers(
                     bearerToken = "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}",
                     gruppeNavn = klageAdminGroupName
                 )
@@ -39,6 +40,27 @@ class SaksbehandlerService(
         }
         logger.debug("Got ${adminRoleMembers.size} members of admin group '$klageAdminGroupName'")
         return adminRoleMembers.map { it.navIdent }.contains(navIdent)
+    }
+
+    fun getUsersRoles(navIdent: String) {
+        val useObo = tokenUtil.getIdent() != null
+        val bearerToken = if (useObo) {
+            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
+        } else {
+            "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
+        }
+
+        val usersRoles = try {
+            timedCall(ENTRAPROXY_TIMER, "getUsersRolesWithObo") {
+                entraProxyService.getAnsattTilganger(
+                    bearerToken = bearerToken,
+                    navIdent = navIdent,
+                )
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to retrieve roles for navIdent $navIdent", e)
+        }
+        teamLogger.debug("Found roles for user $navIdent: $usersRoles")
     }
 
     private fun <T> timedCall(timerName: String, method: String, block: () -> T): T {
