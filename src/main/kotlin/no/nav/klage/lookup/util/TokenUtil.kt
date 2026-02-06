@@ -51,4 +51,16 @@ class TokenUtil(
     fun getIdent(): String? =
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("NAVident")?.toString()
+
+    fun getGroups(): Array<String>? =
+        tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
+            ?.jwtTokenClaims?.get("groups")?.let {
+                if (it is Array<*>) {
+                    @Suppress("UNCHECKED_CAST")
+                    it as Array<String>
+                } else {
+                    logger.warn("Groups claim is not an array, cannot parse groups from token")
+                    null
+                }
+            }
 }

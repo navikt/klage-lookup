@@ -15,42 +15,56 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "saksbehandler", description = "API for getting info about saksbehandler")
 @ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
 @RestController
-@RequestMapping("/saksbehandler")
+@RequestMapping("/user")
 class SaksbehandlerController(
     private val saksbehandlerService: SaksbehandlerService,
 ) {
 
-    @Operation(summary = "Saksbehandler has Kabal saksbehandler role")
+    @Operation(summary = "User has Kabal saksbehandler role")
     @GetMapping("/is-kabal-saksbehandler/{navIdent}")
     fun isKabalSaksbehandler(
-        @PathVariable("navIdent") navIdent: String? = null,
+        @PathVariable navIdent: String,
     ): Boolean {
         return saksbehandlerService.userIsKabalSaksbehandler(
             navIdent = navIdent,
         )
     }
 
-    @Operation(summary = "Saksbehandler has KROL role")
-    @PostMapping("/is-krol")
+    @Operation(summary = "User has KROL role")
+    @GetMapping("/is-krol/{navIdent}")
     fun isKROL(
-        @RequestBody input: SaksbehandlerRequest,
+        @PathVariable navIdent: String,
     ): Boolean {
         return saksbehandlerService.userIsKROL(
-            navIdent = input.navIdent,
+            navIdent = navIdent,
         )
     }
 
-    @Operation(summary = "Saksbehandler has ROL role")
-    @PostMapping("/is-rol")
+    @Operation(summary = "User has ROL role")
+    @GetMapping("/is-rol/{navIdent}")
     fun isROL(
-        @RequestBody input: SaksbehandlerRequest,
+        @PathVariable navIdent: String,
     ): Boolean {
         return saksbehandlerService.userIsROL(
-            navIdent = input.navIdent,
+            navIdent = navIdent,
         )
     }
 
-    data class SaksbehandlerRequest(
-        val navIdent: String,
-    )
+    @Operation(summary = "Logged in user has Kabal saksbehandler role")
+    @GetMapping("/me/is-kabal-saksbehandler")
+    fun loggedInUserIsKabalSaksbehandler(): Boolean {
+        return saksbehandlerService.loggedInUserIsKabalSaksbehandler()
+    }
+
+    @Operation(summary = "Logged in user has KROL role")
+    @GetMapping("/me/is-krol")
+    fun loggedInUserIsKROL(): Boolean {
+        return saksbehandlerService.loggedInUserIsKROL()
+    }
+
+    @Operation(summary = "Logged in user has ROL role")
+    @GetMapping("/me/is-rol")
+    fun loggedInUserIsROL(): Boolean {
+        return saksbehandlerService.loggedInUserIsROL()
+    }
 }

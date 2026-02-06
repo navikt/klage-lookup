@@ -52,19 +52,13 @@ class EntraProxyService(
     //TODO: Skal dette caches? Trenger vi annen innstilling enn standard?
     @Cacheable(USERS_GROUPS)
     @Retryable
-    fun getUsersGroups(navIdent: String?): List<EntraProxyRolle> {
-        val useObo = tokenUtil.getIdent() != null
-        val bearerToken = if (useObo) {
-            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
-        } else {
-            "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
-        }
-
+    fun getUsersGroups(navIdent: String): List<EntraProxyRolle> {
+        val bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
         val usersRoles = try {
             timedCall(ENTRAPROXY_TIMER, "getUsersRoles") {
                 entraProxyInterface.getAnsattTilganger(
                     bearerToken = bearerToken,
-                    navIdent = navIdent ?: tokenUtil.getIdent()!!,
+                    navIdent = navIdent,
                 )
             }
         } catch (e: Exception) {
