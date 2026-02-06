@@ -12,7 +12,7 @@ import org.springframework.web.service.invoker.createClient
 class EntraProxyConfig {
 
     @Bean
-    fun entraProxyService(
+    fun entraProxyClient(
         @Value($$"${ENTRA_PROXY_BASE_URL}")
         entraProxyUrl: String
     ): EntraProxyInterface {
