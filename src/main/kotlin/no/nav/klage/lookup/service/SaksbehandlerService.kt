@@ -23,14 +23,14 @@ class SaksbehandlerService(
     }
 
     fun userIsKabalSaksbehandler(navIdent: String): Boolean {
-        return entraProxyService.getUsersRoles(navIdent = navIdent).any { it.rolle == kabalSaksbehandlerGroupName }
+        return entraProxyService.getUsersGroups(navIdent = navIdent).any { it.rolle == kabalSaksbehandlerGroupName }
     }
 
     fun userIsROL(navIdent: String): Boolean {
-        return entraProxyService.getUsersRoles(navIdent = navIdent).any { it.rolle == kabalROLGroupName }
+        return entraProxyService.getUsersGroups(navIdent = navIdent).any { it.rolle == kabalROLGroupName }
     }
 
     fun userIsKROL(navIdent: String): Boolean {
-        return entraProxyService.getUsersRoles(navIdent = navIdent).any { it.rolle == kabalKROLGroupName }
+        return entraProxyService.getUsersGroups(navIdent = navIdent).any { it.rolle == kabalKROLGroupName }
     }
 }

@@ -52,7 +52,7 @@ class EntraProxyService(
     //TODO: Skal dette caches? Trenger vi annen innstilling enn standard?
     @Cacheable(USERS_ROLES)
     @Retryable
-    fun getUsersRoles(navIdent: String): List<EntraProxyRolle> {
+    fun getUsersGroups(navIdent: String): List<EntraProxyRolle> {
         val useObo = tokenUtil.getIdent() != null
         val bearerToken = if (useObo) {
             "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
