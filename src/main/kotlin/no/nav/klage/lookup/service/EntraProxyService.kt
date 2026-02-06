@@ -2,7 +2,7 @@ package no.nav.klage.lookup.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
-import no.nav.klage.lookup.config.CacheConfiguration.Companion.USERS_ROLES
+import no.nav.klage.lookup.config.CacheConfiguration.Companion.USERS_GROUPS
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyInterface
 import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
@@ -50,7 +50,7 @@ class EntraProxyService(
     }
 
     //TODO: Skal dette caches? Trenger vi annen innstilling enn standard?
-    @Cacheable(USERS_ROLES)
+    @Cacheable(USERS_GROUPS)
     @Retryable
     fun getUsersGroups(navIdent: String): List<EntraProxyRolle> {
         val useObo = tokenUtil.getIdent() != null
