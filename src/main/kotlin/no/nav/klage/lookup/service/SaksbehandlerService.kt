@@ -22,7 +22,7 @@ class SaksbehandlerService(
         return entraProxyService.getGroupMembers(klageAdminGroupName).map { it.navIdent }.contains(navIdent)
     }
 
-    fun userIsKabalSaksbehandler(navIdent: String): Boolean {
+    fun userIsKabalSaksbehandler(navIdent: String?): Boolean {
         return entraProxyService.getUsersGroups(navIdent = navIdent).any { it.rolle == kabalSaksbehandlerGroupName }
     }
 
