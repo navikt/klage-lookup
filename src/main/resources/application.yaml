@@ -75,8 +75,19 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-jwk: ${AZURE_APP_JWK}
           client-auth-method: private_key_jwt
+      entraproxy-maskintilmaskin:
+        token-endpoint-url: https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://${ENTRA_PROXY_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-jwk: ${AZURE_APP_JWK}
+          client-auth-method: private_key_jwt
 
 TILGANGSMASKINEN_BASE_URL: http://populasjonstilgangskontroll.tilgangsmaskin
 ENTRA_PROXY_BASE_URL: http://entra-proxy.sikkerhetstjenesten
 
 KLAGE_ADMIN_GROUP_NAME: 0000-GA-KLAGE-TEKNISK_ADMIN
+KLAGE_KABAL_SAKSBEHANDLER_GROUP_NAME: 0000-GA-KLAGE-KABAL_SAKSBEHANDLING
+KLAGE_KABAL_KROL_GROUP_NAME: 0000-GA-KLAGE-KABAL_KROL
+KLAGE_KABAL_ROL_GROUP_NAME: 0000-GA-KLAGE-KABAL_ROL

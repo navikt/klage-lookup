@@ -40,6 +40,7 @@ class DevAdminController(
     fun getTokens(): Map<String, String> {
         return mapOf(
             "getSaksbehandlerAccessTokenWithEntraProxyScope" to tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope(),
+            "getAppAccessTokenWithEntraProxyScope" to tokenUtil.getAppAccessTokenWithEntraProxyScope(),
         )
     }
 }

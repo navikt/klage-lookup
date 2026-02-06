@@ -1,8 +1,5 @@
 package no.nav.klage.lookup.service
 
-import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Timer
-import no.nav.klage.lookup.config.entraproxy.EntraProxyService
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
@@ -13,38 +10,55 @@ import org.springframework.stereotype.Service
 class SaksbehandlerService(
     private val tokenUtil: TokenUtil,
     private val entraProxyService: EntraProxyService,
-    private val meterRegistry: MeterRegistry,
     @Value($$"${KLAGE_ADMIN_GROUP_NAME}")
     private val klageAdminGroupName: String,
+    @Value($$"${KLAGE_KABAL_SAKSBEHANDLER_GROUP_NAME}")
+    private val kabalSaksbehandlerGroupName: String,
+    @Value($$"${KLAGE_KABAL_ROL_GROUP_NAME}")
+    private val kabalROLGroupName: String,
+    @Value($$"${KLAGE_KABAL_KROL_GROUP_NAME}")
+    private val kabalKROLGroupName: String,
 ) {
+
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
         private val teamLogger = getTeamLogger()
-        private const val ENTRAPROXY_TIMER = "entraproxy.response.time"
     }
 
     fun loggedInUserIsKlageAdmin(): Boolean {
         val navIdent = tokenUtil.getIdent()
-        val adminRoleMembers = try {
-            timedCall(ENTRAPROXY_TIMER, "getGroupMembersWithObo") {
-                entraProxyService.getGroupMembersWithObo(
-                    bearerToken = "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}",
-                    gruppeNavn = klageAdminGroupName
-                )
-            }
-        } catch (e: Exception) {
-            logger.error("Failed to retrieve members of admin group '$klageAdminGroupName'", e)
-            return false
-        }
-        logger.debug("Got ${adminRoleMembers.size} members of admin group '$klageAdminGroupName'")
-        return adminRoleMembers.map { it.navIdent }.contains(navIdent)
+        return entraProxyService.getGroupMembers(klageAdminGroupName).map { it.navIdent }.contains(navIdent)
     }
 
-    private fun <T> timedCall(timerName: String, method: String, block: () -> T): T {
-        return Timer.builder(timerName)
-            .tag("method", method)
-            .register(meterRegistry)
-            .recordCallable(block)!!
+    fun userIsKabalSaksbehandler(navIdent: String): Boolean {
+        return entraProxyService.getUsersGroups(navIdent = navIdent).any { it.rolle == kabalSaksbehandlerGroupName }
+    }
+
+    fun userIsROL(navIdent: String): Boolean {
+        return entraProxyService.getUsersGroups(navIdent = navIdent).any { it.rolle == kabalROLGroupName }
+    }
+
+    fun userIsKROL(navIdent: String): Boolean {
+        return entraProxyService.getUsersGroups(navIdent = navIdent).any { it.rolle == kabalKROLGroupName }
+    }
+
+    fun loggedInUserIsKabalSaksbehandler(): Boolean {
+        if (tokenUtil.getIdent() == null) {
+            logger.warn("No NAVident found in token, cannot determine if user is Kabal Saksbehandler")
+            return false
+        }
+        logger.debug("groups in token: " + tokenUtil.getGroups().toString())
+        tokenUtil.getGroups()?.forEach { logger.debug("group: $it") }
+
+        return false
+    }
+
+    fun loggedInUserIsKROL(): Boolean {
+        TODO()
+    }
+
+    fun loggedInUserIsROL(): Boolean {
+        TODO()
     }
 }

@@ -2,7 +2,9 @@ package no.nav.klage.lookup.api
 
 import no.nav.klage.lookup.config.SecurityConfiguration
 import no.nav.klage.lookup.service.CacheService
+import no.nav.klage.lookup.service.EntraProxyService
 import no.nav.klage.lookup.service.SaksbehandlerService
+import no.nav.klage.lookup.util.TokenUtil
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/admin")
 class AdminController(
     private val saksbehandlerService: SaksbehandlerService,
+    private val entraProxyService: EntraProxyService,
     private val cacheService: CacheService,
-) {
+    private val tokenUtil: TokenUtil,
+    ) {
 
     @GetMapping("/evict-cache")
     fun evictCache(
@@ -35,6 +39,12 @@ class AdminController(
         } else {
             cacheService.evictAllCaches()
         }
+    }
+
+    @GetMapping("/mygroups")
+    fun getUserGroups() {
+        requireAdminAccess()
+        entraProxyService.getUsersGroups(tokenUtil.getIdent()!!)
     }
 
     private fun requireAdminAccess() {
