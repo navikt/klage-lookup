@@ -42,7 +42,7 @@ class AdminController(
     @GetMapping("/myroles")
     fun getUserRoles() {
         requireAdminAccess()
-        saksbehandlerService.getUsersRoles(navIdent = tokenUtil.getIdent()!!)
+        saksbehandlerService.loggedInUserIsKlageAdmin()
     }
 
     private fun requireAdminAccess() {
