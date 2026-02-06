@@ -15,7 +15,7 @@ class EntraProxyConfig {
     fun entraProxyService(
         @Value($$"${ENTRA_PROXY_BASE_URL}")
         entraProxyUrl: String
-    ): EntraProxyService {
+    ): EntraProxyInterface {
         val restClient = RestClient.create(entraProxyUrl)
 
         // Create factory for client proxies
@@ -23,6 +23,6 @@ class EntraProxyConfig {
             .exchangeAdapter(RestClientAdapter.create(restClient))
             .build()
 
-        return proxyFactory.createClient<EntraProxyService>()
+        return proxyFactory.createClient<EntraProxyInterface>()
     }
 }

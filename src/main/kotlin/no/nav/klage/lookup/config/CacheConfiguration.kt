@@ -15,18 +15,20 @@ class CacheConfiguration {
 
     companion object {
         const val ACCESS_TO_PERSON = "accessToPerson"
+        const val USERS_ROLES = "usersRoles"
     }
 
     @Bean
     fun cacheManager(redisConnectionFactory: RedisConnectionFactory): RedisCacheManager {
         val defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
 
-        val accessToPersonConfig = RedisCacheConfiguration.defaultCacheConfig()
+        val standardConfig = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofMinutes(10))
 
         return RedisCacheManager.builder(redisConnectionFactory)
             .cacheDefaults(defaultConfig)
-            .withCacheConfiguration(ACCESS_TO_PERSON, accessToPersonConfig)
+            .withCacheConfiguration(ACCESS_TO_PERSON, standardConfig)
+            .withCacheConfiguration(USERS_ROLES, standardConfig)
             .build()
     }
 }

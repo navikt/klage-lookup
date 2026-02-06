@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.service.annotation.GetExchange
 
-interface EntraProxyService {
+interface EntraProxyInterface {
     @GetExchange("/api/v1/gruppe/medlemmer")
     fun getGroupMembers(
         @RequestHeader(AUTHORIZATION) bearerToken: String,
