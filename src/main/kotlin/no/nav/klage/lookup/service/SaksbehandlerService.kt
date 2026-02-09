@@ -48,8 +48,8 @@ class SaksbehandlerService(
             logger.warn("No NAVident found in token, cannot determine if user is Kabal Saksbehandler")
             return false
         }
-        logger.debug("groups in token: " + tokenUtil.getGroups().toString())
-        tokenUtil.getGroups()?.forEach { logger.debug("group: $it") }
+        logger.debug("groups in token: " + tokenUtil.getGroups())
+//        tokenUtil.getGroups()?.forEach { logger.debug("group: $it") }
 
         return false
     }
