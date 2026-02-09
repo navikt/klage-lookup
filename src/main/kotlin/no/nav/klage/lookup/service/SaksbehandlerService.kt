@@ -1,5 +1,8 @@
 package no.nav.klage.lookup.service
 
+import no.nav.klage.lookup.api.user.Enhet
+import no.nav.klage.lookup.api.user.UserResponse
+import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
@@ -72,5 +75,30 @@ class SaksbehandlerService(
             return false
         }
         return tokenUtil.getGroups().contains(kabalROLRoleId)
+    }
+
+    fun getUserInfo(navIdent: String): UserResponse {
+        return entraProxyService.getUserInfo(navIdent).toUserResponse()
+    }
+
+    fun getUserInfoForLoggedInUser(): UserResponse {
+        if (tokenUtil.getIdent() == null) {
+            throw RuntimeException("No NAVident found in token")
+        }
+        return getUserInfo(tokenUtil.getIdent()!!)
+    }
+
+    private fun EntraProxyUtvidetAnsatt.toUserResponse(): UserResponse {
+        return UserResponse(
+            navIdent = this.navIdent,
+            fornavn = this.fornavn,
+            etternavn = this.etternavn,
+            sammensattNavn = this.visningNavn,
+            epost = this.epost,
+            enhet = Enhet(
+                enhetNr = this.enhet.enhetnummer,
+                enhetNavn = this.enhet.navn,
+            ),
+        )
     }
 }

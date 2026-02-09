@@ -1,4 +1,4 @@
-package no.nav.klage.lookup.api
+package no.nav.klage.lookup.api.user
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -11,12 +11,22 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "saksbehandler", description = "API for getting info about saksbehandler")
-@ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
+@ProtectedWithClaims(issuer = SecurityConfiguration.Companion.ISSUER_AAD)
 @RestController
 @RequestMapping("/user")
-class SaksbehandlerController(
+class UserController(
     private val saksbehandlerService: SaksbehandlerService,
 ) {
+
+    @Operation(summary = "Get info about user")
+    @GetMapping("/info/{navIdent}")
+    fun getUserInfo(
+        @PathVariable navIdent: String,
+    ): UserResponse {
+        return saksbehandlerService.getUserInfo(
+            navIdent = navIdent,
+        )
+    }
 
     @Operation(summary = "User has Kabal saksbehandler role")
     @GetMapping("/is-kabal-saksbehandler/{navIdent}")
@@ -64,5 +74,11 @@ class SaksbehandlerController(
     @GetMapping("/me/is-rol")
     fun loggedInUserIsROL(): Boolean {
         return saksbehandlerService.loggedInUserIsROL()
+    }
+
+    @Operation(summary = "Get info about logged in user")
+    @GetMapping("/me/info")
+    fun getLoggedInUserInfo(): UserResponse {
+        return saksbehandlerService.getUserInfoForLoggedInUser()
     }
 }

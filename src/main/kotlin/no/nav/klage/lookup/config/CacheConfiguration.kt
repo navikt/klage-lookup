@@ -21,6 +21,7 @@ class CacheConfiguration {
     companion object {
         const val ACCESS_TO_PERSON = "accessToPerson"
         const val USERS_GROUPS = "usersGroups"
+        const val USER_INFO = "userInfo"
 
         internal fun createRedisSerializer(): GenericJacksonJsonRedisSerializer {
             val typeValidator = BasicPolymorphicTypeValidator.builder()
@@ -53,6 +54,7 @@ class CacheConfiguration {
             .cacheDefaults(defaultConfig)
             .withCacheConfiguration(ACCESS_TO_PERSON, standardConfig)
             .withCacheConfiguration(USERS_GROUPS, standardConfig)
+            .withCacheConfiguration(USER_INFO, standardConfig)
             .build()
     }
 }

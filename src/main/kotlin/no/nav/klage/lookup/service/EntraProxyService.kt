@@ -3,9 +3,11 @@ package no.nav.klage.lookup.service
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USERS_GROUPS
+import no.nav.klage.lookup.config.CacheConfiguration.Companion.USER_INFO
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyInterface
 import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
+import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
@@ -47,6 +49,31 @@ class EntraProxyService(
         }
 
         return groupMembers
+    }
+
+    @Cacheable(USER_INFO)
+    @Retryable
+    fun getUserInfo(navIdent: String): EntraProxyUtvidetAnsatt {
+        val useObo = tokenUtil.getIdent() != null
+        val bearerToken = if (useObo) {
+            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
+        } else {
+            "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
+        }
+
+        val userInfo = try {
+            timedCall(ENTRAPROXY_TIMER, "getUserInfo") {
+                entraProxyInterface.getAnsattInfo(
+                    bearerToken = bearerToken,
+                    navIdent = navIdent
+                )
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to retrieve user info for navIdent'$navIdent'", e)
+            throw e
+        }
+
+        return userInfo
     }
 
     //TODO: Skal dette caches? Trenger vi annen innstilling enn standard?
