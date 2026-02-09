@@ -18,7 +18,7 @@ data class EntraProxyUtvidetAnsatt(
     val etternavn: String,
     val epost: String,
     val enhet: EntraProxyEnhet,
-    val tident: String,
+    val tIdent: String,
 )
 
 data class EntraProxyEnhet(
