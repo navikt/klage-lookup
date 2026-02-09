@@ -5,6 +5,7 @@ import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import org.springframework.stereotype.Service
+import kotlin.collections.emptyList
 
 @Service
 class TokenUtil(
@@ -54,10 +55,7 @@ class TokenUtil(
 
     fun getGroups(): List<String> {
         val groupsClaim = tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
-            ?.jwtTokenClaims?.get("groups")
-        logger.debug("Groups: $groupsClaim")
-        return tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
-            ?.jwtTokenClaims?.get("groups")?.toString()?.split(",") ?: emptyList()
+            ?.jwtTokenClaims?.get("groups") ?: emptyList<String>()
+        return groupsClaim as List<String>
     }
-
 }
