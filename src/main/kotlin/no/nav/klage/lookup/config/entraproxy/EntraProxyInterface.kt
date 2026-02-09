@@ -13,6 +13,12 @@ interface EntraProxyInterface {
         @RequestParam gruppeNavn: String,
     ): List<EntraProxyAnsatt>
 
+    @GetExchange("/api/v1/enhet/{enhetsnummer}")
+    fun getAnsatteInEnhet(
+        @RequestHeader(AUTHORIZATION) bearerToken: String,
+        @PathVariable enhetsnummer: String,
+    ): List<EntraProxyAnsatt>
+
     @GetExchange("/api/v1/ansatt/tilganger/{navIdent}")
     fun getAnsattTilganger(
         @RequestHeader(AUTHORIZATION) bearerToken: String,

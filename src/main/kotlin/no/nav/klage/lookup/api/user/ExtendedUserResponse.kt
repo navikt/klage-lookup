@@ -5,6 +5,13 @@ data class UserResponse (
     val sammensattNavn: String,
     val fornavn: String,
     val etternavn: String,
+)
+
+data class ExtendedUserResponse (
+    val navIdent: String,
+    val sammensattNavn: String,
+    val fornavn: String,
+    val etternavn: String,
     val epost: String,
     val enhet: Enhet,
 )

@@ -1,7 +1,9 @@
 package no.nav.klage.lookup.service
 
 import no.nav.klage.lookup.api.user.Enhet
+import no.nav.klage.lookup.api.user.ExtendedUserResponse
 import no.nav.klage.lookup.api.user.UserResponse
+import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
@@ -29,7 +31,6 @@ class SaksbehandlerService(
     @Value($$"${KABAL_KROL_ROLE_ID}")
     private val kabalKROLRoleId: String,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -77,19 +78,23 @@ class SaksbehandlerService(
         return tokenUtil.getGroups().contains(kabalROLRoleId)
     }
 
-    fun getUserInfo(navIdent: String): UserResponse {
+    fun getUserInfo(navIdent: String): ExtendedUserResponse {
         return entraProxyService.getUserInfo(navIdent).toUserResponse()
     }
 
-    fun getUserInfoForLoggedInUser(): UserResponse {
+    fun getUserInfoForLoggedInUser(): ExtendedUserResponse {
         if (tokenUtil.getIdent() == null) {
             throw RuntimeException("No NAVident found in token")
         }
         return getUserInfo(tokenUtil.getIdent()!!)
     }
 
-    private fun EntraProxyUtvidetAnsatt.toUserResponse(): UserResponse {
-        return UserResponse(
+    fun getUsersInEnhet(enhetsnummer: String): List<UserResponse> {
+        return entraProxyService.getAnsatteInEnhet(enhetsnummer).map { it.toUserResponse() }
+    }
+
+    private fun EntraProxyUtvidetAnsatt.toUserResponse(): ExtendedUserResponse {
+        return ExtendedUserResponse(
             navIdent = this.navIdent,
             fornavn = this.fornavn,
             etternavn = this.etternavn,
@@ -101,4 +106,14 @@ class SaksbehandlerService(
             ),
         )
     }
+
+    private fun EntraProxyAnsatt.toUserResponse(): UserResponse {
+        return UserResponse(
+            navIdent = this.navIdent,
+            fornavn = this.fornavn,
+            etternavn = this.etternavn,
+            sammensattNavn = this.visningNavn,
+        )
+    }
 }
+

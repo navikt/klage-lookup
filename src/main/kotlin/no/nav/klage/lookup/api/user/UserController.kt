@@ -22,7 +22,7 @@ class UserController(
     @GetMapping("/info/{navIdent}")
     fun getUserInfo(
         @PathVariable navIdent: String,
-    ): UserResponse {
+    ): ExtendedUserResponse {
         return saksbehandlerService.getUserInfo(
             navIdent = navIdent,
         )
@@ -58,6 +58,16 @@ class UserController(
         )
     }
 
+    @Operation(summary = "Get users in given enhet")
+    @GetMapping("/usersInEnhet/{enhetsnummer}")
+    fun getUsersInEnhet(
+        @PathVariable enhetsnummer: String,
+    ): List<UserResponse> {
+        return saksbehandlerService.getUsersInEnhet(
+            enhetsnummer = enhetsnummer,
+        )
+    }
+
     @Operation(summary = "Logged in user has Kabal saksbehandler role")
     @GetMapping("/me/is-kabal-saksbehandler")
     fun loggedInUserIsKabalSaksbehandler(): Boolean {
@@ -78,7 +88,7 @@ class UserController(
 
     @Operation(summary = "Get info about logged in user")
     @GetMapping("/me/info")
-    fun getLoggedInUserInfo(): UserResponse {
+    fun getLoggedInUserInfo(): ExtendedUserResponse {
         return saksbehandlerService.getUserInfoForLoggedInUser()
     }
 }
