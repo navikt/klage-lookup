@@ -53,6 +53,7 @@ class TokenUtil(
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("NAVident")?.toString()
 
+    @Suppress("UNCHECKED_CAST")
     fun getGroups(): List<String> {
         val groupsClaim = tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("groups") ?: emptyList<String>()

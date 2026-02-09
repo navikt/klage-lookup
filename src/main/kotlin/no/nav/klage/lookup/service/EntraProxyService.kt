@@ -65,8 +65,6 @@ class EntraProxyService(
             logger.error("Failed to retrieve roles for navIdent $navIdent", e)
             throw e
         }
-        //TODO: Remove after development
-        teamLogger.debug("Found roles for user $navIdent: $usersRoles")
         return usersRoles
     }
 

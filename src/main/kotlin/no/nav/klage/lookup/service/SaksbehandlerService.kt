@@ -55,9 +55,6 @@ class SaksbehandlerService(
             logger.warn("No NAVident found in token, cannot determine if user is Kabal Saksbehandler")
             return false
         }
-        logger.debug("User groups: ${tokenUtil.getGroups()}")
-        logger.debug("kabalSaksbehandlerRoleId: $kabalSaksbehandlerRoleId")
-        logger.debug("inneholder: ${tokenUtil.getGroups().contains(kabalSaksbehandlerRoleId)}")
         return tokenUtil.getGroups().contains(kabalSaksbehandlerRoleId)
     }
 
