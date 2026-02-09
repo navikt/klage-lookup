@@ -52,7 +52,12 @@ class TokenUtil(
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("NAVident")?.toString()
 
-    fun getGroups(): List<String> =
-        tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
+    fun getGroups(): List<String> {
+        val groupsClaim = tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
+            ?.jwtTokenClaims?.get("groups")
+        logger.debug("Groups: $groupsClaim")
+        return tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("groups")?.toString()?.split(",") ?: emptyList()
+    }
+
 }
