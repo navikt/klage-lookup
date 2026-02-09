@@ -18,6 +18,13 @@ class SaksbehandlerService(
     private val kabalROLGroupName: String,
     @Value($$"${KLAGE_KABAL_KROL_GROUP_NAME}")
     private val kabalKROLGroupName: String,
+
+    @Value($$"${KABAL_SAKSBEHANDLING_ROLE_ID}")
+    private val kabalSaksbehandlerRoleId: String,
+    @Value($$"${KABAL_ROL_ROLE_ID}")
+    private val kabalROLRoleId: String,
+    @Value($$"${KABAL_KROL_ROLE_ID}")
+    private val kabalKROLRoleId: String,
 ) {
 
     companion object {
@@ -48,17 +55,22 @@ class SaksbehandlerService(
             logger.warn("No NAVident found in token, cannot determine if user is Kabal Saksbehandler")
             return false
         }
-        logger.debug("groups in token: " + tokenUtil.getGroups())
-//        tokenUtil.getGroups()?.forEach { logger.debug("group: $it") }
-
-        return false
+        return tokenUtil.getGroups().contains(kabalSaksbehandlerRoleId)
     }
 
     fun loggedInUserIsKROL(): Boolean {
-        TODO()
+        if (tokenUtil.getIdent() == null) {
+            logger.warn("No NAVident found in token, cannot determine if user is Kabal KROL")
+            return false
+        }
+        return tokenUtil.getGroups().contains(kabalKROLRoleId)
     }
 
     fun loggedInUserIsROL(): Boolean {
-        TODO()
+        if (tokenUtil.getIdent() == null) {
+            logger.warn("No NAVident found in token, cannot determine if user is Kabal ROL")
+            return false
+        }
+        return tokenUtil.getGroups().contains(kabalROLRoleId)
     }
 }

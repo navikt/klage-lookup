@@ -52,7 +52,7 @@ class TokenUtil(
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("NAVident")?.toString()
 
-    fun getGroups(): String? =
+    fun getGroups(): List<String> =
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
-            ?.jwtTokenClaims?.get("groups")?.toString()
+            ?.jwtTokenClaims?.get("groups")?.toString()?.split(",") ?: emptyList()
 }
