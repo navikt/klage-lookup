@@ -47,15 +47,18 @@ class CacheConfiguration {
 
         val standardConfig = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofMinutes(10))
+
+        val standardConfigWithSerializer = RedisCacheConfiguration.defaultCacheConfig()
+            .entryTtl(Duration.ofMinutes(10))
             .serializeKeysWith(fromSerializer(StringRedisSerializer()))
             .serializeValuesWith(fromSerializer(serializer))
 
         return RedisCacheManager.builder(redisConnectionFactory)
             .cacheDefaults(defaultConfig)
             .withCacheConfiguration(ACCESS_TO_PERSON, standardConfig)
-            .withCacheConfiguration(USERS_GROUPS, standardConfig)
-            .withCacheConfiguration(USER_INFO, standardConfig)
-            .withCacheConfiguration(ANSATTE_IN_ENHET, standardConfig)
+            .withCacheConfiguration(USERS_GROUPS, standardConfigWithSerializer)
+            .withCacheConfiguration(USER_INFO, standardConfigWithSerializer)
+            .withCacheConfiguration(ANSATTE_IN_ENHET, standardConfigWithSerializer)
             .build()
     }
 }
