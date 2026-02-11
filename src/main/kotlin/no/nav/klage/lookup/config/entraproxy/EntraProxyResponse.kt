@@ -29,13 +29,18 @@ data class EntraProxyUtvidetAnsatt(
     val epost: String,
     val enhet: EntraProxyEnhet,
     val tIdent: String,
-)  : Serializable {
+) : Serializable {
     companion object {
         private const val serialVersionUID: Long = 1L
     }
-    data class EntraProxyEnhet(
-        val enhetnummer: String,
-        val navn: String,
-    )
+}
+
+data class EntraProxyEnhet(
+    val enhetnummer: String,
+    val navn: String,
+) : Serializable {
+    companion object {
+        private const val serialVersionUID: Long = 1L
+    }
 }
 
