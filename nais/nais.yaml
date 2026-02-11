@@ -61,6 +61,7 @@ spec:
       rules:
         - application: kabal-innstillinger
         - application: kabal-api
+        - application: kabal-frontend
     outbound:
       rules:
         - application: populasjonstilgangskontroll
