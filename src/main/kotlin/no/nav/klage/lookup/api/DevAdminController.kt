@@ -1,5 +1,6 @@
 package no.nav.klage.lookup.api
 
+import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
 import no.nav.klage.lookup.service.CacheService
 import no.nav.klage.lookup.service.EntraProxyService
 import no.nav.klage.lookup.util.TokenUtil
@@ -39,8 +40,8 @@ class DevAdminController(
     }
 
     @GetMapping("/mygroups")
-    fun getUserGroups() {
-        entraProxyService.getUsersGroups(tokenUtil.getIdent()!!)
+    fun getUserGroups(): List<EntraProxyRolle> {
+        return entraProxyService.getUsersGroups(tokenUtil.getIdent()!!)
     }
 
     @GetMapping("/mytokens")

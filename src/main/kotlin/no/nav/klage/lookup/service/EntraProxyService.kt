@@ -70,7 +70,7 @@ class EntraProxyService(
                 )
             }
         } catch (e: Exception) {
-            logger.error("Failed to retrieve user info for navIdent'$navIdent'", e)
+            logger.error("Failed to retrieve user info for navIdent '$navIdent'", e)
             throw e
         }
 
