@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class AdminController(
     private val saksbehandlerService: SaksbehandlerService,
     private val cacheService: CacheService,
-) {
+    ) {
 
     @GetMapping("/evict-cache")
     fun evictCache(

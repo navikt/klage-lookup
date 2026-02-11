@@ -7,6 +7,10 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.cache.RedisCacheConfiguration
 import org.springframework.data.redis.cache.RedisCacheManager
 import org.springframework.data.redis.connection.RedisConnectionFactory
+import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer
+import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair.fromSerializer
+import org.springframework.data.redis.serializer.StringRedisSerializer
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 import java.time.Duration
 
 @EnableCaching
@@ -15,18 +19,43 @@ class CacheConfiguration {
 
     companion object {
         const val ACCESS_TO_PERSON = "accessToPerson"
+        const val USERS_GROUPS = "usersGroups"
+        const val USER_INFO = "userInfo"
+        const val ANSATTE_IN_ENHET = "ansatteInEnhet"
+
+        internal fun createRedisSerializer(): GenericJacksonJsonRedisSerializer {
+            val typeValidator = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType("no.nav")
+                .allowIfSubType("java.time")
+                .allowIfSubType("java.math")
+                .allowIfSubType("java.util.ArrayList")
+                .allowIfBaseType(Collection::class.java)
+                .allowIfBaseType(Map::class.java)
+                .build()
+
+            return GenericJacksonJsonRedisSerializer
+                .builder()
+                .enableDefaultTyping(typeValidator)
+                .build()
+        }
     }
 
     @Bean
     fun cacheManager(redisConnectionFactory: RedisConnectionFactory): RedisCacheManager {
         val defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+        val serializer = createRedisSerializer()
 
-        val accessToPersonConfig = RedisCacheConfiguration.defaultCacheConfig()
+        val standardConfig = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofMinutes(10))
+            .serializeKeysWith(fromSerializer(StringRedisSerializer()))
+            .serializeValuesWith(fromSerializer(serializer))
 
         return RedisCacheManager.builder(redisConnectionFactory)
             .cacheDefaults(defaultConfig)
-            .withCacheConfiguration(ACCESS_TO_PERSON, accessToPersonConfig)
+            .withCacheConfiguration(ACCESS_TO_PERSON, standardConfig)
+            .withCacheConfiguration(USERS_GROUPS, standardConfig)
+            .withCacheConfiguration(USER_INFO, standardConfig)
+            .withCacheConfiguration(ANSATTE_IN_ENHET, standardConfig)
             .build()
     }
 }
