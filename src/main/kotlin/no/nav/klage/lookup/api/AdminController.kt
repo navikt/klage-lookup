@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/admin")
 class AdminController(
     private val saksbehandlerService: SaksbehandlerService,
-    private val entraProxyService: EntraProxyService,
     private val cacheService: CacheService,
-    private val tokenUtil: TokenUtil,
     ) {
 
     @GetMapping("/evict-cache")
@@ -39,12 +37,6 @@ class AdminController(
         } else {
             cacheService.evictAllCaches()
         }
-    }
-
-    @GetMapping("/mygroups")
-    fun getUserGroups() {
-        requireAdminAccess()
-        entraProxyService.getUsersGroups(tokenUtil.getIdent()!!)
     }
 
     private fun requireAdminAccess() {

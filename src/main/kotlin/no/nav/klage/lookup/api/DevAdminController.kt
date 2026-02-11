@@ -1,6 +1,7 @@
 package no.nav.klage.lookup.api
 
 import no.nav.klage.lookup.service.CacheService
+import no.nav.klage.lookup.service.EntraProxyService
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.context.annotation.Profile
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 class DevAdminController(
     private val cacheService: CacheService,
     private val tokenUtil: TokenUtil,
+    private val entraProxyService: EntraProxyService,
 ) {
 
     @GetMapping("/evict-cache")
@@ -34,6 +36,11 @@ class DevAdminController(
         } else {
             cacheService.evictAllCaches()
         }
+    }
+
+    @GetMapping("/mygroups")
+    fun getUserGroups() {
+        entraProxyService.getUsersGroups(tokenUtil.getIdent()!!)
     }
 
     @GetMapping("/mytokens")
