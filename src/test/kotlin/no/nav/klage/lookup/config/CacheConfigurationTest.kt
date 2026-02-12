@@ -3,6 +3,7 @@ package no.nav.klage.lookup.config
 import no.nav.klage.lookup.config.entraproxy.EntraProxyEnhet
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNull
@@ -41,6 +42,14 @@ class CacheConfigurationTest {
     @Autowired
     private lateinit var cacheManager: RedisCacheManager
 
+    @BeforeEach
+    fun setUp() {
+        // Clear all caches before each test
+        cacheManager.cacheNames.forEach { cacheName ->
+            cacheManager.getCache(cacheName)?.clear()
+        }
+    }
+
     @Test
     @Order(1)
     fun `cacheManager is configured as RedisCacheManager`() {
@@ -65,12 +74,11 @@ class CacheConfigurationTest {
     fun `cache stores and retrieves values`() {
         val cache = cacheManager.getCache(CacheConfiguration.ANSATTE_IN_ENHET)
         assertThat(cache).isNotNull
-        cache!!.clear()
 
-        val key = "testKey3"
+        val key = "testKey"
         val value = "testValue"
 
-        cache.put(key, value)
+        cache!!.putIfAbsent(key, value)
         val retrieved = cache.get<String>(key)
 
         assertThat(retrieved).isEqualTo(value)
@@ -81,9 +89,8 @@ class CacheConfigurationTest {
     fun `serialization works as expected`() {
         val cache = cacheManager.getCache(CacheConfiguration.USER_INFO)
         assertThat(cache).isNotNull
-        cache!!.clear()
 
-        val key = "testKey4"
+        val key = "testKey"
         val value = EntraProxyUtvidetAnsatt(
             navIdent = "navIdent",
             visningNavn = "visningNavn",
@@ -96,7 +103,7 @@ class CacheConfigurationTest {
             ),
             tIdent = "tIdent"
         )
-        cache.put(key, value)
+        cache!!.putIfAbsent(key, value)
         assertThat(cache.get<EntraProxyUtvidetAnsatt>(key)).isEqualTo(value)
     }
 
@@ -105,11 +112,10 @@ class CacheConfigurationTest {
     fun `cache evicts values after TTL`() {
         val cache = cacheManager.getCache(CacheConfiguration.ACCESS_TO_PERSON)
         assertThat(cache).isNotNull
-        cache!!.clear()
 
-        val key = "testKey5"
+        val key = "testKey"
         val value = "testValue"
-        cache.put(key, value)
+        cache!!.putIfAbsent(key, value)
         assertThat(cache.get<String>(key)).isEqualTo(value)
 
         Thread.sleep(2500)
