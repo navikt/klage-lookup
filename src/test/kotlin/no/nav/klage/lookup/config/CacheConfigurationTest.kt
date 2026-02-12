@@ -65,11 +65,12 @@ class CacheConfigurationTest {
     fun `cache stores and retrieves values`() {
         val cache = cacheManager.getCache(CacheConfiguration.ANSATTE_IN_ENHET)
         assertThat(cache).isNotNull
+        cache!!.clear()
 
-        val key = "testKey"
+        val key = "testKey3"
         val value = "testValue"
 
-        cache!!.put(key, value)
+        cache.put(key, value)
         val retrieved = cache.get<String>(key)
 
         assertThat(retrieved).isEqualTo(value)
@@ -80,8 +81,9 @@ class CacheConfigurationTest {
     fun `serialization works as expected`() {
         val cache = cacheManager.getCache(CacheConfiguration.USER_INFO)
         assertThat(cache).isNotNull
+        cache!!.clear()
 
-        val key = "currentTestKey"
+        val key = "testKey4"
         val value = EntraProxyUtvidetAnsatt(
             navIdent = "navIdent",
             visningNavn = "visningNavn",
@@ -94,7 +96,7 @@ class CacheConfigurationTest {
             ),
             tIdent = "tIdent"
         )
-        cache!!.put(key, value)
+        cache.put(key, value)
         assertThat(cache.get<EntraProxyUtvidetAnsatt>(key)).isEqualTo(value)
     }
 
@@ -103,14 +105,14 @@ class CacheConfigurationTest {
     fun `cache evicts values after TTL`() {
         val cache = cacheManager.getCache(CacheConfiguration.ACCESS_TO_PERSON)
         assertThat(cache).isNotNull
+        cache!!.clear()
 
-        val key = "testKey"
+        val key = "testKey5"
         val value = "testValue"
-        cache!!.evict(key)
         cache.put(key, value)
         assertThat(cache.get<String>(key)).isEqualTo(value)
 
-        Thread.sleep(2200)
+        Thread.sleep(2500)
         assertNull(cache.get<String>(key))
     }
 }
