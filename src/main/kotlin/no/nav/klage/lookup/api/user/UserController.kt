@@ -28,32 +28,12 @@ class UserController(
         )
     }
 
-    @Operation(summary = "User has Kabal saksbehandler role")
-    @GetMapping("/is-kabal-saksbehandler/{navIdent}")
-    fun isKabalSaksbehandler(
+    @Operation(summary = "Get info about user")
+    @GetMapping("/group-memberships/{navIdent}")
+    fun getGroupMemberships(
         @PathVariable navIdent: String,
-    ): Boolean {
-        return saksbehandlerService.userIsKabalSaksbehandler(
-            navIdent = navIdent,
-        )
-    }
-
-    @Operation(summary = "User has KROL role")
-    @GetMapping("/is-krol/{navIdent}")
-    fun isKROL(
-        @PathVariable navIdent: String,
-    ): Boolean {
-        return saksbehandlerService.userIsKROL(
-            navIdent = navIdent,
-        )
-    }
-
-    @Operation(summary = "User has ROL role")
-    @GetMapping("/is-rol/{navIdent}")
-    fun isROL(
-        @PathVariable navIdent: String,
-    ): Boolean {
-        return saksbehandlerService.userIsROL(
+    ): GroupMembershipsResponse {
+        return saksbehandlerService.getGroupMemberships(
             navIdent = navIdent,
         )
     }
@@ -68,27 +48,15 @@ class UserController(
         )
     }
 
-    @Operation(summary = "Logged in user has Kabal saksbehandler role")
-    @GetMapping("/me/is-kabal-saksbehandler")
-    fun loggedInUserIsKabalSaksbehandler(): Boolean {
-        return saksbehandlerService.loggedInUserIsKabalSaksbehandler()
-    }
-
-    @Operation(summary = "Logged in user has KROL role")
-    @GetMapping("/me/is-krol")
-    fun loggedInUserIsKROL(): Boolean {
-        return saksbehandlerService.loggedInUserIsKROL()
-    }
-
-    @Operation(summary = "Logged in user has ROL role")
-    @GetMapping("/me/is-rol")
-    fun loggedInUserIsROL(): Boolean {
-        return saksbehandlerService.loggedInUserIsROL()
-    }
-
     @Operation(summary = "Get info about logged in user")
     @GetMapping("/me/info")
     fun getLoggedInUserInfo(): ExtendedUserResponse {
         return saksbehandlerService.getUserInfoForLoggedInUser()
+    }
+
+    @Operation(summary = "Get info about user")
+    @GetMapping("/me/group-memberships")
+    fun getGroupMembershipsForLoggedInUser(): GroupMembershipsResponse {
+        return saksbehandlerService.getGroupMembershipsForLoggedInUser()
     }
 }

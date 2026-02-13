@@ -17,6 +17,8 @@ adRoles:
     value: 1edfbdf1-c1bc-4dc6-9cab-4fff1cb7e2a8
   - name: KABAL_INNSYN_EGEN_ENHET_ROLE_ID
     value: e9de217a-7244-45ac-8a06-1994905d7964
+  - name: KABAL_TILGANGSSTYRING_EGEN_ENHET_ROLE_ID
+    value: 7cb733c8-2558-4235-a5ec-8c4e9b397494
   - name: FORTROLIG_ROLE_ID
     value: 9ec6487d-f37a-4aad-a027-cd221c1ac32b
   - name: STRENGT_FORTROLIG_ROLE_ID
@@ -31,6 +33,20 @@ adRoles:
     value: a478bf9a-fb73-4dee-bd84-411ca4749cb9
   - name: KABAL_SVARBREVINNSTILLINGER_ROLE_ID
     value: e11eac72-43dc-48bc-b9cb-383b600fd03b
+  - name: ALLE_I_NAV_KLAGEINSTANS_ROLE_ID
+    value: bccc2468-3077-44f0-ab4d-df9896c24bb7
+  - name: KAKA_KVALITETSVURDERING_ROLE_ID
+    value: 3cc106d4-1b0d-4bbc-b918-8ec5213f138b
+  - name: KAKA_KVALITETSTILBAKEMELDING_ROLE_ID
+    value: ae3f82ff-c1b9-4e59-93c5-1d8c3b860ba6
+  - name: KAKA_TOTALSTATISTIKK_ROLE_ID
+    value: 596cbd6f-bc5c-4a4c-bf9e-9f734d556051
+  - name: KAKA_LEDERSTATISTIKK_ROLE_ID
+    value: d399dc50-0e80-47fd-8b0e-4118c0fc5c9b
+  - name: KAKA_EXCEL_UTTREKK_MED_FRITEKST_ROLE_ID
+    value: 4b1b3c8d-1d63-4533-b396-22b1f1103efe
+  - name: KAKA_EXCEL_UTTREKK_UTEN_FRITEKST_ROLE_ID
+    value: 5a3380b0-80b5-4059-a6eb-9bd54516928e
 
 envs:
   - name: JAVA_OPTS
