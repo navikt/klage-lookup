@@ -3,10 +3,7 @@ package no.nav.klage.lookup.config
 import no.nav.klage.lookup.config.entraproxy.EntraProxyEnhet
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertNull
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.redis.test.autoconfigure.DataRedisTest
 import org.springframework.cache.get
@@ -24,6 +21,7 @@ import org.testcontainers.utility.DockerImageName
 @DataRedisTest
 @Testcontainers
 @Import(CacheConfiguration::class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class CacheConfigurationTest {
 
     companion object {
@@ -122,10 +120,10 @@ class CacheConfigurationTest {
         val pollIntervalMillis = 100L
         val startTime = System.currentTimeMillis()
 
-        var cachedValue: String? = cache.get(key)
+        var cachedValue: String? = cache.get<String>(key)
         while (cachedValue != null && System.currentTimeMillis() - startTime < timeoutMillis) {
             Thread.sleep(pollIntervalMillis)
-            cachedValue = cache.get(key)
+            cachedValue = cache.get<String>(key)
         }
 
         assertNull(cachedValue)
