@@ -51,17 +51,12 @@ dependencies {
         exclude(group = "org.junit.vintage")
         exclude(group = "org.mockito")
     }
-    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test") {
+    testImplementation("org.springframework.boot:spring-boot-starter-data-redis-test") {
         exclude(group = "org.junit.vintage")
         exclude(group = "org.mockito")
     }
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.testcontainers:testcontainers:${testContainersVersion}")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:${testContainersVersion}")
-    testImplementation("org.testcontainers:testcontainers-postgresql:${testContainersVersion}")
-    testImplementation("io.mockk:mockk:${mockkVersion}")
-    testImplementation("com.ninja-squad:springmockk:${springMockkVersion}")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType<KotlinCompile> {

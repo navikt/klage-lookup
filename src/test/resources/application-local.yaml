@@ -1,0 +1,8 @@
+STANDARD_TTL_SECONDS: 2
+spring:
+  data:
+    redis:
+      ssl:
+        enabled: false
+      username: ""
+      password: ""

@@ -102,7 +102,6 @@ class EntraProxyService(
         return ansattList
     }
 
-    //TODO: Skal dette caches? Trenger vi annen innstilling enn standard?
     @Cacheable(USERS_GROUPS)
     @Retryable
     fun getUsersGroups(navIdent: String): List<EntraProxyRolle> {

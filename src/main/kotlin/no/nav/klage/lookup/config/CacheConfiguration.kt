@@ -1,6 +1,7 @@
 package no.nav.klage.lookup.config
 
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -11,7 +12,10 @@ import java.time.Duration
 
 @EnableCaching
 @Configuration
-class CacheConfiguration {
+class CacheConfiguration(
+    @Value($$"${STANDARD_TTL_SECONDS}")
+    private val standardTTLSeconds: Int,
+) {
 
     companion object {
         const val ACCESS_TO_PERSON = "accessToPerson"
@@ -25,7 +29,7 @@ class CacheConfiguration {
         val defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
 
         val standardConfig = RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofMinutes(10))
+            .entryTtl(Duration.ofSeconds(standardTTLSeconds.toLong()))
 
         return RedisCacheManager.builder(redisConnectionFactory)
             .cacheDefaults(defaultConfig)
