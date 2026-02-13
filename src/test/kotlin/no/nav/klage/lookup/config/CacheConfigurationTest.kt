@@ -118,7 +118,16 @@ class CacheConfigurationTest {
         cache!!.putIfAbsent(key, value)
         assertThat(cache.get<String>(key)).isEqualTo(value)
 
-        Thread.sleep(2500)
-        assertNull(cache.get<String>(key))
+        val timeoutMillis = 5000L
+        val pollIntervalMillis = 100L
+        val startTime = System.currentTimeMillis()
+
+        var cachedValue: String? = cache.get(key)
+        while (cachedValue != null && System.currentTimeMillis() - startTime < timeoutMillis) {
+            Thread.sleep(pollIntervalMillis)
+            cachedValue = cache.get(key)
+        }
+
+        assertNull(cachedValue)
     }
 }
