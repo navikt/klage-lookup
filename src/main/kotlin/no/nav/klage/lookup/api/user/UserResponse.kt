@@ -20,3 +20,7 @@ data class Enhet (
     val enhetNr: String,
     val enhetNavn: String,
 )
+
+data class GroupMembershipsResponse (
+    val groupIds: List<String>,
+)
