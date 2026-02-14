@@ -40,7 +40,7 @@ class UserController(
     }
 
     @Operation(summary = "Get users in given enhet")
-    @GetMapping("/enhets/{enhetsnummer}/usersInEnhet")
+    @GetMapping("/enhets/{enhetsnummer}/users-in-enhet")
     fun getUsersInEnhet(
         @PathVariable enhetsnummer: String,
     ): List<UserResponse> {
