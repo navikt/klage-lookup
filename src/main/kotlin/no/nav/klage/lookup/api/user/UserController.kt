@@ -54,7 +54,7 @@ class UserController(
         return saksbehandlerService.getUserInfoForLoggedInUser()
     }
 
-    @Operation(summary = "Get info about user")
+    @Operation(summary = "Get group memberships for logged in user")
     @GetMapping("/me/group-memberships")
     fun getGroupMembershipsForLoggedInUser(): GroupMembershipsResponse {
         return saksbehandlerService.getGroupMembershipsForLoggedInUser()
