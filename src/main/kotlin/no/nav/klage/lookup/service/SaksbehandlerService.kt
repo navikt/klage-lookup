@@ -102,6 +102,10 @@ class SaksbehandlerService(
         return entraProxyService.getAnsatteInEnhet(enhetsnummer).map { it.toUserResponse() }
     }
 
+    fun getGroupMembers(azureGroup: AzureGroup): List<UserResponse> {
+        return entraProxyService.getGroupMembers(gruppeNavn = azureGroup.reference).map { it.toUserResponse() }
+    }
+
     private fun EntraProxyUtvidetAnsatt.toUserResponse(): ExtendedUserResponse {
         return ExtendedUserResponse(
             navIdent = this.navIdent,

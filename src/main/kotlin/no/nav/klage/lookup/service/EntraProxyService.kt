@@ -30,6 +30,28 @@ class EntraProxyService(
         private const val ENTRAPROXY_TIMER = "entraproxy.response.time"
     }
 
+    fun getGroupMembers(gruppeNavn: String): List<EntraProxyAnsatt> {
+        val useObo = tokenUtil.getIdent() != null
+        val bearerToken = if (useObo) {
+            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
+        } else {
+            "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
+        }
+        val groupMembers = try {
+            timedCall(ENTRAPROXY_TIMER, "getGroupMembers") {
+                entraProxyInterface.getGroupMembers(
+                    bearerToken = bearerToken,
+                    gruppeNavn = gruppeNavn
+                )
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to retrieve members of group '$gruppeNavn'", e)
+            throw e
+        }
+
+        return groupMembers
+    }
+
     @Cacheable(USER_INFO)
     @Retryable
     fun getUserInfo(navIdent: String): EntraProxyUtvidetAnsatt {

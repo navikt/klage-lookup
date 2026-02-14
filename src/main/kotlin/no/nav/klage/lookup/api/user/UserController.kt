@@ -2,6 +2,7 @@ package no.nav.klage.lookup.api.user
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.lookup.config.SecurityConfiguration
 import no.nav.klage.lookup.service.SaksbehandlerService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -46,6 +47,16 @@ class UserController(
     ): List<UserResponse> {
         return saksbehandlerService.getUsersInEnhet(
             enhetsnummer = enhetsnummer,
+        )
+    }
+
+    @Operation(summary = "Get users in given Azure group")
+    @GetMapping("/groups/{groupId}/users-in-group")
+    fun getUsersInGroup(
+        @PathVariable groupId: String,
+    ): List<UserResponse> {
+        return saksbehandlerService.getGroupMembers(
+            azureGroup = AzureGroup.of(groupId),
         )
     }
 }
