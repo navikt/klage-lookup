@@ -91,7 +91,7 @@ class SaksbehandlerService(
     fun getUserInfo(navIdent: String): ExtendedUserResponse {
         return if (tokenUtil.getIdent() == navIdent) {
             logger.debug("Getting user info for logged in user with NAVident '{}'", navIdent)
-            getUserInfo(tokenUtil.getIdent()!!)
+            entraProxyService.getUserInfo(tokenUtil.getIdent()!!).toUserResponse()
         } else {
             logger.debug("Getting user info for user with NAVident '{}'", navIdent)
             entraProxyService.getUserInfo(navIdent).toUserResponse()
