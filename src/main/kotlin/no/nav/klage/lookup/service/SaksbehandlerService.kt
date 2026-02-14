@@ -65,36 +65,37 @@ class SaksbehandlerService(
     }
 
     fun loggedInUserIsKlageAdmin(): Boolean {
-        return getGroupMembershipsForLoggedInUser().groupIds.contains(AzureGroup.KABAL_ADMIN.id)
+        if (tokenUtil.getIdent() == null) {
+            throw RuntimeException("No logged in user")
+        }
+        return getGroupMemberships(navIdent = tokenUtil.getIdent()!!).groupIds.contains(AzureGroup.KABAL_ADMIN.id)
     }
 
     fun getGroupMemberships(navIdent: String): GroupMembershipsResponse {
-        val userGroups = entraProxyService.getUsersGroups(navIdent = navIdent)
-        return GroupMembershipsResponse(
-            groupIds = userGroups.mapNotNull { userGroup ->
-                AzureGroup.entries.find { it.reference == userGroup.rolle }?.id
-            }
-        )
-    }
-
-    fun getGroupMembershipsForLoggedInUser(): GroupMembershipsResponse {
-        if (tokenUtil.getIdent() == null) {
-            throw RuntimeException("No NAVident found in token")
+        return if (tokenUtil.getIdent() == navIdent) {
+            logger.debug("Getting group memberships for logged in user with NAVident '{}'", navIdent)
+            val userGroups = tokenUtil.getGroups()
+            teamLogger.debug("Found groups for logged in user {}: {}", tokenUtil.getIdent(), userGroups)
+            userGroups.toGroupMembershipsResponse()
+        } else {
+            logger.debug("Getting group memberships for user with NAVident '{}'", navIdent)
+            val userGroups = entraProxyService.getUsersGroups(navIdent = navIdent)
+            GroupMembershipsResponse(
+                groupIds = userGroups.mapNotNull { userGroup ->
+                    AzureGroup.entries.find { it.reference == userGroup.rolle }?.id
+                }
+            )
         }
-        val userGroups = tokenUtil.getGroups()
-        teamLogger.debug("Found groups for user {}: {}", tokenUtil.getIdent(), userGroups)
-        return userGroups.toGroupMembershipsResponse()
     }
 
     fun getUserInfo(navIdent: String): ExtendedUserResponse {
-        return entraProxyService.getUserInfo(navIdent).toUserResponse()
-    }
-
-    fun getUserInfoForLoggedInUser(): ExtendedUserResponse {
-        if (tokenUtil.getIdent() == null) {
-            throw RuntimeException("No NAVident found in token")
+        return if (tokenUtil.getIdent() == navIdent) {
+            logger.debug("Getting user info for logged in user with NAVident '{}'", navIdent)
+            getUserInfo(tokenUtil.getIdent()!!)
+        } else {
+            logger.debug("Getting user info for user with NAVident '{}'", navIdent)
+            entraProxyService.getUserInfo(navIdent).toUserResponse()
         }
-        return getUserInfo(tokenUtil.getIdent()!!)
     }
 
     fun getUsersInEnhet(enhetsnummer: String): List<UserResponse> {

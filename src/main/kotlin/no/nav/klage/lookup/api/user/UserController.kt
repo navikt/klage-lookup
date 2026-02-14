@@ -10,16 +10,17 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@Tag(name = "saksbehandler", description = "API for getting info about saksbehandler")
+@Tag(name = "user", description = "API for getting info about users")
 @ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
 @RestController
-@RequestMapping("/user")
+@RequestMapping
 class UserController(
+
     private val saksbehandlerService: SaksbehandlerService,
 ) {
 
     @Operation(summary = "Get info about user")
-    @GetMapping("/info/{navIdent}")
+    @GetMapping("/user/{navIdent}")
     fun getUserInfo(
         @PathVariable navIdent: String,
     ): ExtendedUserResponse {
@@ -28,8 +29,8 @@ class UserController(
         )
     }
 
-    @Operation(summary = "Get info about user")
-    @GetMapping("/group-memberships/{navIdent}")
+    @Operation(summary = "Get group memberships for user")
+    @GetMapping("/user/{navIdent}/group-memberships")
     fun getGroupMemberships(
         @PathVariable navIdent: String,
     ): GroupMembershipsResponse {
@@ -39,24 +40,12 @@ class UserController(
     }
 
     @Operation(summary = "Get users in given enhet")
-    @GetMapping("/usersInEnhet/{enhetsnummer}")
+    @GetMapping("/enhet/{enhetsnummer}/usersInEnhet")
     fun getUsersInEnhet(
         @PathVariable enhetsnummer: String,
     ): List<UserResponse> {
         return saksbehandlerService.getUsersInEnhet(
             enhetsnummer = enhetsnummer,
         )
-    }
-
-    @Operation(summary = "Get info about logged in user")
-    @GetMapping("/me/info")
-    fun getLoggedInUserInfo(): ExtendedUserResponse {
-        return saksbehandlerService.getUserInfoForLoggedInUser()
-    }
-
-    @Operation(summary = "Get group memberships for logged in user")
-    @GetMapping("/me/group-memberships")
-    fun getGroupMembershipsForLoggedInUser(): GroupMembershipsResponse {
-        return saksbehandlerService.getGroupMembershipsForLoggedInUser()
     }
 }
