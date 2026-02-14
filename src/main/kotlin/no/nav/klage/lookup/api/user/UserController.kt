@@ -20,7 +20,7 @@ class UserController(
 ) {
 
     @Operation(summary = "Get info about user")
-    @GetMapping("/user/{navIdent}")
+    @GetMapping("/users/{navIdent}")
     fun getUserInfo(
         @PathVariable navIdent: String,
     ): ExtendedUserResponse {
@@ -30,7 +30,7 @@ class UserController(
     }
 
     @Operation(summary = "Get group memberships for user")
-    @GetMapping("/user/{navIdent}/group-memberships")
+    @GetMapping("/users/{navIdent}/group-memberships")
     fun getGroupMemberships(
         @PathVariable navIdent: String,
     ): GroupMembershipsResponse {
@@ -40,7 +40,7 @@ class UserController(
     }
 
     @Operation(summary = "Get users in given enhet")
-    @GetMapping("/enhet/{enhetsnummer}/usersInEnhet")
+    @GetMapping("/enhets/{enhetsnummer}/usersInEnhet")
     fun getUsersInEnhet(
         @PathVariable enhetsnummer: String,
     ): List<UserResponse> {
