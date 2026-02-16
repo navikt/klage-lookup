@@ -19,6 +19,8 @@ adRoles:
     value: 94d34f17-e325-4ed6-9667-d23041a3f40c
   - name: KABAL_INNSYN_EGEN_ENHET_ROLE_ID
     value: 016fb83f-4e7c-47ec-ae8a-e3efa72a43e7
+  - name: KABAL_TILGANGSSTYRING_EGEN_ENHET_ROLE_ID
+    value: 78539b90-89e6-4859-8e19-4a36fe5d006a
   - name: FORTROLIG_ROLE_ID
     value: ea930b6b-9397-44d9-b9e6-f4cf527a632a
   - name: STRENGT_FORTROLIG_ROLE_ID
@@ -33,6 +35,20 @@ adRoles:
     value: c3cbba77-ce3b-4d47-b136-79c1ce4ad4c0
   - name: KABAL_SVARBREVINNSTILLINGER_ROLE_ID
     value: cdfc5e18-a75a-4335-9002-1519bb0e7f76
+  - name: ALLE_I_NAV_KLAGEINSTANS_ROLE_ID
+    value: 14d756b4-d014-419a-a5bc-b8f9e31ce248 #Dette er det samme som "KABAL_ADMIN_ROLE_ID" i dev, siden rollen ikke fins der.
+  - name: KAKA_KVALITETSVURDERING_ROLE_ID
+    value: a4dbd743-5adb-45c8-8918-59c2c6e8e3f2
+  - name: KAKA_KVALITETSTILBAKEMELDING_ROLE_ID
+    value: ef9eaacb-a19d-4d13-bfc5-930e4fb217cd
+  - name: KAKA_TOTALSTATISTIKK_ROLE_ID
+    value: 82c229e8-0ff7-41cb-a34d-92872afb84c5
+  - name: KAKA_LEDERSTATISTIKK_ROLE_ID
+    value: 159c9814-4056-4809-8c90-d75e71ac0893
+  - name: KAKA_EXCEL_UTTREKK_MED_FRITEKST_ROLE_ID
+    value: 2071e477-8a9d-4995-a9f5-a3260affc168
+  - name: KAKA_EXCEL_UTTREKK_UTEN_FRITEKST_ROLE_ID
+    value: 74228255-6ba6-4d05-9c30-00786c112936
 
 envs:
   - name: JAVA_TOOL_OPTIONS

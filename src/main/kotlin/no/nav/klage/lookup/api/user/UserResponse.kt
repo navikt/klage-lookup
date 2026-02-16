@@ -1,5 +1,9 @@
 package no.nav.klage.lookup.api.user
 
+data class UsersResponse(
+    val users: List<UserResponse>,
+)
+
 data class UserResponse (
     val navIdent: String,
     val sammensattNavn: String,
@@ -19,4 +23,8 @@ data class ExtendedUserResponse (
 data class Enhet (
     val enhetNr: String,
     val enhetNavn: String,
+)
+
+data class GroupsResponse (
+    val groupIds: List<String>,
 )
