@@ -65,17 +65,17 @@ class SaksbehandlerService(
         if (tokenUtil.getIdent() == null) {
             throw RuntimeException("No logged in user")
         }
-        return getGroupMemberships(navIdent = tokenUtil.getIdent()!!).groupIds.contains(AzureGroup.KABAL_ADMIN.id)
+        return getGroupsForUser(navIdent = tokenUtil.getIdent()!!).groupIds.contains(AzureGroup.KABAL_ADMIN.id)
     }
 
-    fun getGroupMemberships(navIdent: String): GroupsResponse {
+    fun getGroupsForUser(navIdent: String): GroupsResponse {
         return if (tokenUtil.getIdent() == navIdent) {
-            logger.debug("Getting group memberships for logged in user with NAVident '{}'", navIdent)
+            logger.debug("Getting groups for logged in user with NAVident '{}'", navIdent)
             val userGroups = tokenUtil.getGroups()
             teamLogger.debug("Found groups for logged in user {}: {}", tokenUtil.getIdent(), userGroups)
-            userGroups.toGroupMembershipsResponse()
+            userGroups.toGroupsResponse()
         } else {
-            logger.debug("Getting group memberships for user with NAVident '{}'", navIdent)
+            logger.debug("Getting groups for user with NAVident '{}'", navIdent)
             val userGroups = entraProxyService.getUsersGroups(navIdent = navIdent)
             GroupsResponse(
                 groupIds = userGroups.mapNotNull { userGroup ->
@@ -101,7 +101,7 @@ class SaksbehandlerService(
         )
     }
 
-    fun getGroupMembers(azureGroup: AzureGroup): UsersResponse {
+    fun getUsersInGroup(azureGroup: AzureGroup): UsersResponse {
         return UsersResponse(
             users = entraProxyService.getGroupMembers(gruppeNavn = azureGroup.reference).map { it.toUserResponse() }
         )
@@ -130,7 +130,7 @@ class SaksbehandlerService(
         )
     }
 
-    private fun List<String>.toGroupMembershipsResponse(): GroupsResponse {
+    private fun List<String>.toGroupsResponse(): GroupsResponse {
         return GroupsResponse(
             groupIds = this.mapNotNull {
                 getAzureGroupFromGroupId(it)?.id

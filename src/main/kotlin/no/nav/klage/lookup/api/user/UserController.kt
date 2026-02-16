@@ -30,12 +30,12 @@ class UserController(
         )
     }
 
-    @Operation(summary = "Get group memberships for user")
+    @Operation(summary = "Get groups for user")
     @GetMapping("/users/{navIdent}/groups")
-    fun getGroupMemberships(
+    fun getGroupsForUser(
         @PathVariable navIdent: String,
     ): GroupsResponse {
-        return saksbehandlerService.getGroupMemberships(
+        return saksbehandlerService.getGroupsForUser(
             navIdent = navIdent,
         )
     }
@@ -55,7 +55,7 @@ class UserController(
     fun getUsersInGroup(
         @PathVariable groupId: String,
     ): UsersResponse {
-        return saksbehandlerService.getGroupMembers(
+        return saksbehandlerService.getUsersInGroup(
             azureGroup = AzureGroup.of(groupId),
         )
     }
