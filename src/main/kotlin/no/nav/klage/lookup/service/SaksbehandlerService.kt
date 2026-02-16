@@ -1,10 +1,7 @@
 package no.nav.klage.lookup.service
 
 import no.nav.klage.kodeverk.AzureGroup
-import no.nav.klage.lookup.api.user.Enhet
-import no.nav.klage.lookup.api.user.ExtendedUserResponse
-import no.nav.klage.lookup.api.user.GroupMembershipsResponse
-import no.nav.klage.lookup.api.user.UserResponse
+import no.nav.klage.lookup.api.user.*
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import no.nav.klage.lookup.util.TokenUtil
@@ -71,7 +68,7 @@ class SaksbehandlerService(
         return getGroupMemberships(navIdent = tokenUtil.getIdent()!!).groupIds.contains(AzureGroup.KABAL_ADMIN.id)
     }
 
-    fun getGroupMemberships(navIdent: String): GroupMembershipsResponse {
+    fun getGroupMemberships(navIdent: String): GroupsResponse {
         return if (tokenUtil.getIdent() == navIdent) {
             logger.debug("Getting group memberships for logged in user with NAVident '{}'", navIdent)
             val userGroups = tokenUtil.getGroups()
@@ -80,7 +77,7 @@ class SaksbehandlerService(
         } else {
             logger.debug("Getting group memberships for user with NAVident '{}'", navIdent)
             val userGroups = entraProxyService.getUsersGroups(navIdent = navIdent)
-            GroupMembershipsResponse(
+            GroupsResponse(
                 groupIds = userGroups.mapNotNull { userGroup ->
                     AzureGroup.entries.find { it.reference == userGroup.rolle }?.id
                 }
@@ -98,12 +95,16 @@ class SaksbehandlerService(
         }
     }
 
-    fun getUsersInEnhet(enhetsnummer: String): List<UserResponse> {
-        return entraProxyService.getAnsatteInEnhet(enhetsnummer).map { it.toUserResponse() }
+    fun getUsersInEnhet(enhetsnummer: String): UsersResponse {
+        return UsersResponse(
+            users = entraProxyService.getAnsatteInEnhet(enhetsnummer).map { it.toUserResponse() }
+        )
     }
 
-    fun getGroupMembers(azureGroup: AzureGroup): List<UserResponse> {
-        return entraProxyService.getGroupMembers(gruppeNavn = azureGroup.reference).map { it.toUserResponse() }
+    fun getGroupMembers(azureGroup: AzureGroup): UsersResponse {
+        return UsersResponse(
+            users = entraProxyService.getGroupMembers(gruppeNavn = azureGroup.reference).map { it.toUserResponse() }
+        )
     }
 
     private fun EntraProxyUtvidetAnsatt.toUserResponse(): ExtendedUserResponse {
@@ -129,8 +130,8 @@ class SaksbehandlerService(
         )
     }
 
-    private fun List<String>.toGroupMembershipsResponse(): GroupMembershipsResponse {
-        return GroupMembershipsResponse(
+    private fun List<String>.toGroupMembershipsResponse(): GroupsResponse {
+        return GroupsResponse(
             groupIds = this.mapNotNull {
                 getAzureGroupFromGroupId(it)?.id
             }

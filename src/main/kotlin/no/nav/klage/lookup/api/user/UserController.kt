@@ -31,30 +31,30 @@ class UserController(
     }
 
     @Operation(summary = "Get group memberships for user")
-    @GetMapping("/users/{navIdent}/group-memberships")
+    @GetMapping("/users/{navIdent}/groups")
     fun getGroupMemberships(
         @PathVariable navIdent: String,
-    ): GroupMembershipsResponse {
+    ): GroupsResponse {
         return saksbehandlerService.getGroupMemberships(
             navIdent = navIdent,
         )
     }
 
     @Operation(summary = "Get users in given enhet")
-    @GetMapping("/enheter/{enhetsnummer}/users-in-enhet")
+    @GetMapping("/enheter/{enhetsnummer}/users")
     fun getUsersInEnhet(
         @PathVariable enhetsnummer: String,
-    ): List<UserResponse> {
+    ): UsersResponse {
         return saksbehandlerService.getUsersInEnhet(
             enhetsnummer = enhetsnummer,
         )
     }
 
     @Operation(summary = "Get users in given Azure group")
-    @GetMapping("/groups/{groupId}/users-in-group")
+    @GetMapping("/groups/{groupId}/users")
     fun getUsersInGroup(
         @PathVariable groupId: String,
-    ): List<UserResponse> {
+    ): UsersResponse {
         return saksbehandlerService.getGroupMembers(
             azureGroup = AzureGroup.of(groupId),
         )
