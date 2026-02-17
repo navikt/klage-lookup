@@ -129,7 +129,7 @@ class EntraProxyService(
             }
         } catch (e: Exception) {
             logger.error("Failed to retrieve roles for navIdent $navIdent", e)
-            throw UserNotFoundException("User info for navIdent '$navIdent' not found")
+            throw UserNotFoundException("User groups/roles for navIdent '$navIdent' not found")
         }
         return usersRoles
     }
