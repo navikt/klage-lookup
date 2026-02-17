@@ -3,8 +3,11 @@ package no.nav.klage.lookup.service
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.ANSATTE_IN_ENHET
+import no.nav.klage.lookup.config.CacheConfiguration.Companion.GROUP_MEMBERS
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USERS_GROUPS
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USER_INFO
+import no.nav.klage.lookup.config.EnhetNotFoundException
+import no.nav.klage.lookup.config.UserNotFoundException
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyInterface
 import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
@@ -30,6 +33,7 @@ class EntraProxyService(
         private const val ENTRAPROXY_TIMER = "entraproxy.response.time"
     }
 
+    @Cacheable(GROUP_MEMBERS)
     fun getGroupMembers(gruppeNavn: String): List<EntraProxyAnsatt> {
         val useObo = tokenUtil.getIdent() != null
         val bearerToken = if (useObo) {
@@ -70,11 +74,11 @@ class EntraProxyService(
                 )
             }
         } catch (e: Exception) {
-            logger.error("Failed to retrieve user info for navIdent '$navIdent'", e)
-            throw e
+            logger.warn("Failed to retrieve user info for navIdent '$navIdent'", e)
+            throw UserNotFoundException("User info for navIdent '$navIdent' could not be found")
         }
 
-        return userInfo
+        return userInfo ?: throw UserNotFoundException("User info for navIdent '$navIdent' not found")
     }
 
     @Cacheable(ANSATTE_IN_ENHET)
@@ -96,7 +100,7 @@ class EntraProxyService(
             }
         } catch (e: Exception) {
             logger.error("Failed to retrieve ansatte in enhet '$enhetsnummer'", e)
-            throw e
+            throw EnhetNotFoundException("Ansatt in enhet '$enhetsnummer' could not be found")
         }
 
         return ansattList
@@ -115,7 +119,7 @@ class EntraProxyService(
             }
         } catch (e: Exception) {
             logger.error("Failed to retrieve roles for navIdent $navIdent", e)
-            throw e
+            throw UserNotFoundException("User info for navIdent '$navIdent' not found")
         }
         return usersRoles
     }
