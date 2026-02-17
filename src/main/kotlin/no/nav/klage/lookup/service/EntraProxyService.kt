@@ -35,6 +35,9 @@ class EntraProxyService(
     }
 
     @Cacheable(GROUP_MEMBERS)
+    @Retryable(
+        excludes = [GroupNotFoundException::class]
+    )
     fun getGroupMembers(gruppeNavn: String): List<EntraProxyAnsatt> {
         val useObo = tokenUtil.getIdent() != null
         val bearerToken = if (useObo) {
@@ -58,7 +61,9 @@ class EntraProxyService(
     }
 
     @Cacheable(USER_INFO)
-    @Retryable
+    @Retryable(
+        excludes = [UserNotFoundException::class]
+    )
     fun getUserInfo(navIdent: String): EntraProxyUtvidetAnsatt {
         val useObo = tokenUtil.getIdent() != null
         val bearerToken = if (useObo) {
@@ -83,7 +88,9 @@ class EntraProxyService(
     }
 
     @Cacheable(ANSATTE_IN_ENHET)
-    @Retryable
+    @Retryable(
+        excludes = [EnhetNotFoundException::class]
+    )
     fun getAnsatteInEnhet(enhetsnummer: String): List<EntraProxyAnsatt> {
         val useObo = tokenUtil.getIdent() != null
         val bearerToken = if (useObo) {
@@ -108,7 +115,9 @@ class EntraProxyService(
     }
 
     @Cacheable(USERS_GROUPS)
-    @Retryable
+    @Retryable(
+        excludes = [UserNotFoundException::class]
+    )
     fun getUsersGroups(navIdent: String): List<EntraProxyRolle> {
         val bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
         val usersRoles = try {
