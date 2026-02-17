@@ -17,8 +17,15 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
     }
 
     @ExceptionHandler
-    fun handleBehandlingNotFound(
+    fun handleUserNotFound(
         ex: UserNotFoundException,
+    ): ProblemDetail {
+        return create(HttpStatus.NOT_FOUND, ex)
+    }
+
+    @ExceptionHandler
+    fun handleEnhetNotFoundException(
+        ex: EnhetNotFoundException,
     ): ProblemDetail {
         return create(HttpStatus.NOT_FOUND, ex)
     }
