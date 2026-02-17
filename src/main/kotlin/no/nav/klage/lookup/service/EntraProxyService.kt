@@ -81,7 +81,7 @@ class EntraProxyService(
             }
         } catch (e: Exception) {
             logger.warn("Failed to retrieve user info for navIdent '$navIdent'", e)
-            throw UserNotFoundException("User info for navIdent '$navIdent' could not be found")
+            throw UserNotFoundException("User info for navIdent '$navIdent' not found")
         }
 
         return userInfo ?: throw UserNotFoundException("User info for navIdent '$navIdent' not found")
