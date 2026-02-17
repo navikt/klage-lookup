@@ -17,6 +17,13 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
     }
 
     @ExceptionHandler
+    fun handleGroupNotFoundException(
+        ex: GroupNotFoundException,
+    ): ProblemDetail {
+        return create(HttpStatus.NOT_FOUND, ex)
+    }
+
+    @ExceptionHandler
     fun handleUserNotFound(
         ex: UserNotFoundException,
     ): ProblemDetail {
@@ -58,6 +65,8 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
         }
     }
 }
+
+class GroupNotFoundException(msg: String) : RuntimeException(msg)
 
 class UserNotFoundException(msg: String) : RuntimeException(msg)
 

@@ -50,7 +50,8 @@ class EntraProxyService(
             }
         } catch (e: Exception) {
             logger.error("Failed to retrieve members of group '$gruppeNavn'", e)
-            throw e
+            throw UserNotFoundException("Could not find members in group '$gruppeNavn'")
+
         }
 
         return groupMembers
@@ -100,7 +101,7 @@ class EntraProxyService(
             }
         } catch (e: Exception) {
             logger.error("Failed to retrieve ansatte in enhet '$enhetsnummer'", e)
-            throw EnhetNotFoundException("Ansatt in enhet '$enhetsnummer' could not be found")
+            throw EnhetNotFoundException("Ansatte in enhet '$enhetsnummer' could not be found")
         }
 
         return ansattList
