@@ -58,7 +58,7 @@ class EntraProxyService(
     }
 
     @Cacheable(USER_INFO)
-    @Retryable
+//    @Retryable
     fun getUserInfo(navIdent: String): EntraProxyUtvidetAnsatt {
         val useObo = tokenUtil.getIdent() != null
         val bearerToken = if (useObo) {
