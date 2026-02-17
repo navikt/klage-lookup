@@ -7,6 +7,7 @@ import no.nav.klage.lookup.config.CacheConfiguration.Companion.GROUP_MEMBERS
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USERS_GROUPS
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USER_INFO
 import no.nav.klage.lookup.config.EnhetNotFoundException
+import no.nav.klage.lookup.config.GroupNotFoundException
 import no.nav.klage.lookup.config.UserNotFoundException
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyInterface
@@ -50,15 +51,14 @@ class EntraProxyService(
             }
         } catch (e: Exception) {
             logger.error("Failed to retrieve members of group '$gruppeNavn'", e)
-            throw UserNotFoundException("Could not find members in group '$gruppeNavn'")
-
+            throw GroupNotFoundException("Could not find members in group '$gruppeNavn'")
         }
 
         return groupMembers
     }
 
     @Cacheable(USER_INFO)
-//    @Retryable
+    @Retryable
     fun getUserInfo(navIdent: String): EntraProxyUtvidetAnsatt {
         val useObo = tokenUtil.getIdent() != null
         val bearerToken = if (useObo) {
