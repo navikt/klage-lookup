@@ -78,7 +78,7 @@ class EntraProxyService(
                 )
             }
         } catch (e: HttpClientErrorException) {
-            logger.error("Failed to retrieve user info for navIdent '$navIdent'", e)
+            logger.warn("Failed to retrieve user info for navIdent '$navIdent'", e)
             throw UserNotFoundException("User info for navIdent '$navIdent' not found")
         } catch (e: Exception) {
             logger.error("Unexpected error when retrieving user info for navIdent '$navIdent'", e)
@@ -146,6 +146,6 @@ class EntraProxyService(
         return Timer.builder(timerName)
             .tag("method", method)
             .register(meterRegistry)
-            .recordCallable(block)!!
+            .recordCallable(block)
     }
 }
