@@ -47,7 +47,7 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
     private fun logError(httpStatus: HttpStatus, errorMessage: String, exception: Exception) {
         when {
             exception is UserNotFoundException -> {
-                ourLogger.debug("UserNotFoundExcpetion thrown to client. See team-logs for more details.")
+                ourLogger.debug("UserNotFoundException thrown to client. See team-logs for more details.")
                 teamLogger.debug("Exception thrown to client: ${httpStatus.reasonPhrase}, $errorMessage", exception)
             }
             exception is EnhetNotFoundException -> {
