@@ -78,7 +78,7 @@ class EntraProxyService(
                 )
             }
         } catch (e: HttpClientErrorException) {
-            logger.warn("Failed to retrieve user info for navIdent '$navIdent'", e)
+            logger.debug("Failed to retrieve user info for navIdent '$navIdent'", e)
             throw UserNotFoundException("User info for navIdent '$navIdent' not found")
         } catch (e: Exception) {
             logger.error("Unexpected error when retrieving user info for navIdent '$navIdent'", e)
@@ -109,7 +109,7 @@ class EntraProxyService(
             }
 
         } catch (e: HttpClientErrorException) {
-            logger.error("Failed to retrieve ansatte in enhet '$enhetsnummer'", e)
+            logger.debug("Failed to retrieve ansatte in enhet '$enhetsnummer'", e)
             throw EnhetNotFoundException("Ansatte in enhet '$enhetsnummer' could not be found")
         } catch (e: Exception) {
             logger.error("Unexpected error when retrieving ansatte in enhet '$enhetsnummer'", e)
@@ -133,7 +133,7 @@ class EntraProxyService(
                 )
             }
         } catch (e: HttpClientErrorException) {
-            logger.error("Client error when retrieving roles for navIdent $navIdent, throwing UserNotFoundException", e)
+            logger.debug("Client error when retrieving roles for navIdent $navIdent, throwing UserNotFoundException", e)
             throw UserNotFoundException("User groups/roles for navIdent '$navIdent' not found")
         } catch (e: Exception) {
             logger.error("Unexpected error when retrieving roles for navIdent '$navIdent'", e)
