@@ -29,5 +29,5 @@ interface EntraProxyInterface {
     fun getAnsattInfo(
         @RequestHeader(AUTHORIZATION) bearerToken: String,
         @PathVariable navIdent: String,
-    ): EntraProxyUtvidetAnsatt
+    ): EntraProxyUtvidetAnsatt?
 }
