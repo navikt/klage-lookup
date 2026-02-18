@@ -108,7 +108,7 @@ class EntraProxyService(
                 )
             }
 
-        }  catch (e: HttpClientErrorException) {
+        } catch (e: HttpClientErrorException) {
             logger.error("Failed to retrieve ansatte in enhet '$enhetsnummer'", e)
             throw EnhetNotFoundException("Ansatte in enhet '$enhetsnummer' could not be found")
         } catch (e: Exception) {
