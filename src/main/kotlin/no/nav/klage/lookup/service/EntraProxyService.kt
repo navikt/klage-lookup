@@ -7,7 +7,6 @@ import no.nav.klage.lookup.config.CacheConfiguration.Companion.GROUP_MEMBERS
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USERS_GROUPS
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USER_INFO
 import no.nav.klage.lookup.config.EnhetNotFoundException
-import no.nav.klage.lookup.config.GroupNotFoundException
 import no.nav.klage.lookup.config.UserNotFoundException
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyInterface
@@ -19,6 +18,7 @@ import no.nav.klage.lookup.util.getTeamLogger
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
 
 @Service
 class EntraProxyService(
@@ -35,9 +35,7 @@ class EntraProxyService(
     }
 
     @Cacheable(GROUP_MEMBERS)
-    @Retryable(
-        excludes = [GroupNotFoundException::class]
-    )
+    @Retryable
     fun getGroupMembers(gruppeNavn: String): List<EntraProxyAnsatt> {
         val useObo = tokenUtil.getIdent() != null
         val bearerToken = if (useObo) {
@@ -54,7 +52,7 @@ class EntraProxyService(
             }
         } catch (e: Exception) {
             logger.error("Failed to retrieve members of group '$gruppeNavn'", e)
-            throw GroupNotFoundException("Could not find members in group '$gruppeNavn'")
+            throw e
         }
 
         return groupMembers
@@ -79,9 +77,12 @@ class EntraProxyService(
                     navIdent = navIdent
                 )
             }
-        } catch (e: Exception) {
-            logger.warn("Failed to retrieve user info for navIdent '$navIdent'", e)
+        }  catch (e: HttpClientErrorException) {
+            logger.error("Failed to retrieve user info for navIdent '$navIdent'", e)
             throw UserNotFoundException("User info for navIdent '$navIdent' not found")
+        } catch (e: Exception) {
+            logger.error("Unexpected error when retrieving user info for navIdent '$navIdent'", e)
+            throw e
         }
 
         return userInfo ?: throw UserNotFoundException("User info for navIdent '$navIdent' not found")
@@ -106,9 +107,13 @@ class EntraProxyService(
                     enhetsnummer = enhetsnummer
                 )
             }
-        } catch (e: Exception) {
+
+        }  catch (e: HttpClientErrorException) {
             logger.error("Failed to retrieve ansatte in enhet '$enhetsnummer'", e)
             throw EnhetNotFoundException("Ansatte in enhet '$enhetsnummer' could not be found")
+        } catch (e: Exception) {
+            logger.error("Unexpected error when retrieving ansatte in enhet '$enhetsnummer'", e)
+            throw e
         }
 
         return ansattList
@@ -127,9 +132,12 @@ class EntraProxyService(
                     navIdent = navIdent,
                 )
             }
-        } catch (e: Exception) {
-            logger.error("Failed to retrieve roles for navIdent $navIdent", e)
+        } catch (e: HttpClientErrorException) {
+            logger.error("Client error when retrieving roles for navIdent $navIdent, throwing UserNotFoundException", e)
             throw UserNotFoundException("User groups/roles for navIdent '$navIdent' not found")
+        } catch (e: Exception) {
+            logger.error("Unexpected error when retrieving roles for navIdent '$navIdent'", e)
+            throw e
         }
         return usersRoles
     }
