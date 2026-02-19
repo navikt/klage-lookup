@@ -16,7 +16,6 @@ data class ExtendedUserResponse (
     val sammensattNavn: String,
     val fornavn: String,
     val etternavn: String,
-    val epost: String,
     val enhet: Enhet,
 )
 
