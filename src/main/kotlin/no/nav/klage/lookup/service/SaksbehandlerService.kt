@@ -113,7 +113,6 @@ class SaksbehandlerService(
             fornavn = this.fornavn,
             etternavn = this.etternavn,
             sammensattNavn = this.visningNavn,
-            epost = this.epost,
             enhet = Enhet(
                 enhetNr = this.enhet.enhetnummer,
                 enhetNavn = this.enhet.navn,

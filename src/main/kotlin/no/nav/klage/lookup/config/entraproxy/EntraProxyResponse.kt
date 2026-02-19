@@ -26,7 +26,7 @@ data class EntraProxyUtvidetAnsatt(
     val visningNavn: String,
     val fornavn: String,
     val etternavn: String,
-    val epost: String,
+    val epost: String? = null,
     val enhet: EntraProxyEnhet,
     val tIdent: String,
 ) : Serializable {
