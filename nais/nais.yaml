@@ -62,6 +62,9 @@ spec:
         - application: kabal-innstillinger
         - application: kabal-api
         - application: kabal-frontend
+        - application: kabal-search
+        - application: kabin-api
+        - application: kaka-api
     outbound:
       rules:
         - application: populasjonstilgangskontroll
