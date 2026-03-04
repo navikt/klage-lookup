@@ -4,6 +4,7 @@ import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.lookup.api.user.*
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
+import no.nav.klage.lookup.config.microsoftgraph.MicrosoftGraphUser
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service
 @Service
 class SaksbehandlerService(
     private val tokenUtil: TokenUtil,
+    private val microsoftGraphService: MicrosoftGraphService,
     private val entraProxyService: EntraProxyService,
     @Value($$"${KABAL_OPPGAVESTYRING_ALLE_ENHETER_ROLE_ID}")
     private val kabalOppgavestyringAlleEnheterRoleId: String,
@@ -97,7 +99,8 @@ class SaksbehandlerService(
 
     fun getUsersInEnhet(enhetsnummer: String): UsersResponse {
         return UsersResponse(
-            users = entraProxyService.getAnsatteInEnhet(enhetsnummer).map { it.toUserResponse() }
+            microsoftGraphService.getAnsatteInEnhet(enhetsnummer = enhetsnummer).value?.map { it.toUserResponse() }
+                .orEmpty(),
         )
     }
 
@@ -117,6 +120,15 @@ class SaksbehandlerService(
                 enhetNr = this.enhet.enhetnummer,
                 enhetNavn = this.enhet.navn,
             ),
+        )
+    }
+
+    private fun MicrosoftGraphUser.toUserResponse(): UserResponse {
+        return UserResponse(
+            navIdent = this.onPremisesSamAccountName,
+            fornavn = this.givenName,
+            etternavn = this.surname,
+            sammensattNavn = this.displayName,
         )
     }
 

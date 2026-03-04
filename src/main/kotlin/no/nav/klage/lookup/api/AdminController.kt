@@ -1,13 +1,11 @@
 package no.nav.klage.lookup.api
 
+import no.nav.klage.lookup.api.user.UsersResponse
 import no.nav.klage.lookup.config.SecurityConfiguration
 import no.nav.klage.lookup.service.CacheService
 import no.nav.klage.lookup.service.SaksbehandlerService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 
 @ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
@@ -41,5 +39,12 @@ class AdminController(
         if (!saksbehandlerService.loggedInUserIsKlageAdmin()) {
             throw RuntimeException("Not an admin")
         }
+    }
+
+    @GetMapping("/enheter/{enhetsnummer}")
+    fun getUserGroups(
+        @PathVariable enhetsnummer: String,
+    ): UsersResponse {
+        return saksbehandlerService.getUsersInEnhet(enhetsnummer = enhetsnummer)
     }
 }
