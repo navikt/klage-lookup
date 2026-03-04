@@ -34,12 +34,8 @@ class MicrosoftGraphService(
         excludes = [EnhetNotFoundException::class]
     )
     fun getAnsatteInEnhet(enhetsnummer: String): MicrosoftGraphUserList {
-        val useObo = tokenUtil.getIdent() != null
-        val bearerToken = if (useObo) {
-            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
-        } else {
-            "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
-        }
+
+        val bearerToken = "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithMicrosoftGraphScope()}"
 
         val ansattList = try {
             timedCall(MICROSOFT_GRAPH_TIMER, "ansatteInEnhet") {
