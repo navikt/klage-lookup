@@ -60,8 +60,9 @@ class TokenUtil(
 
     @Suppress("UNCHECKED_CAST")
     fun getGroups(): List<String> {
-        val groupsClaim = tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
-            ?.jwtTokenClaims?.get("groups") ?: emptyList<String>()
+        val groupsClaim =
+            tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
+                ?.jwtTokenClaims?.get("groups") ?: emptyList<String>()
         return groupsClaim as List<String>
     }
 }

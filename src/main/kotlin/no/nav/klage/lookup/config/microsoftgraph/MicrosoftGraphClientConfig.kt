@@ -9,10 +9,10 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 import org.springframework.web.service.invoker.createClient
 
 @Configuration
-class MicrosoftGraphClientConfig{
+class MicrosoftGraphClientConfig {
 
     @Bean
-    fun microsoftGraphWebClient(
+    fun microsoftGraphClient(
         @Value($$"${MICROSOFT_GRAPH_URL}")
         microsoftGraphUrl: String
     ): MicrosoftGraphInterface {
