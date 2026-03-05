@@ -26,7 +26,7 @@ class MicrosoftGraphService(
         private val logger = getLogger(javaClass.enclosingClass)
         private val teamLogger = getTeamLogger()
         private const val MICROSOFT_GRAPH_TIMER = "microsoftgraph.response.time"
-        private const val userSelect = "userPrincipalName,onPremisesSamAccountName,displayName,givenName,surname"
+        private const val USER_SELECT = "userPrincipalName,onPremisesSamAccountName,displayName,givenName,surname"
     }
 
     @Cacheable(ANSATTE_IN_ENHET)
@@ -43,7 +43,7 @@ class MicrosoftGraphService(
                     bearerToken = bearerToken,
                     consistencyLevel = "eventual",
                     filter = "streetAddress eq '$enhetsnummer'",
-                    select = userSelect,
+                    select = USER_SELECT,
                     count = true,
                     top = 500
                 )
