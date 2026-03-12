@@ -15,6 +15,7 @@ spec:
     application:
       enabled: true
       tenant: {{tenant}}
+      allowAllUsers: true
       claims:
         groups:
         {{#each adRoles}}
