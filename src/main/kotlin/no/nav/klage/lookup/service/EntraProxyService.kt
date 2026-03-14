@@ -2,11 +2,9 @@ package no.nav.klage.lookup.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
-import no.nav.klage.lookup.config.CacheConfiguration.Companion.ANSATTE_IN_ENHET
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.GROUP_MEMBERS
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USERS_GROUPS
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USER_INFO
-import no.nav.klage.lookup.config.EnhetNotFoundException
 import no.nav.klage.lookup.config.UserNotFoundException
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyInterface
@@ -86,37 +84,6 @@ class EntraProxyService(
         }
 
         return userInfo ?: throw UserNotFoundException("User info for navIdent '$navIdent' not found")
-    }
-
-    @Cacheable(ANSATTE_IN_ENHET)
-    @Retryable(
-        excludes = [EnhetNotFoundException::class]
-    )
-    fun getAnsatteInEnhet(enhetsnummer: String): List<EntraProxyAnsatt> {
-        val useObo = tokenUtil.getIdent() != null
-        val bearerToken = if (useObo) {
-            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
-        } else {
-            "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
-        }
-
-        val ansattList = try {
-            timedCall(ENTRAPROXY_TIMER, "ansatteInEnhet") {
-                entraProxyInterface.getAnsatteInEnhet(
-                    bearerToken = bearerToken,
-                    enhetsnummer = enhetsnummer
-                )
-            }
-
-        } catch (e: HttpClientErrorException) {
-            logger.debug("Failed to retrieve ansatte in enhet '$enhetsnummer'", e)
-            throw EnhetNotFoundException("Ansatte in enhet '$enhetsnummer' could not be found")
-        } catch (e: Exception) {
-            logger.error("Unexpected error when retrieving ansatte in enhet '$enhetsnummer'", e)
-            throw e
-        }
-
-        return ansattList
     }
 
     @Cacheable(USERS_GROUPS)

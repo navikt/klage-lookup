@@ -102,5 +102,6 @@ no.nav.security.jwt:
 
 TILGANGSMASKINEN_BASE_URL: http://populasjonstilgangskontroll.tilgangsmaskin
 ENTRA_PROXY_BASE_URL: http://entra-proxy.sikkerhetstjenesten
+MICROSOFT_GRAPH_URL: https://graph.microsoft.com/v1.0
 
 STANDARD_TTL_SECONDS: 600
