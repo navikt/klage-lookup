@@ -2,9 +2,7 @@ package no.nav.klage.lookup.service.access
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
-import no.nav.klage.kodeverk.Fagsystem
-import no.nav.klage.kodeverk.ytelse.Ytelse.*
-import no.nav.klage.lookup.api.access.AccessRequest.Sak
+import no.nav.klage.lookup.api.common.Sak
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.ACCESS_TO_PERSON
 import no.nav.klage.lookup.config.fpsak.FpsakService
 import no.nav.klage.lookup.config.tilgangsmaskinen.TilgangsmaskinenErrorResponse
@@ -12,6 +10,7 @@ import no.nav.klage.lookup.config.tilgangsmaskinen.TilgangsmaskinenService
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
+import no.nav.klage.lookup.util.shouldCheckFamilyMembers
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
 import org.springframework.resilience.annotation.Retryable
@@ -42,7 +41,8 @@ class AccessToPersonService(
         navIdent: String,
         sak: Sak?,
     ): Access {
-        val usersToCheck = if (sak != null && sak.ytelse in listOf(FOR_FOR, FOR_ENG, FOR_SVA) && sak.fagsystem == Fagsystem.FS36) {
+        val usersToCheck = if (shouldCheckFamilyMembers(sak)) {
+            sak!!
             val aktoerIds = timedCall(FPSAK_TIMER, "getAktoerForSak") {
                 fpsakService.getAktoerForSak(
                     bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithFpsakScope()}",

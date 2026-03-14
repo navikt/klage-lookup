@@ -11,4 +11,7 @@ FPSAK_BASE_URL: https://fpsak-api.dev-fss-pub.nais.io
 
 ENTRA_PROXY_SCOPE: dev-gcp.sikkerhetstjenesten.entra-proxy
 
+PDL_BASE_URL: https://pdl-api.dev-fss-pub.nais.io/graphql
+PDL_SCOPE: dev-fss.pdl.pdl-api
+
 TENANT_ID: 966ac572-f5b7-4bbe-aa88-c76419c0f851

@@ -65,6 +65,7 @@ class CacheConfigurationTest {
             CacheConfiguration.USER_INFO,
             CacheConfiguration.ANSATTE_IN_ENHET,
             CacheConfiguration.GROUP_MEMBERS,
+            CacheConfiguration.PERSON,
         )
     }
 
