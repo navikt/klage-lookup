@@ -45,7 +45,7 @@ class PersonService(
             if (extraUsersFnrList.isEmpty()) {
                 logger.debug("No extra users found for sak ${sak.sakId}.")
             } else {
-                logger.debug("Found ${fnrList.size} extra ident for sak ${sak.sakId}")
+                logger.debug("Found ${extraUsersFnrList.size} extra ident for sak ${sak.sakId}")
             }
             extraUsersFnrList
         } else {
