@@ -16,7 +16,11 @@ class PdlConfig {
         @Value($$"${PDL_BASE_URL}")
         pdlUrl: String
     ): PdlClient {
-        val restClient = RestClient.create(pdlUrl)
+        val restClient = RestClient.builder()
+            .baseUrl(pdlUrl)
+            .defaultHeader("TEMA", "KLA")
+            .defaultHeader("behandlingsnummer", "B392")
+            .build()
 
         // Create factory for client proxies
         val proxyFactory = HttpServiceProxyFactory.builder()
