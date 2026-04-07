@@ -6,16 +6,31 @@ query($ident: ID!){
         navn {
             fornavn,
             mellomnavn,
-            etternavn
+            etternavn,
+            metadata {
+                master
+            }
         },
         kjoenn {
             kjoenn
         },
-        sivilstand {
+        vergemaalEllerFremtidsfullmakt(historikk: false) {
             type
+            embete
+            vergeEllerFullmektig {
+                motpartsPersonident
+                omfang
+                omfangetErInnenPersonligOmraade
+            }
+        },
+        doedsfall {
+            doedsdato
+        },
+        sikkerhetstiltak {
+            tiltakstype
+            beskrivelse
             gyldigFraOgMed
-            relatertVedSivilstand
-            bekreftelsesdato
+            gyldigTilOgMed
         }
     }
 }
