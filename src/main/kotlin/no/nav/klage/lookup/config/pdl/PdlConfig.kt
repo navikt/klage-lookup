@@ -1,4 +1,4 @@
-package no.nav.klage.lookup.config.entraproxy
+package no.nav.klage.lookup.config.pdl
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -9,20 +9,20 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 import org.springframework.web.service.invoker.createClient
 
 @Configuration
-class EntraProxyConfig {
+class PdlConfig{
 
     @Bean
-    fun entraProxyClient(
-        @Value($$"${ENTRA_PROXY_BASE_URL}")
-        entraProxyUrl: String
-    ): EntraProxyClient {
-        val restClient = RestClient.create(entraProxyUrl)
+    fun pdlService(
+        @Value($$"${PDL_BASE_URL}")
+        pdlUrl: String
+    ): PdlClient {
+        val restClient = RestClient.create(pdlUrl)
 
         // Create factory for client proxies
         val proxyFactory = HttpServiceProxyFactory.builder()
             .exchangeAdapter(RestClientAdapter.create(restClient))
             .build()
 
-        return proxyFactory.createClient<EntraProxyClient>()
+        return proxyFactory.createClient<PdlClient>()
     }
 }

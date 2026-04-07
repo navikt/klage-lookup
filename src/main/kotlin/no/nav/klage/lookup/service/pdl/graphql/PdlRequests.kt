@@ -1,5 +1,9 @@
 package no.nav.klage.lookup.service.pdl.graphql
 
+import java.net.URL
+
+fun URL.cleanForGraphql() = readText().replace("[\n\r]", "")
+
 data class PersonGraphqlQuery(
     val query: String,
     val variables: IdentVariables,
@@ -35,7 +39,7 @@ fun hentFolkeregisterIdentQuery(ident: String): PersonGraphqlQuery {
     return hentIdenterQuery(ident = ident, identType = IdentType.FOLKEREGISTERIDENT)
 }
 
-fun hentAktorIdQuery(ident: String): PersonGraphqlQuery {
+fun hentAktoerIdQuery(ident: String): PersonGraphqlQuery {
     return hentIdenterQuery(ident = ident, identType = IdentType.AKTORID)
 }
 

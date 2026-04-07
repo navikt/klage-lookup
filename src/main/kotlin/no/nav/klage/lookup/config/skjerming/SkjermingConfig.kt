@@ -1,4 +1,4 @@
-package no.nav.klage.lookup.config.microsoftgraph
+package no.nav.klage.lookup.config.skjerming
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -9,20 +9,20 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 import org.springframework.web.service.invoker.createClient
 
 @Configuration
-class MicrosoftGraphClientConfig {
+class SkjermingConfig {
 
     @Bean
-    fun microsoftGraphClient(
-        @Value($$"${MICROSOFT_GRAPH_URL}")
-        microsoftGraphUrl: String
-    ): MicrosoftGraphInterface {
-        val restClient = RestClient.create(microsoftGraphUrl)
+    fun skjermingService(
+        @Value($$"${SKJERMING_BASE_URL}")
+        skjermingUrl: String
+    ): SkjermingClient {
+        val restClient = RestClient.create(skjermingUrl)
 
         // Create factory for client proxies
         val proxyFactory = HttpServiceProxyFactory.builder()
             .exchangeAdapter(RestClientAdapter.create(restClient))
             .build()
 
-        return proxyFactory.createClient<MicrosoftGraphInterface>()
+        return proxyFactory.createClient<SkjermingClient>()
     }
 }

@@ -17,7 +17,7 @@ class PersonController(
     private val personService: PersonService
 ) {
 
-    @Operation(summary = "Get person. Word of caution: make sure in the client that proper access control is in place.")
+    @Operation(summary = "Get person. Word of caution: client needs to have proper access control.")
     @PostMapping("/person")
     fun getPerson(
         @RequestBody input: PersonRequest,
@@ -26,6 +26,22 @@ class PersonController(
             fnr = input.ident,
             sak = input.sak,
         )
+    }
+
+    @Operation(summary = "Get fødselsnummer from ident.")
+    @PostMapping("/foedselsnummer")
+    fun getFoedselsnummerFromIdent(
+        @RequestBody input: IdentRequest,
+    ): FnrResponse {
+        return FnrResponse(personService.getFoedselsnummerFromIdent(ident = input.ident))
+    }
+
+    @Operation(summary = "Get aktør ID from ident.")
+    @PostMapping("/aktoerid")
+    fun getAktoerIdFromIdent(
+        @RequestBody input: IdentRequest,
+    ): AktoerIdResponse {
+        return AktoerIdResponse(personService.getAktoerIdFromIdent(ident = input.ident))
     }
 
 }

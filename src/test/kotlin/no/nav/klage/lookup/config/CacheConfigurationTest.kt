@@ -66,6 +66,7 @@ class CacheConfigurationTest {
             CacheConfiguration.ANSATTE_IN_ENHET,
             CacheConfiguration.GROUP_MEMBERS,
             CacheConfiguration.PERSON,
+            CacheConfiguration.SKJERMET,
         )
     }
 

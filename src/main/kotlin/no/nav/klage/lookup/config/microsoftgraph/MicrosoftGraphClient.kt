@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.service.annotation.GetExchange
 
 
-interface MicrosoftGraphInterface {
+interface MicrosoftGraphClient {
     @GetExchange("/users")
     fun microsoftGraphQuery(
         @RequestHeader(AUTHORIZATION) bearerToken: String,

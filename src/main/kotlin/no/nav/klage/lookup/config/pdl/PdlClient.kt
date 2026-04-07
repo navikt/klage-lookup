@@ -1,11 +1,12 @@
-package no.nav.klage.lookup.service.pdl.graphql
+package no.nav.klage.lookup.config.pdl
 
+import no.nav.klage.lookup.service.pdl.graphql.*
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.service.annotation.PostExchange
 
-interface PdlService {
+interface PdlClient {
 
     @PostExchange
     fun getPerson(

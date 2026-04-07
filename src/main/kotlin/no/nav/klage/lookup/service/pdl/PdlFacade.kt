@@ -1,5 +1,6 @@
 package no.nav.klage.lookup.service.pdl
 
+import no.nav.klage.lookup.config.pdl.PdlClient
 import no.nav.klage.lookup.service.pdl.graphql.*
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class PdlFacade(
-    private val pdlClient: PdlService,
+    private val pdlClient: PdlClient,
     private val tokenUtil: TokenUtil,
 ) {
 
@@ -37,8 +38,8 @@ class PdlFacade(
         return getIdent(query = query)
     }
 
-    fun getAktorIdFromIdent(ident: String): String {
-        val query = hentAktorIdQuery(ident = ident)
+    fun getAktoerIdFromIdent(ident: String): String {
+        val query = hentAktoerIdQuery(ident = ident)
         return getIdent(query = query)
     }
 

@@ -1,16 +1,12 @@
 package no.nav.klage.lookup.service.access
 
 import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Timer
 import no.nav.klage.lookup.api.common.Sak
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.ACCESS_TO_PERSON
-import no.nav.klage.lookup.config.fpsak.FpsakService
+import no.nav.klage.lookup.config.fpsak.FpsakClient
 import no.nav.klage.lookup.config.tilgangsmaskinen.TilgangsmaskinenErrorResponse
 import no.nav.klage.lookup.config.tilgangsmaskinen.TilgangsmaskinenService
-import no.nav.klage.lookup.util.TokenUtil
-import no.nav.klage.lookup.util.getLogger
-import no.nav.klage.lookup.util.getTeamLogger
-import no.nav.klage.lookup.util.shouldCheckFamilyMembers
+import no.nav.klage.lookup.util.*
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
 import org.springframework.resilience.annotation.Retryable
@@ -21,7 +17,7 @@ import tools.jackson.module.kotlin.jacksonObjectMapper
 @Service
 class AccessToPersonService(
     private val tilgangsmaskinenService: TilgangsmaskinenService,
-    private val fpsakService: FpsakService,
+    private val fpsakClient: FpsakClient,
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
 ) {
@@ -43,8 +39,8 @@ class AccessToPersonService(
     ): Access {
         val usersToCheck = if (shouldCheckFamilyMembers(sak)) {
             sak!!
-            val aktoerIds = timedCall(FPSAK_TIMER, "getAktoerForSak") {
-                fpsakService.getAktoerForSak(
+            val aktoerIds = meterRegistry.timedCall(FPSAK_TIMER, "getAktoerForSak") {
+                fpsakClient.getAktoerForSak(
                     bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithFpsakScope()}",
                     saksnummer = sak.sakId,
                 )
@@ -72,14 +68,14 @@ class AccessToPersonService(
         for (userToCheck in usersToCheck) {
             try {
                 if (useObo) {
-                    timedCall(TILGANGSMASKINEN_TIMER, "validateAccessWithObo") {
+                    meterRegistry.timedCall(TILGANGSMASKINEN_TIMER, "validateAccessWithObo") {
                         tilgangsmaskinenService.validateAccessWithObo(
                             oboBearerToken = bearerToken,
                             brukerId = userToCheck,
                         )
                     }
                 } else {
-                    timedCall(TILGANGSMASKINEN_TIMER, "validateAccess") {
+                    meterRegistry.timedCall(TILGANGSMASKINEN_TIMER, "validateAccess") {
                         tilgangsmaskinenService.validateAccess(
                             clientBearerToken = bearerToken,
                             brukerId = userToCheck,
@@ -120,12 +116,5 @@ class AccessToPersonService(
                 reason = deniedReasons.joinToString("; ")
             )
         }
-    }
-
-    private fun <T> timedCall(timerName: String, method: String, block: () -> T): T {
-        return Timer.builder(timerName)
-            .tag("method", method)
-            .register(meterRegistry)
-            .recordCallable(block)!!
     }
 }

@@ -15,7 +15,7 @@ class FpsakConfig {
     fun fpsakService(
         @Value($$"${FPSAK_BASE_URL}")
         fpsakUrl: String
-    ): FpsakService {
+    ): FpsakClient {
         val restClient = RestClient.create(fpsakUrl)
 
         // Create factory for client proxies
@@ -23,6 +23,6 @@ class FpsakConfig {
             .exchangeAdapter(RestClientAdapter.create(restClient))
             .build()
 
-        return proxyFactory.createClient<FpsakService>()
+        return proxyFactory.createClient<FpsakClient>()
     }
 }
