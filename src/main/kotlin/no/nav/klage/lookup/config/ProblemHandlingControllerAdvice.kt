@@ -1,5 +1,6 @@
 package no.nav.klage.lookup.config
 
+import no.nav.klage.lookup.service.pdl.PDLPersonNotFoundException
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
 import org.springframework.http.HttpStatus
@@ -26,6 +27,13 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
     @ExceptionHandler
     fun handleEnhetNotFoundException(
         ex: EnhetNotFoundException,
+    ): ProblemDetail {
+        return create(HttpStatus.NOT_FOUND, ex)
+    }
+
+    @ExceptionHandler
+    fun handlePDLPersonNotFound(
+        ex: PDLPersonNotFoundException,
     ): ProblemDetail {
         return create(HttpStatus.NOT_FOUND, ex)
     }
