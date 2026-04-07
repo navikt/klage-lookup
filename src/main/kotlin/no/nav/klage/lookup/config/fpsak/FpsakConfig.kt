@@ -12,7 +12,7 @@ import org.springframework.web.service.invoker.createClient
 class FpsakConfig {
 
     @Bean
-    fun fpsakService(
+    fun fpsakClient(
         @Value($$"${FPSAK_BASE_URL}")
         fpsakUrl: String
     ): FpsakClient {

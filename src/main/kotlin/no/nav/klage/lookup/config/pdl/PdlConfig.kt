@@ -9,10 +9,10 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 import org.springframework.web.service.invoker.createClient
 
 @Configuration
-class PdlConfig{
+class PdlConfig {
 
     @Bean
-    fun pdlService(
+    fun pdlClient(
         @Value($$"${PDL_BASE_URL}")
         pdlUrl: String
     ): PdlClient {

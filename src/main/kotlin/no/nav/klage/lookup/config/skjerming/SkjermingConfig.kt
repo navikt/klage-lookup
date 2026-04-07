@@ -12,7 +12,7 @@ import org.springframework.web.service.invoker.createClient
 class SkjermingConfig {
 
     @Bean
-    fun skjermingService(
+    fun skjermingClient(
         @Value($$"${SKJERMING_BASE_URL}")
         skjermingUrl: String
     ): SkjermingClient {
