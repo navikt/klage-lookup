@@ -23,7 +23,7 @@ class PersonController(
         @RequestBody input: PersonRequest,
     ): Person {
         return personService.getPerson(
-            fnr = input.ident,
+            fnr = input.fnr,
             sak = input.sak,
         )
     }
