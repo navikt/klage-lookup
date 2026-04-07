@@ -1,5 +1,6 @@
 package no.nav.klage.lookup.service.pdl
 
+import java.io.Serializable
 import java.time.LocalDate
 
 data class Person(
@@ -17,7 +18,11 @@ data class Person(
     val vergemaalEllerFremtidsfullmakt: Boolean,
     val sikkerhetstiltak: Sikkerhetstiltak?,
     val relevantFamily: List<FamilyMember>,
-) {
+) : Serializable {
+    companion object {
+        private const val serialVersionUID: Long = 1L
+    }
+
     data class FamilyMember(
         val foedselsnr: String,
         val fornavn: String,
@@ -30,14 +35,22 @@ data class Person(
         val strengtFortroligUtland: Boolean,
         val fortrolig: Boolean,
         val egenAnsatt: Boolean,
-    )
+    ) : Serializable {
+        companion object {
+            private const val serialVersionUID: Long = 1L
+        }
+    }
 
     data class Sikkerhetstiltak(
         val tiltakstype: Tiltakstype,
         val beskrivelse: String,
         val gyldigFraOgMed: LocalDate,
         val gyldigTilOgMed: LocalDate,
-    ) {
+    ) : Serializable {
+        companion object {
+            private const val serialVersionUID: Long = 1L
+        }
+
         enum class Tiltakstype {
             FYUS,
             TFUS,
