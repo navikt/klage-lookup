@@ -17,13 +17,13 @@ data class Person(
     val egenAnsatt: Boolean,
     val vergemaalEllerFremtidsfullmakt: Boolean,
     val sikkerhetstiltak: Sikkerhetstiltak?,
-    val relevantFamily: List<FamilyMember>,
+    val protectedFamilyMembers: List<ProtectedFamilyMember>,
 ) : Serializable {
     companion object {
         private const val serialVersionUID: Long = 1L
     }
 
-    data class FamilyMember(
+    data class ProtectedFamilyMember(
         val foedselsnr: String,
         val fornavn: String,
         val mellomnavn: String?,

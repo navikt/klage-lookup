@@ -24,9 +24,14 @@ fun toPerson(
         doed = person.second.doedsfall.firstOrNull()?.doedsdato,
         sikkerhetstiltak = person.second.sikkerhetstiltak.firstOrNull()?.mapToSikkerhetstiltak(),
         egenAnsatt = skjermingService.skjermet(foedselsnr = person.first),
-        relevantFamily = relevantFamilyMembers.map { familyMember ->
+        protectedFamilyMembers = relevantFamilyMembers.filter { familyMember ->
+            familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.FORTROLIG ||
+            familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG ||
+            familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG_UTLAND ||
+            skjermingService.skjermet(foedselsnr = familyMember.key)
+        }.map { familyMember ->
             val preferredFamilyName = preferredName(familyMember.value)
-            Person.FamilyMember(
+            Person.ProtectedFamilyMember(
                 foedselsnr = familyMember.key,
                 fornavn = preferredFamilyName.fornavn,
                 mellomnavn = preferredFamilyName.mellomnavn,
