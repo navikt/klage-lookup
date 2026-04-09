@@ -1,5 +1,6 @@
 package no.nav.klage.lookup.api.user
 
-class BatchedUserRequest (
+
+data class BatchedUserRequest (
     val navIdentList: List<String>
 )
