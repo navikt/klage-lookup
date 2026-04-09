@@ -12,7 +12,8 @@ data class UserResponse (
 )
 
 data class ExtendedUsersResponse (
-    val users: List<ExtendedUserResponse>,
+    val hits: List<ExtendedUserResponse>,
+    val misses: List<String>
 )
 
 data class ExtendedUserResponse (

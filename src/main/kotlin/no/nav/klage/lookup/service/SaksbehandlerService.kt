@@ -98,10 +98,15 @@ class SaksbehandlerService(
     }
 
     fun getUserInfoBatched(navIdentList: List<String>): ExtendedUsersResponse {
+        val lookupResults = navIdentList
+            .distinct()
+            .map { navIdent -> navIdent to runCatching { getUserInfo(navIdent) } }
+
+        val (successfulLookups, failedLookups) = lookupResults.partition { (_, result) -> result.isSuccess }
+
         return ExtendedUsersResponse(
-            users = navIdentList.map {
-                getUserInfo(it)
-            }
+            hits = successfulLookups.map { (_, result) -> result.getOrThrow() },
+            misses = failedLookups.map { (navIdent, _) -> navIdent },
         )
     }
 
@@ -183,4 +188,3 @@ class SaksbehandlerService(
         }
     }
 }
-
