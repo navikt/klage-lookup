@@ -28,7 +28,7 @@ class UserController(
     }
 
     @Operation(summary = "Get info about users")
-    @GetMapping("/users")
+    @PostMapping("/users")
     fun getUserInfoBatched(
         @RequestBody input: BatchedUserRequest,
     ): ExtendedUsersResponse {
