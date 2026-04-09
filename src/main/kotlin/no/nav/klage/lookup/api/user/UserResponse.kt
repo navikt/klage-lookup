@@ -13,7 +13,7 @@ data class UserResponse (
 
 data class ExtendedUsersResponse (
     val hits: List<ExtendedUserResponse>,
-    val misses: List<String>
+    val misses: List<String>,
 )
 
 data class ExtendedUserResponse (
