@@ -97,6 +97,14 @@ class SaksbehandlerService(
         }
     }
 
+    fun getUserInfoBatched(navIdentList: List<String>): ExtendedUsersResponse {
+        return ExtendedUsersResponse(
+            users = navIdentList.map {
+                getUserInfo(it)
+            }
+        )
+    }
+
     fun getUsersInEnhet(enhetsnummer: String): UsersResponse {
         return UsersResponse(
             microsoftGraphService.getAnsatteInEnhet(enhetsnummer = enhetsnummer).value?.map { it.toUserResponse() }
