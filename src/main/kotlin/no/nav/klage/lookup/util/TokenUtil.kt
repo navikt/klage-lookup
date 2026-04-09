@@ -54,6 +54,24 @@ class TokenUtil(
         return response.access_token!!
     }
 
+    fun getSaksbehandlerAccessTokenWithPdlScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["pdl-onbehalfof"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
+    fun getAppAccessTokenWithPdlScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["pdl-maskintilmaskin"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
+    fun getAppAccessTokenWithSkjermingPipScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["skjerming-pip-maskintilmaskin"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
     fun getIdent(): String? =
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("NAVident")?.toString()

@@ -12,7 +12,7 @@ import org.springframework.web.service.invoker.createClient
 class TilgangsmaskinenConfig{
 
     @Bean
-    fun tilgangsmaskinenService(
+    fun tilgangsmaskinenClient(
         @Value($$"${TILGANGSMASKINEN_BASE_URL}")
         tilgangsmaskinenUrl: String
     ): TilgangsmaskinenService {

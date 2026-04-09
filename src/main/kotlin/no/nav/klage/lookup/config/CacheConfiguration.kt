@@ -23,6 +23,8 @@ class CacheConfiguration(
         const val USER_INFO = "userInfo"
         const val GROUP_MEMBERS = "groupMembers"
         const val ANSATTE_IN_ENHET = "ansatteInEnhet"
+        const val PERSON = "person"
+        const val SKJERMET = "skjermet"
     }
 
     @Bean
@@ -33,12 +35,15 @@ class CacheConfiguration(
             .entryTtl(Duration.ofSeconds(standardTTLSeconds.toLong()))
 
         return RedisCacheManager.builder(redisConnectionFactory)
+            .enableStatistics()
             .cacheDefaults(defaultConfig)
             .withCacheConfiguration(ACCESS_TO_PERSON, standardConfig)
             .withCacheConfiguration(USERS_GROUPS, standardConfig)
             .withCacheConfiguration(USER_INFO, standardConfig)
             .withCacheConfiguration(GROUP_MEMBERS, standardConfig)
             .withCacheConfiguration(ANSATTE_IN_ENHET, standardConfig)
+            .withCacheConfiguration(PERSON, standardConfig)
+            .withCacheConfiguration(SKJERMET, standardConfig)
             .build()
     }
 }

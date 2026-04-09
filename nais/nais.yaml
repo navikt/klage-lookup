@@ -72,6 +72,8 @@ spec:
           namespace: tilgangsmaskin
         - application: entra-proxy
           namespace: sikkerhetstjenesten
+        - application: skjermede-personer-pip
+          namespace: nom
         - application: logging
           namespace: nais-system
       external:

@@ -2,6 +2,7 @@ springProfile: prod
 tenant: nav.no
 externalHosts:
   - host: fpsak-api.prod-fss-pub.nais.io
+  - host: pdl-api.prod-fss-pub.nais.io
 
 replicasMin: 2
 replicasMax: 4

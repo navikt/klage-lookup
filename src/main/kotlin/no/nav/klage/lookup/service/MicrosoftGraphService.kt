@@ -1,14 +1,14 @@
 package no.nav.klage.lookup.service
 
 import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.Timer
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.ANSATTE_IN_ENHET
 import no.nav.klage.lookup.config.EnhetNotFoundException
-import no.nav.klage.lookup.config.microsoftgraph.MicrosoftGraphInterface
+import no.nav.klage.lookup.config.microsoftgraph.MicrosoftGraphClient
 import no.nav.klage.lookup.config.microsoftgraph.MicrosoftGraphUserList
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
+import no.nav.klage.lookup.util.timedCall
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Service
@@ -18,7 +18,7 @@ import org.springframework.web.client.HttpClientErrorException
 class MicrosoftGraphService(
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
-    private val microsoftGraphInterface: MicrosoftGraphInterface,
+    private val microsoftGraphClient: MicrosoftGraphClient,
 ) {
 
     companion object {
@@ -38,8 +38,8 @@ class MicrosoftGraphService(
         val bearerToken = "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithMicrosoftGraphScope()}"
 
         val ansattList = try {
-            timedCall(MICROSOFT_GRAPH_TIMER, "ansatteInEnhet") {
-                microsoftGraphInterface.microsoftGraphQuery(
+            meterRegistry.timedCall(MICROSOFT_GRAPH_TIMER, "ansatteInEnhet") {
+                microsoftGraphClient.microsoftGraphQuery(
                     bearerToken = bearerToken,
                     consistencyLevel = "eventual",
                     filter = "streetAddress eq '$enhetsnummer'",
@@ -58,12 +58,5 @@ class MicrosoftGraphService(
         }
 
         return ansattList
-    }
-
-    private fun <T> timedCall(timerName: String, method: String, block: () -> T): T {
-        return Timer.builder(timerName)
-            .tag("method", method)
-            .register(meterRegistry)
-            .recordCallable(block)
     }
 }
