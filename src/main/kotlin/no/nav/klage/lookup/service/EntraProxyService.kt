@@ -68,7 +68,7 @@ class EntraProxyService(
             "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
         }
 
-        val userInfo = try {
+        val userInfo: EntraProxyUtvidetAnsatt? = try {
             meterRegistry.timedCall(ENTRAPROXY_TIMER, "getUserInfo") {
                 entraProxyClient.getAnsattInfo(
                     bearerToken = bearerToken,

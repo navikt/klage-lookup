@@ -7,5 +7,5 @@ fun <T> MeterRegistry.timedCall(timerName: String, method: String, block: () -> 
     return Timer.builder(timerName)
         .tag("method", method)
         .register(this)
-        .recordCallable(block)!!
+        .recordCallable(block)
 }
