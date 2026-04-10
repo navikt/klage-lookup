@@ -58,6 +58,7 @@ dependencies {
     }
     testImplementation("org.testcontainers:testcontainers:${testContainersVersion}")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:${testContainersVersion}")
+    testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
 tasks.withType<KotlinCompile> {

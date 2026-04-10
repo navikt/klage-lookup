@@ -97,6 +97,19 @@ class SaksbehandlerService(
         }
     }
 
+    fun getUserInfoBatched(navIdentList: List<String>): ExtendedUsersResponse {
+        val lookupResults = navIdentList
+            .distinct()
+            .map { navIdent -> navIdent to runCatching { getUserInfo(navIdent) } }
+
+        val (successfulLookups, failedLookups) = lookupResults.partition { (_, result) -> result.isSuccess }
+
+        return ExtendedUsersResponse(
+            hits = successfulLookups.map { (_, result) -> result.getOrThrow() },
+            misses = failedLookups.map { (navIdent, _) -> navIdent },
+        )
+    }
+
     fun getUsersInEnhet(enhetsnummer: String): UsersResponse {
         return UsersResponse(
             microsoftGraphService.getAnsatteInEnhet(enhetsnummer = enhetsnummer).value?.map { it.toUserResponse() }
@@ -175,4 +188,3 @@ class SaksbehandlerService(
         }
     }
 }
-

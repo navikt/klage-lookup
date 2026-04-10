@@ -11,6 +11,11 @@ data class UserResponse (
     val etternavn: String,
 )
 
+data class ExtendedUsersResponse (
+    val hits: List<ExtendedUserResponse>,
+    val misses: List<String>,
+)
+
 data class ExtendedUserResponse (
     val navIdent: String,
     val sammensattNavn: String,
