@@ -4,8 +4,10 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.lookup.api.user.ExtendedUserResponse
 import no.nav.klage.lookup.config.entraproxy.EntraProxyEnhet
+import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import no.nav.klage.lookup.util.TokenUtil
 import org.assertj.core.api.Assertions.assertThat
@@ -79,6 +81,38 @@ class SaksbehandlerServiceTest {
 
         verify(exactly = 1) { entraProxyService.getUserInfo("A123") }
         verify(exactly = 1) { entraProxyService.getUserInfo("B456") }
+        confirmVerified(entraProxyService)
+    }
+
+    @Test
+    fun `getGroupsForUsersBatched returns hits and misses`() {
+        every { tokenUtil.getIdent() } returns null
+        every { entraProxyService.getUsersGroups("A123") } returns listOf(
+            EntraProxyRolle(AzureGroup.KABAL_ADMIN.reference),
+            EntraProxyRolle("unknown-role"),
+        )
+        every { entraProxyService.getUsersGroups("B456") } throws RuntimeException("Not found")
+
+        val result = saksbehandlerService.getGroupsForUsersBatched(listOf("A123", "B456"))
+
+        assertThat(result.hits).containsKey("A123")
+        assertThat(result.hits["A123"]?.groupIds).containsExactly(AzureGroup.KABAL_ADMIN.id)
+        assertThat(result.misses).containsExactly("B456")
+    }
+
+    @Test
+    fun `getGroupsForUsersBatched deduplicates input before lookup`() {
+        every { tokenUtil.getIdent() } returns null
+        every { entraProxyService.getUsersGroups("A123") } returns emptyList()
+        every { entraProxyService.getUsersGroups("B456") } throws RuntimeException("Not found")
+
+        val result = saksbehandlerService.getGroupsForUsersBatched(listOf("A123", "A123", "B456", "B456"))
+
+        assertThat(result.hits).containsOnlyKeys("A123")
+        assertThat(result.misses).containsExactly("B456")
+
+        verify(exactly = 1) { entraProxyService.getUsersGroups("A123") }
+        verify(exactly = 1) { entraProxyService.getUsersGroups("B456") }
         confirmVerified(entraProxyService)
     }
 

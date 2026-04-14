@@ -29,6 +29,11 @@ data class Enhet (
     val enhetNavn: String,
 )
 
+data class BatchedGroupsResponse (
+    val hits: Map<String, GroupsResponse>,
+    val misses: List<String>,
+)
+
 data class GroupsResponse (
     val groupIds: List<String>,
 )

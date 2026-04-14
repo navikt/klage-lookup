@@ -110,6 +110,19 @@ class SaksbehandlerService(
         )
     }
 
+    fun getGroupsForUsersBatched(navIdentList: List<String>): BatchedGroupsResponse {
+        val lookupResults = navIdentList
+            .distinct()
+            .associateWith { navIdent -> runCatching { getGroupsForUser(navIdent) } }
+
+        return BatchedGroupsResponse(
+            hits = lookupResults.mapNotNull { (navIdent, result) ->
+                result.getOrNull()?.let { navIdent to it }
+            }.toMap(),
+            misses = lookupResults.filterValues { it.isFailure }.keys.toList(),
+        )
+    }
+
     fun getUsersInEnhet(enhetsnummer: String): UsersResponse {
         return UsersResponse(
             microsoftGraphService.getAnsatteInEnhet(enhetsnummer = enhetsnummer).value?.map { it.toUserResponse() }

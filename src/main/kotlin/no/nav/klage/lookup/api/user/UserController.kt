@@ -47,6 +47,16 @@ class UserController(
         )
     }
 
+    @Operation(summary = "Get groups for users")
+    @PostMapping("/users/groups")
+    fun getGroupsForUsers(
+        @RequestBody input: BatchedUserRequest,
+    ): BatchedGroupsResponse {
+        return saksbehandlerService.getGroupsForUsersBatched(
+            navIdentList = input.navIdentList,
+        )
+    }
+
     @Operation(summary = "Get users in given enhet")
     @GetMapping("/enheter/{enhetsnummer}/users")
     fun getUsersInEnhet(
