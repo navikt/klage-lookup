@@ -117,8 +117,13 @@ class SaksbehandlerService(
 
         return BatchedGroupsResponse(
             hits = lookupResults.mapNotNull { (navIdent, result) ->
-                result.getOrNull()?.let { navIdent to it }
-            }.toMap(),
+                result.getOrNull()?.let { groupsResponse ->
+                    BatchedGroupsHitResponse(
+                        navIdent = navIdent,
+                        groupIds = groupsResponse.groupIds,
+                    )
+                }
+            },
             misses = lookupResults.filterValues { it.isFailure }.keys.toList(),
         )
     }

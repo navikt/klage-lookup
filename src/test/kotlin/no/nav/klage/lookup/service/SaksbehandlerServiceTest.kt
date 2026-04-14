@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.klage.kodeverk.AzureGroup
+import no.nav.klage.lookup.api.user.BatchedGroupsHitResponse
 import no.nav.klage.lookup.api.user.ExtendedUserResponse
 import no.nav.klage.lookup.config.entraproxy.EntraProxyEnhet
 import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
@@ -95,8 +96,12 @@ class SaksbehandlerServiceTest {
 
         val result = saksbehandlerService.getGroupsForUsersBatched(listOf("A123", "B456"))
 
-        assertThat(result.hits).containsKey("A123")
-        assertThat(result.hits["A123"]?.groupIds).containsExactly(AzureGroup.KABAL_ADMIN.id)
+        assertThat(result.hits).containsExactly(
+            BatchedGroupsHitResponse(
+                navIdent = "A123",
+                groupIds = listOf(AzureGroup.KABAL_ADMIN.id),
+            )
+        )
         assertThat(result.misses).containsExactly("B456")
     }
 
@@ -108,7 +113,12 @@ class SaksbehandlerServiceTest {
 
         val result = saksbehandlerService.getGroupsForUsersBatched(listOf("A123", "A123", "B456", "B456"))
 
-        assertThat(result.hits).containsOnlyKeys("A123")
+        assertThat(result.hits).containsExactly(
+            BatchedGroupsHitResponse(
+                navIdent = "A123",
+                groupIds = emptyList(),
+            )
+        )
         assertThat(result.misses).containsExactly("B456")
 
         verify(exactly = 1) { entraProxyService.getUsersGroups("A123") }
