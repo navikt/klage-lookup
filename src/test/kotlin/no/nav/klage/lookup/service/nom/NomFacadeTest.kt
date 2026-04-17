@@ -64,7 +64,7 @@ class NomFacadeTest {
         every { cache.get(any<String>(), Ansatt::class.java) } returns null
         every {
             nomClient.hentAnsatte(
-                bearerToken = "token",
+                bearerToken = "Bearer token",
                 query = match { it.variables.navidenter == listOf("A123", "B456") },
             )
         } returns GetAnsatteResponse(
@@ -99,7 +99,7 @@ class NomFacadeTest {
         every { cache.get("C789", Ansatt::class.java) } returns null
         every {
             nomClient.hentAnsatte(
-                bearerToken = "token",
+                bearerToken = "Bearer token",
                 query = match { it.variables.navidenter == listOf("B456", "C789") },
             )
         } returns GetAnsatteResponse(
@@ -136,7 +136,7 @@ class NomFacadeTest {
         every { cacheManager.getCache(USER_SLUTTDATO) } returns null
         every {
             nomClient.hentAnsatte(
-                bearerToken = "token",
+                bearerToken = "Bearer token",
                 query = match { it.variables.navidenter == listOf("A123") },
             )
         } returns response
