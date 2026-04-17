@@ -25,6 +25,9 @@ class CacheConfiguration(
         const val ANSATTE_IN_ENHET = "ansatteInEnhet"
         const val PERSON = "person"
         const val SKJERMET = "skjermet"
+        const val AKTOER_FOR_SAK = "aktoerForSak"
+        const val IDENT_TO_FNR = "aktoerIdToFnr"
+        const val IDENT_TO_AKTOER_ID = "identToAktoerId"
     }
 
     @Bean
@@ -33,6 +36,9 @@ class CacheConfiguration(
 
         val standardConfig = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofSeconds(standardTTLSeconds.toLong()))
+
+        val oneWeekConfig = RedisCacheConfiguration.defaultCacheConfig()
+            .entryTtl(Duration.ofDays(7))
 
         return RedisCacheManager.builder(redisConnectionFactory)
             .enableStatistics()
@@ -44,6 +50,9 @@ class CacheConfiguration(
             .withCacheConfiguration(ANSATTE_IN_ENHET, standardConfig)
             .withCacheConfiguration(PERSON, standardConfig)
             .withCacheConfiguration(SKJERMET, standardConfig)
+            .withCacheConfiguration(AKTOER_FOR_SAK, oneWeekConfig)
+            .withCacheConfiguration(IDENT_TO_FNR, oneWeekConfig)
+            .withCacheConfiguration(IDENT_TO_AKTOER_ID, oneWeekConfig)
             .build()
     }
 }

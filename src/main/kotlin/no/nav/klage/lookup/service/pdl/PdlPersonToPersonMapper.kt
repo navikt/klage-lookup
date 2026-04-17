@@ -5,7 +5,6 @@ import no.nav.klage.lookup.service.skjerming.SkjermingService
 
 fun toPerson(
     person: Pair<String, PdlPerson>,
-    relevantFamilyMembers: Map<String, PdlPerson>,
     skjermingService: SkjermingService,
 ): Person {
     val preferredName = preferredName(person.second)
@@ -24,27 +23,6 @@ fun toPerson(
         doed = person.second.doedsfall.firstOrNull()?.doedsdato,
         sikkerhetstiltak = person.second.sikkerhetstiltak.firstOrNull()?.mapToSikkerhetstiltak(),
         egenAnsatt = skjermingService.skjermet(foedselsnr = person.first),
-        protectedFamilyMembers = relevantFamilyMembers.filter { familyMember ->
-            familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.FORTROLIG ||
-            familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG ||
-            familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG_UTLAND ||
-            skjermingService.skjermet(foedselsnr = familyMember.key)
-        }.map { familyMember ->
-            val preferredFamilyName = preferredName(familyMember.value)
-            Person.ProtectedFamilyMember(
-                foedselsnr = familyMember.key,
-                fornavn = preferredFamilyName.fornavn,
-                mellomnavn = preferredFamilyName.mellomnavn,
-                etternavn = preferredFamilyName.etternavn,
-                sammensattNavn = preferredFamilyName.sammensattNavn(),
-                kjoenn = familyMember.value.kjoenn.firstOrNull()?.kjoenn?.name,
-                doed = familyMember.value.doedsfall.firstOrNull()?.doedsdato,
-                strengtFortrolig = familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG,
-                strengtFortroligUtland = familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG_UTLAND,
-                fortrolig = familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.FORTROLIG,
-                egenAnsatt = skjermingService.skjermet(foedselsnr = familyMember.key),
-            )
-        }
     )
 }
 

@@ -67,6 +67,9 @@ class CacheConfigurationTest {
             CacheConfiguration.GROUP_MEMBERS,
             CacheConfiguration.PERSON,
             CacheConfiguration.SKJERMET,
+            CacheConfiguration.AKTOER_FOR_SAK,
+            CacheConfiguration.IDENT_TO_AKTOER_ID,
+            CacheConfiguration.IDENT_TO_FNR,
         )
     }
 

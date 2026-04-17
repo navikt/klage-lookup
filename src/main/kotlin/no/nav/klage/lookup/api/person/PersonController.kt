@@ -24,7 +24,6 @@ class PersonController(
     ): Person {
         return personService.getPerson(
             fnr = input.fnr,
-            sak = input.sak,
         )
     }
 
