@@ -21,6 +21,7 @@ class CacheConfiguration(
         const val ACCESS_TO_PERSON = "accessToPerson"
         const val USERS_GROUPS = "usersGroups"
         const val USER_INFO = "userInfo"
+        const val USER_SLUTTDATO = "userSluttdato"
         const val GROUP_MEMBERS = "groupMembers"
         const val ANSATTE_IN_ENHET = "ansatteInEnhet"
         const val PERSON = "person"
@@ -40,6 +41,7 @@ class CacheConfiguration(
             .withCacheConfiguration(ACCESS_TO_PERSON, standardConfig)
             .withCacheConfiguration(USERS_GROUPS, standardConfig)
             .withCacheConfiguration(USER_INFO, standardConfig)
+            .withCacheConfiguration(USER_SLUTTDATO, standardConfig)
             .withCacheConfiguration(GROUP_MEMBERS, standardConfig)
             .withCacheConfiguration(ANSATTE_IN_ENHET, standardConfig)
             .withCacheConfiguration(PERSON, standardConfig)

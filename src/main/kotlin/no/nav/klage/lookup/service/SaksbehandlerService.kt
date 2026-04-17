@@ -5,6 +5,7 @@ import no.nav.klage.lookup.api.user.*
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import no.nav.klage.lookup.config.microsoftgraph.MicrosoftGraphUser
+import no.nav.klage.lookup.service.nom.NomErrorException
 import no.nav.klage.lookup.service.nom.NomFacade
 import no.nav.klage.lookup.service.nom.graphql.Ansatt
 import no.nav.klage.lookup.util.TokenUtil
@@ -150,7 +151,10 @@ class SaksbehandlerService(
 
     fun getSluttdatoForUsers(navIdentList: List<String>): BatchedSluttdatoResponse {
         val response = nomFacade.getAnsatteInfoFromNom(navIdentList = navIdentList.distinct())
-        val ressurser = response.data?.ressurser.orEmpty()
+        if (response.data == null) {
+            throw NomErrorException("Klarte ikke å hente ansatte fra NOM")
+        }
+        val ressurser = response.data.ressurser
 
         return BatchedSluttdatoResponse(
             hits = ressurser.mapNotNull { it.ressurs?.toSluttdatoResponse() },
