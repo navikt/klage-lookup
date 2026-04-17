@@ -37,9 +37,7 @@ class NomFacade(
     }
 
     fun getAnsatteInfoFromNom(navIdentList: List<String>): GetAnsatteResponse {
-        val cache = cacheManager.getCache(USER_SLUTTDATO) ?: return fetchAnsatteFromNom(navIdentList)
-
-        logger.debug("Cache was found. Fetching Ansatt for $navIdentList")
+        val cache = cacheManager.getCache(USER_SLUTTDATO)!!
 
         val cached = mutableMapOf<String, Ansatt>()
         val uncached = mutableListOf<String>()
@@ -76,7 +74,6 @@ class NomFacade(
         }
         newlyFetched.data?.ressurser?.let { combinedRessurser.addAll(it) }
 
-        logger.debug("Returning all entries: $combinedRessurser")
         return GetAnsatteResponse(
             data = GetAnsatteDataWrapper(ressurser = combinedRessurser),
             errors = newlyFetched.errors
@@ -84,7 +81,6 @@ class NomFacade(
     }
 
     private fun fetchAnsatteFromNom(navIdentList: List<String>): GetAnsatteResponse {
-        logger.debug("Fetching Ansatt for $navIdentList")
         return nomClient.hentAnsatte(
             bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithNomScope()}",
             getAnsatteQuery(navIdenter = navIdentList)

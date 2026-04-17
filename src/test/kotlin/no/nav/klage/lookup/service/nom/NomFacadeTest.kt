@@ -124,29 +124,6 @@ class NomFacadeTest {
         verify(exactly = 0) { cache.put("C789", any()) }
     }
 
-    @Test
-    fun `getAnsatteInfoFromNom falls back to NOM when cache is unavailable`() {
-        val response = GetAnsatteResponse(
-            data = GetAnsatteDataWrapper(
-                ressurser = listOf(Ressurs(id = "A123", ressurs = ansatt("A123")))
-            ),
-            errors = null,
-        )
-
-        every { cacheManager.getCache(USER_SLUTTDATO) } returns null
-        every {
-            nomClient.hentAnsatte(
-                bearerToken = "Bearer token",
-                query = match { it.variables.navidenter == listOf("A123") },
-            )
-        } returns response
-
-        val result = nomFacade.getAnsatteInfoFromNom(listOf("A123"))
-
-        assertThat(result).isEqualTo(response)
-        verify(exactly = 1) { nomClient.hentAnsatte(any(), any()) }
-    }
-
     private fun ansatt(navIdent: String): Ansatt {
         return Ansatt(
             navident = navIdent,
