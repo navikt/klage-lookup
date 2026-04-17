@@ -1,5 +1,6 @@
 package no.nav.klage.lookup.config
 
+import no.nav.klage.lookup.service.nom.NomAnsattNotFoundException
 import no.nav.klage.lookup.service.pdl.PDLPersonNotFoundException
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
@@ -34,6 +35,13 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
     @ExceptionHandler
     fun handlePDLPersonNotFound(
         ex: PDLPersonNotFoundException,
+    ): ProblemDetail {
+        return create(HttpStatus.NOT_FOUND, ex)
+    }
+
+    @ExceptionHandler
+    fun handleNomAnsattNotFound(
+        ex: NomAnsattNotFoundException,
     ): ProblemDetail {
         return create(HttpStatus.NOT_FOUND, ex)
     }

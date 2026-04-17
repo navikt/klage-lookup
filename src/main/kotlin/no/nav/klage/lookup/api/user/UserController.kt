@@ -27,12 +27,32 @@ class UserController(
         )
     }
 
+    @Operation(summary = "Get sluttdato for user")
+    @GetMapping("/users/{navIdent}/sluttdato")
+    fun getUserSluttdato(
+        @PathVariable navIdent: String,
+    ): SluttdatoResponse {
+        return saksbehandlerService.getSluttdatoForUser(
+            navIdent = navIdent,
+        )
+    }
+
     @Operation(summary = "Get info about users")
     @PostMapping("/users")
     fun getUserInfoBatched(
         @RequestBody input: BatchedUserRequest,
     ): ExtendedUsersResponse {
         return saksbehandlerService.getUserInfoBatched(
+            navIdentList = input.navIdentList,
+        )
+    }
+
+    @Operation(summary = "Get sluttdato for users")
+    @PostMapping("/users/sluttdato")
+    fun getUserSluttdatoBatched(
+        @RequestBody input: BatchedUserRequest,
+    ): BatchedSluttdatoResponse {
+        return saksbehandlerService.getSluttdatoForUsers(
             navIdentList = input.navIdentList,
         )
     }
