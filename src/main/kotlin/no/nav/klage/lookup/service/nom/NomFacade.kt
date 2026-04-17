@@ -36,7 +36,6 @@ class NomFacade(
         return ansatt.getRessursOrThrowError(navIdent)
     }
 
-
     fun getAnsatteInfoFromNom(navIdentList: List<String>): GetAnsatteResponse {
         val cache = cacheManager.getCache(USER_SLUTTDATO) ?: return fetchAnsatteFromNom(navIdentList)
 

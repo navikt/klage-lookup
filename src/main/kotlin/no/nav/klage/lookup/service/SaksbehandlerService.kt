@@ -164,7 +164,7 @@ class SaksbehandlerService(
 
     private fun Ansatt.toSluttdatoResponse(): SluttdatoResponse {
         return SluttdatoResponse(
-            navident = navident,
+            navIdent = navident,
             sluttdato = sluttdato,
         )
     }

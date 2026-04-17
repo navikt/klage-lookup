@@ -51,6 +51,6 @@ data class BatchedSluttdatoResponse(
 )
 
 data class SluttdatoResponse(
-    val navident: String,
+    val navIdent: String,
     val sluttdato: LocalDate?,
 )

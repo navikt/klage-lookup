@@ -1,5 +1,6 @@
 package no.nav.klage.lookup.service.nom.graphql
 
+import java.io.Serializable
 import java.time.LocalDate
 
 data class GetAnsattResponse(val data: GetAnsattDataWrapper?, val errors: List<NomError>? = null) {
@@ -34,9 +35,13 @@ data class Ressurs(
 data class Ansatt(
     val navident: String,
     val sluttdato: LocalDate?,
-) {
+) : Serializable {
     override fun toString(): String {
         return "Ansatt(navident='$navident', sluttdato=$sluttdato)"
+    }
+
+    companion object {
+        private const val serialVersionUID: Long = 1L
     }
 }
 

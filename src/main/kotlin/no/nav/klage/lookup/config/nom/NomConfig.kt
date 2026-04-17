@@ -13,7 +13,7 @@ class NomClientConfiguration {
 
     @Bean
     fun nomWebClient(
-        @Value("\${NOM_BASE_URL}")
+        @Value($$"${NOM_BASE_URL}")
         nomUrl: String
     ): NomClient {
         val restClient = RestClient.create(nomUrl)
@@ -24,6 +24,5 @@ class NomClientConfiguration {
             .build()
 
         return proxyFactory.createClient<NomClient>()
-
     }
 }

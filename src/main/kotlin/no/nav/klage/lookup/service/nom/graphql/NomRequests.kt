@@ -1,6 +1,6 @@
 package no.nav.klage.lookup.service.nom.graphql
 
-import java.net.URL
+import no.nav.klage.lookup.util.cleanForGraphql
 
 data class AnsattGraphqlQuery(
     val query: String,
@@ -31,5 +31,3 @@ fun getAnsattQuery(navIdent: String): AnsattGraphqlQuery {
         AnsattGraphqlQuery::class.java.getResource("/nom/getAnsatt.graphql").cleanForGraphql()
     return AnsattGraphqlQuery(query, IdentVariables(navIdent))
 }
-
-fun URL.cleanForGraphql() = readText().replace("[\n\r]", "")
