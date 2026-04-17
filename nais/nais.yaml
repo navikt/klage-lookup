@@ -74,8 +74,6 @@ spec:
           namespace: sikkerhetstjenesten
         - application: skjermede-personer-pip
           namespace: nom
-        - application: nom-api
-          namespace: nom
         - application: logging
           namespace: nais-system
       external:
