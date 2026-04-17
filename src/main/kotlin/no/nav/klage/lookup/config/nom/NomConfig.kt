@@ -16,7 +16,9 @@ class NomClientConfiguration {
         @Value($$"${NOM_BASE_URL}")
         nomUrl: String
     ): NomClient {
-        val restClient = RestClient.create(nomUrl)
+        val restClient = RestClient.builder()
+            .baseUrl(nomUrl)
+            .build()
 
         // Create factory for client proxies
         val proxyFactory = HttpServiceProxyFactory.builder()
