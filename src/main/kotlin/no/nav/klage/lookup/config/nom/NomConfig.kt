@@ -14,9 +14,10 @@ class NomClientConfiguration {
     @Bean
     fun nomWebClient(
         @Value($$"${NOM_BASE_URL}")
-        nomUrl: String
+        nomUrl: String,
+        restClientBuilder: RestClient.Builder,
     ): NomClient {
-        val restClient = RestClient.builder()
+        val restClient = restClientBuilder
             .baseUrl(nomUrl)
             .build()
 

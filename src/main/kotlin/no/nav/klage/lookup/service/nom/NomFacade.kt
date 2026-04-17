@@ -30,7 +30,7 @@ class NomFacade(
     )
     fun getAnsattInfoFromNom(navIdent: String): Ansatt {
         val ansatt = nomClient.hentAnsatt(
-            bearerToken = tokenUtil.getAppAccessTokenWithNomScope(),
+            bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithNomScope()}",
             getAnsattQuery(navIdent = navIdent)
         )
         return ansatt.getRessursOrThrowError(navIdent)
@@ -86,7 +86,7 @@ class NomFacade(
     private fun fetchAnsatteFromNom(navIdentList: List<String>): GetAnsatteResponse {
         logger.debug("Fetching Ansatt for $navIdentList")
         return nomClient.hentAnsatte(
-            bearerToken = tokenUtil.getAppAccessTokenWithNomScope(),
+            bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithNomScope()}",
             getAnsatteQuery(navIdenter = navIdentList)
         )
     }
