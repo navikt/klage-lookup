@@ -10,6 +10,7 @@ import no.nav.klage.lookup.api.user.ExtendedUserResponse
 import no.nav.klage.lookup.config.entraproxy.EntraProxyEnhet
 import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
+import no.nav.klage.lookup.service.nom.NomFacade
 import no.nav.klage.lookup.util.TokenUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -19,11 +20,13 @@ class SaksbehandlerServiceTest {
     private val tokenUtil = mockk<TokenUtil>()
     private val microsoftGraphService = mockk<MicrosoftGraphService>(relaxed = true)
     private val entraProxyService = mockk<EntraProxyService>()
+    private val nomFacade = mockk<NomFacade>()
 
     private val saksbehandlerService = SaksbehandlerService(
         tokenUtil = tokenUtil,
         microsoftGraphService = microsoftGraphService,
         entraProxyService = entraProxyService,
+        nomFacade = nomFacade,
         kabalOppgavestyringAlleEnheterRoleId = "kabalOppgavestyringAlleEnheterRoleId",
         kabalMaltekstredigeringRoleId = "kabalMaltekstredigeringRoleId",
         kabalSaksbehandlerRoleId = "kabalSaksbehandlerRoleId",

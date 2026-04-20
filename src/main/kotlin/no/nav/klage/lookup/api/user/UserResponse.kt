@@ -1,22 +1,24 @@
 package no.nav.klage.lookup.api.user
 
+import java.time.LocalDate
+
 data class UsersResponse(
     val users: List<UserResponse>,
 )
 
-data class UserResponse (
+data class UserResponse(
     val navIdent: String,
     val sammensattNavn: String,
     val fornavn: String,
     val etternavn: String,
 )
 
-data class ExtendedUsersResponse (
+data class ExtendedUsersResponse(
     val hits: List<ExtendedUserResponse>,
     val misses: List<String>,
 )
 
-data class ExtendedUserResponse (
+data class ExtendedUserResponse(
     val navIdent: String,
     val sammensattNavn: String,
     val fornavn: String,
@@ -24,12 +26,12 @@ data class ExtendedUserResponse (
     val enhet: Enhet,
 )
 
-data class Enhet (
+data class Enhet(
     val enhetNr: String,
     val enhetNavn: String,
 )
 
-data class BatchedGroupsResponse (
+data class BatchedGroupsResponse(
     val hits: List<BatchedGroupsHitResponse>,
     val misses: List<String>,
 )
@@ -39,6 +41,16 @@ data class BatchedGroupsHitResponse(
     val groupIds: List<String>,
 )
 
-data class GroupsResponse (
+data class GroupsResponse(
     val groupIds: List<String>,
+)
+
+data class BatchedSluttdatoResponse(
+    val hits: List<SluttdatoResponse>,
+    val misses: List<String>,
+)
+
+data class SluttdatoResponse(
+    val navIdent: String,
+    val sluttdato: LocalDate?,
 )
