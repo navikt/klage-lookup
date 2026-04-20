@@ -8,6 +8,7 @@ import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.get
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 
@@ -44,7 +45,7 @@ class NomFacade(
 
         // Separate cached and uncached idents
         for (navIdent in navIdentList.distinct()) {
-            val cachedValue = cache.get(navIdent, Ansatt::class.java)
+            val cachedValue = cache.get<Ansatt>(navIdent)
             if (cachedValue != null) {
                 cached[navIdent] = cachedValue
             } else {

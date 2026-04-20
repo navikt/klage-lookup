@@ -9,15 +9,14 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 import org.springframework.web.service.invoker.createClient
 
 @Configuration
-class NomClientConfiguration {
+class NomConfig {
 
     @Bean
     fun nomWebClient(
         @Value($$"${NOM_BASE_URL}")
         nomUrl: String,
-        restClientBuilder: RestClient.Builder,
     ): NomClient {
-        val restClient = restClientBuilder
+        val restClient = RestClient.builder()
             .baseUrl(nomUrl)
             .build()
 

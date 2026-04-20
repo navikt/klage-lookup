@@ -15,10 +15,9 @@ class PdlConfig {
     fun pdlClient(
         @Value($$"${PDL_BASE_URL}")
         pdlUrl: String,
-        restClientBuilder: RestClient.Builder,
     ): PdlClient {
         //https://behandlingskatalog.ansatt.nav.no/process/system/KABAL/478cac88-3dde-4abe-aab9-c0bb5c06c083?
-        val restClient = restClientBuilder
+        val restClient = RestClient.builder()
             .baseUrl(pdlUrl)
             .defaultHeader("TEMA", "KLA")
             .defaultHeader("behandlingsnummer", "B392")
