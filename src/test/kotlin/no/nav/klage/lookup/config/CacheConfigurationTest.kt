@@ -70,7 +70,7 @@ class CacheConfigurationTest {
             CacheConfiguration.SKJERMET,
             CacheConfiguration.AKTOER_FOR_SAK,
             CacheConfiguration.IDENT_TO_AKTOER_ID,
-            CacheConfiguration.IDENT_TO_FNR,
+            CacheConfiguration.AKTOER_ID_TO_FNR,
         )
     }
 

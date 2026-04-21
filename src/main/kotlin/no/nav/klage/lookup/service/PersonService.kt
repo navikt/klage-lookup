@@ -1,8 +1,8 @@
 package no.nav.klage.lookup.service
 
 import io.micrometer.core.instrument.MeterRegistry
+import no.nav.klage.lookup.config.CacheConfiguration.Companion.AKTOER_ID_TO_FNR
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.IDENT_TO_AKTOER_ID
-import no.nav.klage.lookup.config.CacheConfiguration.Companion.IDENT_TO_FNR
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.PERSON
 import no.nav.klage.lookup.service.kabalapi.KabalApiService
 import no.nav.klage.lookup.service.pdl.PdlFacade
@@ -43,7 +43,7 @@ class PersonService(
         }
     }
 
-    @Cacheable(IDENT_TO_FNR)
+    @Cacheable(AKTOER_ID_TO_FNR)
     @Retryable
     fun getFoedselsnummerFromIdent(ident: String): String {
         return pdlFacade.getFoedselsnummerFromIdent(ident = ident)
