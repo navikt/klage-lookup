@@ -63,6 +63,7 @@ class CacheConfigurationTest {
             CacheConfiguration.ACCESS_TO_PERSON,
             CacheConfiguration.USERS_GROUPS,
             CacheConfiguration.USER_INFO,
+            CacheConfiguration.USER_SLUTTDATO,
             CacheConfiguration.ANSATTE_IN_ENHET,
             CacheConfiguration.GROUP_MEMBERS,
             CacheConfiguration.PERSON,

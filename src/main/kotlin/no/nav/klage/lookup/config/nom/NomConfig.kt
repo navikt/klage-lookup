@@ -1,4 +1,4 @@
-package no.nav.klage.lookup.config.pdl
+package no.nav.klage.lookup.config.nom
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -9,18 +9,15 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 import org.springframework.web.service.invoker.createClient
 
 @Configuration
-class PdlConfig {
+class NomConfig {
 
     @Bean
-    fun pdlClient(
-        @Value($$"${PDL_BASE_URL}")
-        pdlUrl: String,
-    ): PdlClient {
-        //https://behandlingskatalog.ansatt.nav.no/process/system/KABAL/478cac88-3dde-4abe-aab9-c0bb5c06c083?
+    fun nomWebClient(
+        @Value($$"${NOM_BASE_URL}")
+        nomUrl: String,
+    ): NomClient {
         val restClient = RestClient.builder()
-            .baseUrl(pdlUrl)
-            .defaultHeader("TEMA", "KLA")
-            .defaultHeader("behandlingsnummer", "B392")
+            .baseUrl(nomUrl)
             .build()
 
         // Create factory for client proxies
@@ -28,6 +25,6 @@ class PdlConfig {
             .exchangeAdapter(RestClientAdapter.create(restClient))
             .build()
 
-        return proxyFactory.createClient<PdlClient>()
+        return proxyFactory.createClient<NomClient>()
     }
 }

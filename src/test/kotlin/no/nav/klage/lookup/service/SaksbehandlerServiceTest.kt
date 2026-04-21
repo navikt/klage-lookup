@@ -4,9 +4,13 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.nav.klage.kodeverk.AzureGroup
+import no.nav.klage.lookup.api.user.BatchedGroupsHitResponse
 import no.nav.klage.lookup.api.user.ExtendedUserResponse
 import no.nav.klage.lookup.config.entraproxy.EntraProxyEnhet
+import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
+import no.nav.klage.lookup.service.nom.NomFacade
 import no.nav.klage.lookup.util.TokenUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -16,11 +20,13 @@ class SaksbehandlerServiceTest {
     private val tokenUtil = mockk<TokenUtil>()
     private val microsoftGraphService = mockk<MicrosoftGraphService>(relaxed = true)
     private val entraProxyService = mockk<EntraProxyService>()
+    private val nomFacade = mockk<NomFacade>()
 
     private val saksbehandlerService = SaksbehandlerService(
         tokenUtil = tokenUtil,
         microsoftGraphService = microsoftGraphService,
         entraProxyService = entraProxyService,
+        nomFacade = nomFacade,
         kabalOppgavestyringAlleEnheterRoleId = "kabalOppgavestyringAlleEnheterRoleId",
         kabalMaltekstredigeringRoleId = "kabalMaltekstredigeringRoleId",
         kabalSaksbehandlerRoleId = "kabalSaksbehandlerRoleId",
@@ -79,6 +85,47 @@ class SaksbehandlerServiceTest {
 
         verify(exactly = 1) { entraProxyService.getUserInfo("A123") }
         verify(exactly = 1) { entraProxyService.getUserInfo("B456") }
+        confirmVerified(entraProxyService)
+    }
+
+    @Test
+    fun `getGroupsForUsersBatched returns hits and misses`() {
+        every { tokenUtil.getIdent() } returns null
+        every { entraProxyService.getUsersGroups("A123") } returns listOf(
+            EntraProxyRolle(AzureGroup.KABAL_ADMIN.reference),
+            EntraProxyRolle("unknown-role"),
+        )
+        every { entraProxyService.getUsersGroups("B456") } throws RuntimeException("Not found")
+
+        val result = saksbehandlerService.getGroupsForUsersBatched(listOf("A123", "B456"))
+
+        assertThat(result.hits).containsExactly(
+            BatchedGroupsHitResponse(
+                navIdent = "A123",
+                groupIds = listOf(AzureGroup.KABAL_ADMIN.id),
+            )
+        )
+        assertThat(result.misses).containsExactly("B456")
+    }
+
+    @Test
+    fun `getGroupsForUsersBatched deduplicates input before lookup`() {
+        every { tokenUtil.getIdent() } returns null
+        every { entraProxyService.getUsersGroups("A123") } returns emptyList()
+        every { entraProxyService.getUsersGroups("B456") } throws RuntimeException("Not found")
+
+        val result = saksbehandlerService.getGroupsForUsersBatched(listOf("A123", "A123", "B456", "B456"))
+
+        assertThat(result.hits).containsExactly(
+            BatchedGroupsHitResponse(
+                navIdent = "A123",
+                groupIds = emptyList(),
+            )
+        )
+        assertThat(result.misses).containsExactly("B456")
+
+        verify(exactly = 1) { entraProxyService.getUsersGroups("A123") }
+        verify(exactly = 1) { entraProxyService.getUsersGroups("B456") }
         confirmVerified(entraProxyService)
     }
 

@@ -5,6 +5,9 @@ import no.nav.klage.lookup.api.user.*
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import no.nav.klage.lookup.config.microsoftgraph.MicrosoftGraphUser
+import no.nav.klage.lookup.service.nom.NomErrorException
+import no.nav.klage.lookup.service.nom.NomFacade
+import no.nav.klage.lookup.service.nom.graphql.Ansatt
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
@@ -16,6 +19,7 @@ class SaksbehandlerService(
     private val tokenUtil: TokenUtil,
     private val microsoftGraphService: MicrosoftGraphService,
     private val entraProxyService: EntraProxyService,
+    private val nomFacade: NomFacade,
     @Value($$"${KABAL_OPPGAVESTYRING_ALLE_ENHETER_ROLE_ID}")
     private val kabalOppgavestyringAlleEnheterRoleId: String,
     @Value($$"${KABAL_MALTEKSTREDIGERING_ROLE_ID}")
@@ -110,6 +114,24 @@ class SaksbehandlerService(
         )
     }
 
+    fun getGroupsForUsersBatched(navIdentList: List<String>): BatchedGroupsResponse {
+        val lookupResults = navIdentList
+            .distinct()
+            .associateWith { navIdent -> runCatching { getGroupsForUser(navIdent) } }
+
+        return BatchedGroupsResponse(
+            hits = lookupResults.mapNotNull { (navIdent, result) ->
+                result.getOrNull()?.let { groupsResponse ->
+                    BatchedGroupsHitResponse(
+                        navIdent = navIdent,
+                        groupIds = groupsResponse.groupIds,
+                    )
+                }
+            },
+            misses = lookupResults.filterValues { it.isFailure }.keys.toList(),
+        )
+    }
+
     fun getUsersInEnhet(enhetsnummer: String): UsersResponse {
         return UsersResponse(
             microsoftGraphService.getAnsatteInEnhet(enhetsnummer = enhetsnummer).value?.map { it.toUserResponse() }
@@ -120,6 +142,30 @@ class SaksbehandlerService(
     fun getUsersInGroup(azureGroup: AzureGroup): UsersResponse {
         return UsersResponse(
             users = entraProxyService.getGroupMembers(gruppeNavn = azureGroup.reference).map { it.toUserResponse() }
+        )
+    }
+
+    fun getSluttdatoForUser(navIdent: String): SluttdatoResponse {
+        return nomFacade.getAnsattInfoFromNom(navIdent = navIdent).toSluttdatoResponse()
+    }
+
+    fun getSluttdatoForUsers(navIdentList: List<String>): BatchedSluttdatoResponse {
+        val response = nomFacade.getAnsatteInfoFromNom(navIdentList = navIdentList.distinct())
+        if (response.data == null) {
+            throw NomErrorException("Klarte ikke å hente ansatte fra NOM")
+        }
+        val ressurser = response.data.ressurser
+
+        return BatchedSluttdatoResponse(
+            hits = ressurser.mapNotNull { it.ressurs?.toSluttdatoResponse() },
+            misses = ressurser.filter { it.ressurs == null }.map { it.id },
+        )
+    }
+
+    private fun Ansatt.toSluttdatoResponse(): SluttdatoResponse {
+        return SluttdatoResponse(
+            navIdent = navident,
+            sluttdato = sluttdato,
         )
     }
 

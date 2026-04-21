@@ -1,15 +1,14 @@
 package no.nav.klage.lookup.api
 
+import no.nav.klage.lookup.api.user.BatchedSluttdatoResponse
 import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
 import no.nav.klage.lookup.service.CacheService
 import no.nav.klage.lookup.service.EntraProxyService
+import no.nav.klage.lookup.service.SaksbehandlerService
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.context.annotation.Profile
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @Profile("dev")
 @RestController
@@ -19,6 +18,7 @@ class DevAdminController(
     private val cacheService: CacheService,
     private val tokenUtil: TokenUtil,
     private val entraProxyService: EntraProxyService,
+    private val saksbehandlerService: SaksbehandlerService
 ) {
 
     @GetMapping("/evict-cache")
@@ -37,6 +37,13 @@ class DevAdminController(
         } else {
             cacheService.evictAllCaches()
         }
+    }
+
+    @GetMapping("/sluttdato/{navIdent}")
+    fun getSluttdatoTest(
+        @PathVariable navIdent: String,
+    ): BatchedSluttdatoResponse {
+        return saksbehandlerService.getSluttdatoForUsers(navIdentList = listOf(navIdent))
     }
 
     @GetMapping("/mygroups")

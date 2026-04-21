@@ -1,8 +1,6 @@
 package no.nav.klage.lookup.service.pdl.graphql
 
-import java.net.URL
-
-fun URL.cleanForGraphql() = readText().replace("[\n\r]", "")
+import no.nav.klage.lookup.util.cleanForGraphql
 
 data class PersonGraphqlQuery(
     val query: String,

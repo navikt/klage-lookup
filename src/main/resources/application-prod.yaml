@@ -14,6 +14,9 @@ ENTRA_PROXY_SCOPE: prod-gcp.sikkerhetstjenesten.entra-proxy
 PDL_BASE_URL: https://pdl-api.prod-fss-pub.nais.io/graphql
 PDL_SCOPE: prod-fss.pdl.pdl-api
 
+NOM_BASE_URL: https://nom-api.intern.nav.no/graphql
+NOM_SCOPE: prod-gcp.nom.nom-api
+
 SKJERMING_PIP_SCOPE: prod-gcp.nom.skjermede-personer-pip
 
 KABAL_API_SCOPE: prod-gcp.klage.kabal-api
