@@ -2,7 +2,6 @@ package no.nav.klage.lookup.service.persongalleri
 
 import no.nav.klage.lookup.api.common.Sak
 import no.nav.klage.lookup.api.persongalleri.PersongalleriResponse
-import no.nav.klage.lookup.service.PersonService
 import no.nav.klage.lookup.service.fpsak.FpsakService
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.shouldCheckFamilyMembers
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service
 @Service
 class PersongalleriService(
     private val fpsakService: FpsakService,
-    private val personService: PersonService,
 ) {
 
     companion object {
@@ -25,8 +23,7 @@ class PersongalleriService(
             return PersongalleriResponse(foedselsnummerList = emptyList())
         }
 
-        val aktoerIdList = fpsakService.getAktoerForSak(saksnummer = sak.sakId)
-        val foedselsnummerList = aktoerIdList.map { personService.getFoedselsnummerFromIdent(it) }
+        val foedselsnummerList = fpsakService.getPersongalleriForSak(saksnummer = sak.sakId)
         return PersongalleriResponse(foedselsnummerList = foedselsnummerList)
     }
 
