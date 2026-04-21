@@ -37,8 +37,14 @@ class CacheConfiguration(
         val standardConfig = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofSeconds(standardTTLSeconds.toLong()))
 
+        val fourHoursConfig = RedisCacheConfiguration.defaultCacheConfig()
+            .entryTtl(Duration.ofHours(4))
+
         val oneWeekConfig = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofDays(7))
+
+        val oneMonthConfig = RedisCacheConfiguration.defaultCacheConfig()
+            .entryTtl(Duration.ofDays(30))
 
         return RedisCacheManager.builder(redisConnectionFactory)
             .enableStatistics()
@@ -48,11 +54,11 @@ class CacheConfiguration(
             .withCacheConfiguration(USER_INFO, standardConfig)
             .withCacheConfiguration(GROUP_MEMBERS, standardConfig)
             .withCacheConfiguration(ANSATTE_IN_ENHET, standardConfig)
-            .withCacheConfiguration(PERSON, standardConfig)
-            .withCacheConfiguration(SKJERMET, standardConfig)
-            .withCacheConfiguration(AKTOER_FOR_SAK, oneWeekConfig)
+            .withCacheConfiguration(PERSON, fourHoursConfig)
             .withCacheConfiguration(IDENT_TO_FNR, oneWeekConfig)
             .withCacheConfiguration(IDENT_TO_AKTOER_ID, oneWeekConfig)
+            .withCacheConfiguration(AKTOER_FOR_SAK, oneMonthConfig)
+            .withCacheConfiguration(SKJERMET, oneMonthConfig)
             .build()
     }
 }

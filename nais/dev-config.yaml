@@ -9,6 +9,8 @@ externalHosts:
 replicasMin: 2
 replicasMax: 2
 
+kafka_pool: nav-dev
+
 adRoles:
   - name: KABAL_OPPGAVESTYRING_ALLE_ENHETER_ROLE_ID
     value: 7ad08bfe-68d4-4c84-bddd-82d8894fb36e

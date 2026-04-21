@@ -8,6 +8,7 @@ val mockkVersion = "1.14.7"
 val tokenValidationVersion = "6.0.4"
 val logstashVersion = "9.0"
 val springDocVersion = "3.0.2"
+val confluentVersion = "8.2.0"
 
 plugins {
     val kotlinVersion = "2.3.20"
@@ -26,6 +27,7 @@ java {
 repositories {
     mavenCentral()
     maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
+    maven("https://packages.confluent.io/maven/")
 }
 
 dependencies {
@@ -40,6 +42,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.kafka:spring-kafka")
+    implementation("io.confluent:kafka-connect-avro-converter:${confluentVersion}") {
+        exclude(group = "io.swagger.core.v3", module = "swagger-annotations")
+    }
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")

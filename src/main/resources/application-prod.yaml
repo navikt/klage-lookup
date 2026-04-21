@@ -16,4 +16,6 @@ PDL_SCOPE: prod-fss.pdl.pdl-api
 
 SKJERMING_PIP_SCOPE: prod-gcp.nom.skjermede-personer-pip
 
+KABAL_API_SCOPE: prod-gcp.klage.kabal-api
+
 TENANT_ID: 62366534-1ec3-4962-8869-9b5535279d0b

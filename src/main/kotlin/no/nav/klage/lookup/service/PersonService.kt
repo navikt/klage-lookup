@@ -4,7 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.IDENT_TO_AKTOER_ID
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.IDENT_TO_FNR
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.PERSON
-import no.nav.klage.lookup.service.fpsak.FpsakService
+import no.nav.klage.lookup.service.kabalapi.KabalApiService
 import no.nav.klage.lookup.service.pdl.PdlFacade
 import no.nav.klage.lookup.service.pdl.Person
 import no.nav.klage.lookup.service.pdl.toPerson
@@ -12,6 +12,7 @@ import no.nav.klage.lookup.service.skjerming.SkjermingService
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
 import no.nav.klage.lookup.util.timedCall
+import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Service
@@ -19,8 +20,9 @@ import org.springframework.stereotype.Service
 @Service
 class PersonService(
     private val pdlFacade: PdlFacade,
-    private val fpsakService: FpsakService,
     private val skjermingService: SkjermingService,
+    private val kabalApiService: KabalApiService,
+    private val cacheManager: CacheManager,
     private val meterRegistry: MeterRegistry,
 ) {
     companion object {
@@ -53,4 +55,8 @@ class PersonService(
         return pdlFacade.getAktoerIdFromIdent(ident = ident)
     }
 
+    fun evictPerson(fnr: String) {
+        cacheManager.getCache(PERSON)!!.evict(fnr)
+        kabalApiService.setPersonProtectionChanged(fnr)
+    }
 }
