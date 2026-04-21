@@ -55,7 +55,7 @@ class AivenKafkaConfiguration(
     @Bean
     fun skjermedePersonerKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
-        factory.setConsumerFactory(sjermedePersonerConsumerFactory())
+        factory.setConsumerFactory(skjermedePersonerConsumerFactory())
         factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL
         factory.containerProperties.idleEventInterval = 3000L
         factory.setCommonErrorHandler(CommonLoggingErrorHandler())
@@ -85,7 +85,7 @@ class AivenKafkaConfiguration(
     }
 
     @Bean
-    fun sjermedePersonerConsumerFactory(): ConsumerFactory<String, String> {
+    fun skjermedePersonerConsumerFactory(): ConsumerFactory<String, String> {
         return DefaultKafkaConsumerFactory(skjermedePersonerConsumerProps())
     }
 
