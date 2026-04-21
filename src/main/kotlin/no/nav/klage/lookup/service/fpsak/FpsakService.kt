@@ -27,8 +27,8 @@ class FpsakService(
 
     @Cacheable(AKTOER_FOR_SAK)
     @Retryable
-    fun getPersongalleriForSak(saksnummer: String): List<String> {
-        val aktoerIdList = meterRegistry.timedCall(FPSAK_TIMER, ::getPersongalleriForSak.name) {
+    fun getPersongalleriFnrListForSak(saksnummer: String): List<String> {
+        val aktoerIdList = meterRegistry.timedCall(FPSAK_TIMER, ::getPersongalleriFnrListForSak.name) {
             fpsakClient.getAktoerForSak(
                 bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithFpsakScope()}",
                 saksnummer = saksnummer,

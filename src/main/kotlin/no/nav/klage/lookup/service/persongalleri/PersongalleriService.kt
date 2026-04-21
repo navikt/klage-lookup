@@ -23,7 +23,7 @@ class PersongalleriService(
             return PersongalleriResponse(foedselsnummerList = emptyList())
         }
 
-        val foedselsnummerList = fpsakService.getPersongalleriForSak(saksnummer = sak.sakId)
+        val foedselsnummerList = fpsakService.getPersongalleriFnrListForSak(saksnummer = sak.sakId)
         return PersongalleriResponse(foedselsnummerList = foedselsnummerList)
     }
 
