@@ -11,10 +11,10 @@ fun toPerson(
 
     return Person(
         foedselsnr = person.first,
-        fornavn = preferredName.fornavn,
-        mellomnavn = preferredName.mellomnavn,
-        etternavn = preferredName.etternavn,
-        sammensattNavn = preferredName.sammensattNavn(),
+        fornavn = preferredName?.fornavn ?: "mangler navn",
+        mellomnavn = preferredName?.mellomnavn,
+        etternavn = preferredName?.etternavn ?: "mangler etternavn",
+        sammensattNavn = preferredName?.sammensattNavn() ?: "mangler navn",
         strengtFortrolig = person.second.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG,
         strengtFortroligUtland = person.second.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG_UTLAND,
         fortrolig = person.second.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.FORTROLIG,
@@ -26,11 +26,11 @@ fun toPerson(
     )
 }
 
-private fun preferredName(person: PdlPerson): PdlPerson.Navn {
+private fun preferredName(person: PdlPerson): PdlPerson.Navn? {
     val preferredName = if (person.navn.size == 1) {
         person.navn.first()
     } else {
-        person.navn.firstOrNull { it.metadata.master.uppercase() == "PDL" } ?: person.navn.first()
+        person.navn.firstOrNull { it.metadata.master.uppercase() == "PDL" } ?: person.navn.firstOrNull()
     }
     return preferredName
 }
