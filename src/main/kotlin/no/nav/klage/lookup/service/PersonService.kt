@@ -39,7 +39,7 @@ class PersonService(
         return meterRegistry.timedCall(PERSON_TIMER, "getPerson") {
             toPerson(
                 person = fnr to pdlFacade.getPerson(fnr),
-                skjermingService = skjermingService,
+                skjermet = skjermingService.skjermet(foedselsnr = fnr),
             )
         }
     }
@@ -47,9 +47,23 @@ class PersonService(
     @Retryable
     fun getPersonBulk(fnrList: List<String>): PersonBulkResponse {
         return meterRegistry.timedCall(PERSON_TIMER, "getPersonBulk") {
+            val pdlResults = pdlFacade.getPersonBulk(fnrList = fnrList)
+            val resolvedIdents = pdlResults.mapNotNull { if (it.person != null) it.ident else null }
+            val skjermingMap = if (resolvedIdents.isNotEmpty()) {
+                skjermingService.skjermetBulk(foedselsnrList = resolvedIdents)
+            } else {
+                emptyMap()
+            }
+
+            val missingFromSkjerming = resolvedIdents.filterNot { skjermingMap.containsKey(it) }
+            if (missingFromSkjerming.isNotEmpty()) {
+                logger.warn("Skjerming bulk response missing ${missingFromSkjerming.size} of ${resolvedIdents.size} idents. See team-logs for details.")
+                teamLogger.warn("Skjerming bulk response missing idents: $missingFromSkjerming")
+            }
+
             val hits = mutableListOf<Person>()
             val misses = mutableListOf<String>()
-            pdlFacade.getPersonBulk(fnrList = fnrList).forEach { result ->
+            pdlResults.forEach { result ->
                 val pdlPerson = result.person
                 if (pdlPerson == null) {
                     logger.warn("No person returned from PDL for an ident in bulk request. See team-logs for details.")
@@ -58,7 +72,7 @@ class PersonService(
                 } else {
                     hits += toPerson(
                         person = result.ident to pdlPerson,
-                        skjermingService = skjermingService,
+                        skjermet = skjermingMap[result.ident] ?: false,
                     )
                 }
             }

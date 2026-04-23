@@ -1,11 +1,10 @@
 package no.nav.klage.lookup.service.pdl
 
 import no.nav.klage.lookup.service.pdl.graphql.PdlPerson
-import no.nav.klage.lookup.service.skjerming.SkjermingService
 
 fun toPerson(
     person: Pair<String, PdlPerson>,
-    skjermingService: SkjermingService,
+    skjermet: Boolean,
 ): Person {
     val preferredName = preferredName(person.second)
 
@@ -22,7 +21,7 @@ fun toPerson(
         vergemaalEllerFremtidsfullmakt = person.second.vergemaalEllerFremtidsfullmakt.isNotEmpty(),
         doed = person.second.doedsfall.firstOrNull()?.doedsdato,
         sikkerhetstiltak = person.second.sikkerhetstiltak.firstOrNull()?.mapToSikkerhetstiltak(),
-        egenAnsatt = skjermingService.skjermet(foedselsnr = person.first),
+        egenAnsatt = skjermet,
     )
 }
 

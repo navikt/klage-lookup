@@ -12,4 +12,10 @@ interface SkjermingClient {
         @RequestHeader(AUTHORIZATION) bearerToken: String,
         @RequestBody personident: SkjermingRequest,
     ): Boolean
+
+    @PostExchange("/skjermetBulk")
+    fun skjermetBulk(
+        @RequestHeader(AUTHORIZATION) bearerToken: String,
+        @RequestBody skjermingBulkRequest: SkjermingBulkRequest,
+    ): Map<String, Boolean>
 }

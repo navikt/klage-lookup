@@ -2,6 +2,7 @@ package no.nav.klage.lookup.service.skjerming
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.SKJERMET
+import no.nav.klage.lookup.config.skjerming.SkjermingBulkRequest
 import no.nav.klage.lookup.config.skjerming.SkjermingClient
 import no.nav.klage.lookup.config.skjerming.SkjermingRequest
 import no.nav.klage.lookup.service.kabalapi.KabalApiService
@@ -35,6 +36,15 @@ class SkjermingService(
             skjermingClient.skjermet(
                 bearerToken = tokenUtil.getAppAccessTokenWithSkjermingPipScope(),
                 personident = SkjermingRequest(personident = foedselsnr),
+            )
+        }
+
+    @Retryable
+    fun skjermetBulk(foedselsnrList: List<String>): Map<String, Boolean> =
+        meterRegistry.timedCall(SKJERMING_TIMER, "skjermetBulk") {
+            skjermingClient.skjermetBulk(
+                bearerToken = tokenUtil.getAppAccessTokenWithSkjermingPipScope(),
+                skjermingBulkRequest = SkjermingBulkRequest(personidenter = foedselsnrList),
             )
         }
 
