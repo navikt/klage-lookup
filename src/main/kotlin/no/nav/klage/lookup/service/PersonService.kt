@@ -1,6 +1,7 @@
 package no.nav.klage.lookup.service
 
 import io.micrometer.core.instrument.MeterRegistry
+import no.nav.klage.lookup.api.person.PersonBulkResponse
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.AKTOER_ID_TO_FNR
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.IDENT_TO_AKTOER_ID
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.PERSON
@@ -40,6 +41,28 @@ class PersonService(
                 person = fnr to pdlFacade.getPerson(fnr),
                 skjermingService = skjermingService,
             )
+        }
+    }
+
+    @Retryable
+    fun getPersonBulk(fnrList: List<String>): PersonBulkResponse {
+        return meterRegistry.timedCall(PERSON_TIMER, "getPersonBulk") {
+            val hits = mutableListOf<Person>()
+            val misses = mutableListOf<String>()
+            pdlFacade.getPersonBulk(fnrList = fnrList).forEach { result ->
+                val pdlPerson = result.person
+                if (pdlPerson == null) {
+                    logger.warn("No person returned from PDL for an ident in bulk request. See team-logs for details.")
+                    teamLogger.warn("No person returned from PDL for ident=${result.ident}, code=${result.code}")
+                    misses += result.ident
+                } else {
+                    hits += toPerson(
+                        person = result.ident to pdlPerson,
+                        skjermingService = skjermingService,
+                    )
+                }
+            }
+            PersonBulkResponse(hits = hits, misses = misses)
         }
     }
 

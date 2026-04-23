@@ -27,6 +27,16 @@ class PersonController(
         )
     }
 
+    @Operation(summary = "Get persons in bulk. Word of caution: client needs to have proper access control.")
+    @PostMapping("/person-bulk")
+    fun getPersonBulk(
+        @RequestBody input: PersonBulkRequest,
+    ): PersonBulkResponse {
+        return personService.getPersonBulk(
+            fnrList = input.fnrList,
+        )
+    }
+
     @Operation(summary = "Get fødselsnummer from ident.")
     @PostMapping("/foedselsnummer")
     fun getFoedselsnummerFromIdent(
