@@ -1,6 +1,7 @@
 package no.nav.klage.lookup.service.skjerming
 
 import io.micrometer.core.instrument.MeterRegistry
+import no.nav.klage.lookup.config.CacheConfiguration.Companion.PERSON
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.SKJERMET
 import no.nav.klage.lookup.config.skjerming.SkjermingBulkRequest
 import no.nav.klage.lookup.config.skjerming.SkjermingClient
@@ -49,12 +50,15 @@ class SkjermingService(
         }
 
     fun updateSkjermetPerson(foedselsnr: String, skjermetPerson: SkjermetPerson) {
+        logger.debug("Update skjermet person in cache, and notify kabal-api.")
         cacheManager.getCache(SKJERMET)!!.put(foedselsnr, skjermetPerson.skjermet())
+        cacheManager.getCache(PERSON)!!.evictIfPresent(foedselsnr)
         kabalApiService.setPersonProtectionChanged(foedselsnr)
     }
 
     fun removeSkjermetPerson(foedselsnr: String) {
-        cacheManager.getCache(SKJERMET)!!.evict(foedselsnr)
+        logger.debug("Removing skjermet person from cache, and notify kabal-api.")
+        cacheManager.getCache(SKJERMET)!!.evictIfPresent(foedselsnr)
         kabalApiService.setPersonProtectionChanged(foedselsnr)
     }
 }

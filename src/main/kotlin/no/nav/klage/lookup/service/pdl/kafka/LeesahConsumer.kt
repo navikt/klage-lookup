@@ -38,7 +38,7 @@ class LeesahConsumer(
         val fnr = personhendelse.fnr
         if (personhendelse.isRelevantForOurCache) {
             logger.debug("Personhendelse is possibly relevant for our cache. Evicting person from cache.")
-            personService.evictPerson(fnr)
+            personService.evictPerson(fnr = fnr, protectionChange = personhendelse.isAdressebeskyttelse)
         }
     }
 }

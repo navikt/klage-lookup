@@ -92,8 +92,11 @@ class PersonService(
         return pdlFacade.getAktoerIdFromIdent(ident = ident)
     }
 
-    fun evictPerson(fnr: String) {
-        cacheManager.getCache(PERSON)!!.evict(fnr)
-        kabalApiService.setPersonProtectionChanged(fnr)
+    fun evictPerson(fnr: String, protectionChange: Boolean) {
+        cacheManager.getCache(PERSON)!!.evictIfPresent((fnr))
+        if (protectionChange) {
+            logger.debug("Notify kabal-api about person changed due to 'protection' changed")
+            kabalApiService.setPersonProtectionChanged(fnr)
+        }
     }
 }

@@ -36,6 +36,7 @@ class SkjermedePersonerKafkaConsumer(
     fun listen(skjermetPersonRecord: ConsumerRecord<String, String?>) {
         runCatching {
             val foedselsnr = skjermetPersonRecord.key()
+            logger.debug("Received skjermet person record. Processing.")
             //Handle tombstone
             if (skjermetPersonRecord.value() == null) {
                 skjermingService.removeSkjermetPerson(foedselsnr)
