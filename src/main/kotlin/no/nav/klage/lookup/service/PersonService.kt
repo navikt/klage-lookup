@@ -93,7 +93,12 @@ class PersonService(
     }
 
     fun evictPerson(fnr: String, protectionChange: Boolean) {
-        cacheManager.getCache(PERSON)!!.evictIfPresent((fnr))
+        val foundAndEvicted = cacheManager.getCache(PERSON)!!.evictIfPresent((fnr))
+
+        if (foundAndEvicted) {
+            logger.debug("Evicted person from cache.")
+        }
+
         if (protectionChange) {
             logger.debug("Notify kabal-api about person changed due to 'protection' changed")
             kabalApiService.setPersonProtectionChanged(fnr)
