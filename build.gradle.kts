@@ -4,10 +4,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val testContainersVersion = "2.0.4"
 val klageKodeverkVersion = "3.2.11"
 val springMockkVersion = "5.0.1"
-val mockkVersion = "1.14.7"
+val mockkVersion = "1.14.9"
 val tokenValidationVersion = "6.0.4"
 val logstashVersion = "9.0"
-val springDocVersion = "3.0.2"
+val springDocVersion = "3.0.3"
 val confluentVersion = "8.2.0"
 
 plugins {
