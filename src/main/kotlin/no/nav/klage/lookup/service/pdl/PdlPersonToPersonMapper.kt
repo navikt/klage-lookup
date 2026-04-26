@@ -1,21 +1,19 @@
 package no.nav.klage.lookup.service.pdl
 
 import no.nav.klage.lookup.service.pdl.graphql.PdlPerson
-import no.nav.klage.lookup.service.skjerming.SkjermingService
 
 fun toPerson(
     person: Pair<String, PdlPerson>,
-    relevantFamilyMembers: Map<String, PdlPerson>,
-    skjermingService: SkjermingService,
+    skjermet: Boolean,
 ): Person {
     val preferredName = preferredName(person.second)
 
     return Person(
         foedselsnr = person.first,
-        fornavn = preferredName.fornavn,
-        mellomnavn = preferredName.mellomnavn,
-        etternavn = preferredName.etternavn,
-        sammensattNavn = preferredName.sammensattNavn(),
+        fornavn = preferredName?.fornavn ?: "mangler navn",
+        mellomnavn = preferredName?.mellomnavn,
+        etternavn = preferredName?.etternavn ?: "mangler etternavn",
+        sammensattNavn = preferredName?.sammensattNavn() ?: "mangler navn",
         strengtFortrolig = person.second.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG,
         strengtFortroligUtland = person.second.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG_UTLAND,
         fortrolig = person.second.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.FORTROLIG,
@@ -23,36 +21,15 @@ fun toPerson(
         vergemaalEllerFremtidsfullmakt = person.second.vergemaalEllerFremtidsfullmakt.isNotEmpty(),
         doed = person.second.doedsfall.firstOrNull()?.doedsdato,
         sikkerhetstiltak = person.second.sikkerhetstiltak.firstOrNull()?.mapToSikkerhetstiltak(),
-        egenAnsatt = skjermingService.skjermet(foedselsnr = person.first),
-        protectedFamilyMembers = relevantFamilyMembers.filter { familyMember ->
-            familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.FORTROLIG ||
-            familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG ||
-            familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG_UTLAND ||
-            skjermingService.skjermet(foedselsnr = familyMember.key)
-        }.map { familyMember ->
-            val preferredFamilyName = preferredName(familyMember.value)
-            Person.ProtectedFamilyMember(
-                foedselsnr = familyMember.key,
-                fornavn = preferredFamilyName.fornavn,
-                mellomnavn = preferredFamilyName.mellomnavn,
-                etternavn = preferredFamilyName.etternavn,
-                sammensattNavn = preferredFamilyName.sammensattNavn(),
-                kjoenn = familyMember.value.kjoenn.firstOrNull()?.kjoenn?.name,
-                doed = familyMember.value.doedsfall.firstOrNull()?.doedsdato,
-                strengtFortrolig = familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG,
-                strengtFortroligUtland = familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.STRENGT_FORTROLIG_UTLAND,
-                fortrolig = familyMember.value.adressebeskyttelse.firstOrNull()?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.FORTROLIG,
-                egenAnsatt = skjermingService.skjermet(foedselsnr = familyMember.key),
-            )
-        }
+        egenAnsatt = skjermet,
     )
 }
 
-private fun preferredName(person: PdlPerson): PdlPerson.Navn {
+private fun preferredName(person: PdlPerson): PdlPerson.Navn? {
     val preferredName = if (person.navn.size == 1) {
         person.navn.first()
     } else {
-        person.navn.firstOrNull { it.metadata.master.uppercase() == "PDL" } ?: person.navn.first()
+        person.navn.firstOrNull { it.metadata.master.uppercase() == "PDL" } ?: person.navn.firstOrNull()
     }
     return preferredName
 }

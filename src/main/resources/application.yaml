@@ -107,6 +107,14 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-jwk: ${AZURE_APP_JWK}
           client-auth-method: private_key_jwt
+      kabal-api-maskintilmaskin:
+        token-endpoint-url: https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://${KABAL_API_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-jwk: ${AZURE_APP_JWK}
+          client-auth-method: private_key_jwt
       nom-maskintilmaskin:
         token-endpoint-url: https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
@@ -121,5 +129,9 @@ TILGANGSMASKINEN_BASE_URL: http://populasjonstilgangskontroll.tilgangsmaskin
 ENTRA_PROXY_BASE_URL: http://entra-proxy.sikkerhetstjenesten
 MICROSOFT_GRAPH_URL: https://graph.microsoft.com/v1.0
 SKJERMING_BASE_URL: http://skjermede-personer-pip.nom
+KABAL_API_BASE_URL: http://kabal-api
+
+SKJERMEDE_PERSONER_KAFKA_TOPIC: nom.skjermede-personer-v1
+LEESAH_KAFKA_TOPIC: pdl.leesah-v1
 
 STANDARD_TTL_SECONDS: 600

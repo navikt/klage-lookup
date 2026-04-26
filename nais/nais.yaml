@@ -23,6 +23,8 @@ spec:
         {{/each}}
         extra:
           - NAVident
+  kafka:
+    pool: {{kafka_pool}}
   port: 8080
   startup:
     failureThreshold: 5
@@ -74,6 +76,7 @@ spec:
           namespace: sikkerhetstjenesten
         - application: skjermede-personer-pip
           namespace: nom
+        - application: kabal-api
         - application: logging
           namespace: nais-system
       external:
