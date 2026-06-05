@@ -123,6 +123,22 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-jwk: ${AZURE_APP_JWK}
           client-auth-method: private_key_jwt
+      regoppslag-onbehalfof:
+        token-endpoint-url: https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://${REGOPPSLAG_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-jwk: ${AZURE_APP_JWK}
+          client-auth-method: private_key_jwt
+      regoppslag-maskintilmaskin:
+        token-endpoint-url: https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://${REGOPPSLAG_SCOPE}/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-jwk: ${AZURE_APP_JWK}
+          client-auth-method: private_key_jwt
 
 
 TILGANGSMASKINEN_BASE_URL: http://populasjonstilgangskontroll.tilgangsmaskin
@@ -135,3 +151,4 @@ SKJERMEDE_PERSONER_KAFKA_TOPIC: nom.skjermede-personer-v1
 LEESAH_KAFKA_TOPIC: pdl.leesah-v1
 
 STANDARD_TTL_SECONDS: 600
+BEHANDLINGSNUMMER: B392

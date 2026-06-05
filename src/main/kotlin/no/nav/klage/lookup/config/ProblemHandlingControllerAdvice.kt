@@ -2,6 +2,7 @@ package no.nav.klage.lookup.config
 
 import no.nav.klage.lookup.service.nom.NomAnsattNotFoundException
 import no.nav.klage.lookup.service.pdl.PDLPersonNotFoundException
+import no.nav.klage.lookup.service.regoppslag.*
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
 import org.springframework.http.HttpStatus
@@ -44,6 +45,55 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
         ex: NomAnsattNotFoundException,
     ): ProblemDetail {
         return create(HttpStatus.NOT_FOUND, ex)
+    }
+
+    @ExceptionHandler
+    fun handleRegoppslagAdresseFiltrert(
+        ex: RegoppslagAdresseFiltrertException,
+    ): ProblemDetail {
+        return create(HttpStatus.NO_CONTENT, ex)
+    }
+
+    @ExceptionHandler
+    fun handleRegoppslagUgyldigInput(
+        ex: RegoppslagUgyldigInputException,
+    ): ProblemDetail {
+        return create(HttpStatus.BAD_REQUEST, ex)
+    }
+
+    @ExceptionHandler
+    fun handleRegoppslagIngenTilgang(
+        ex: RegoppslagIngenTilgangException,
+    ): ProblemDetail {
+        return create(HttpStatus.UNAUTHORIZED, ex)
+    }
+
+    @ExceptionHandler
+    fun handleRegoppslagTilgangAvvist(
+        ex: RegoppslagTilgangAvvistException,
+    ): ProblemDetail {
+        return create(HttpStatus.FORBIDDEN, ex)
+    }
+
+    @ExceptionHandler
+    fun handleRegoppslagUkjentAdresse(
+        ex: RegoppslagUkjentAdresseException,
+    ): ProblemDetail {
+        return create(HttpStatus.NOT_FOUND, ex)
+    }
+
+    @ExceptionHandler
+    fun handleRegoppslagPersonDoed(
+        ex: RegoppslagPersonDoedException,
+    ): ProblemDetail {
+        return create(HttpStatus.GONE, ex)
+    }
+
+    @ExceptionHandler
+    fun handleRegoppslagInternTekniskFeil(
+        ex: RegoppslagInternTekniskFeilException,
+    ): ProblemDetail {
+        return create(HttpStatus.INTERNAL_SERVER_ERROR, ex)
     }
 
     private fun create(httpStatus: HttpStatus, ex: Exception): ProblemDetail {
