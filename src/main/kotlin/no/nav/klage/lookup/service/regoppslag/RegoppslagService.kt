@@ -6,6 +6,7 @@ import no.nav.klage.lookup.api.postadresse.PostadresseResponse
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.POSTADRESSE
 import no.nav.klage.lookup.config.regoppslag.RegoppslagClient
 import no.nav.klage.lookup.util.TokenUtil
+import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.timedCall
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
@@ -29,10 +30,13 @@ class RegoppslagService(
         private const val UKJENT_ADRESSE = "Person / organisasjon har ukjent adresse."
         private const val PERSON_ER_DOED = "Person er død og har ukjent adresse."
         private const val INTERN_TEKNISK_FEIL = "Intern teknisk feil i postadresse tjenesten."
+
+        private val logger = getLogger(javaClass.enclosingClass)
     }
 
     @Cacheable(POSTADRESSE)
     fun getPostadresse(request: PostadresseRequest): PostadresseResponse {
+        logger.debug("Getting postadresse")
         val useObo = tokenUtil.getIdent() != null
         val bearerToken = if (useObo) {
             "Bearer ${tokenUtil.getOnBehalfOfTokenWithRegoppslagScope()}"
