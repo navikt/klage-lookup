@@ -1,30 +1,8 @@
 package no.nav.klage.lookup.api.postadresse
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
-
 data class PostadresseRequest(
     val ident: String,
-    val filtrerAdressebeskyttelse: List<Adressebeskyttelse>? = emptyList(),
 )
-
-enum class Adressebeskyttelse(
-    @get:JsonValue
-    val value: String,
-) {
-    FORTROLIG("fortrolig"),
-    STRENGT_FORTROLIG("strengt_fortrolig"),
-    STRENGT_FORTROLIG_UTLAND("strengt_fortrolig_utland");
-
-    companion object {
-        @JvmStatic
-        @JsonCreator
-        fun fromValue(value: String): Adressebeskyttelse {
-            return entries.firstOrNull { it.value == value }
-                ?: throw IllegalArgumentException("Ugyldig verdi for filtrerAdressebeskyttelse: $value")
-        }
-    }
-}
 
 data class PostadresseResponse(
     val navn: String?,
