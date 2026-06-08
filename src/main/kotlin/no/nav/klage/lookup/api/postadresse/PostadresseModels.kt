@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 
 data class PostadresseRequest(
     val ident: String,
-    val filtrerAdressebeskyttelse: List<Adressebeskyttelse> = emptyList(),
+    val filtrerAdressebeskyttelse: List<Adressebeskyttelse>? = emptyList(),
 )
 
 enum class Adressebeskyttelse(
