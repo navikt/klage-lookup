@@ -1,13 +1,15 @@
 package no.nav.klage.lookup.api.postadresse
 
+import java.io.Serializable
+
 data class PostadresseRequest(
     val ident: String,
-)
+) : Serializable
 
 data class PostadresseResponse(
     val navn: String?,
     val adresse: Postadresse?,
-)
+) : Serializable
 
 data class Postadresse(
     val adresseKilde: String?,
@@ -19,5 +21,5 @@ data class Postadresse(
     val poststed: String?,
     val landkode: String?,
     val land: String?,
-)
+) : Serializable
 
