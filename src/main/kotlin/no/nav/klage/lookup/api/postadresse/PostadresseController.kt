@@ -16,7 +16,7 @@ class PostadresseController(
     private val regoppslagService: RegoppslagService,
 ) {
 
-    @Operation(summary = "Hent postadresse")
+    @Operation(summary = "Hent postadresse for oppgitt bruker")
     @PostMapping("/postadresse")
     fun getPostadresse(
         @RequestBody input: PostadresseRequest,
