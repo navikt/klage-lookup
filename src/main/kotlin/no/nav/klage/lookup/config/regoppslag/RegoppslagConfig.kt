@@ -1,4 +1,4 @@
-package no.nav.klage.lookup.config.pdl
+package no.nav.klage.lookup.config.regoppslag
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -9,19 +9,18 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 import org.springframework.web.service.invoker.createClient
 
 @Configuration
-class PdlConfig {
+class RegoppslagConfig {
 
     @Bean
-    fun pdlClient(
-        @Value($$"${PDL_BASE_URL}")
-        pdlUrl: String,
+    fun regoppslagClient(
+        @Value($$"${REGOPPSLAG_URL}")
+        regoppslagUrl: String,
         @Value($$"${BEHANDLINGSNUMMER}")
         behandlingsnummer: String,
-    ): PdlClient {
-        //https://behandlingskatalog.ansatt.nav.no/process/system/KABAL/478cac88-3dde-4abe-aab9-c0bb5c06c083?
+    ): RegoppslagClient {
+
         val restClient = RestClient.builder()
-            .baseUrl(pdlUrl)
-            .defaultHeader("TEMA", "KLA")
+            .baseUrl(regoppslagUrl)
             .defaultHeader("behandlingsnummer", behandlingsnummer)
             .build()
 
@@ -30,6 +29,6 @@ class PdlConfig {
             .exchangeAdapter(RestClientAdapter.create(restClient))
             .build()
 
-        return proxyFactory.createClient<PdlClient>()
+        return proxyFactory.createClient<RegoppslagClient>()
     }
 }

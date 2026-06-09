@@ -19,6 +19,7 @@ class CacheConfiguration(
 
     companion object {
         const val ACCESS_TO_PERSON = "accessToPerson"
+        const val POSTADRESSE = "postadresse"
         const val USERS_GROUPS = "usersGroups"
         const val USER_INFO = "userInfo"
         const val USER_SLUTTDATO = "userSluttdato"
@@ -51,6 +52,7 @@ class CacheConfiguration(
             .enableStatistics()
             .cacheDefaults(defaultConfig)
             .withCacheConfiguration(ACCESS_TO_PERSON, standardConfig)
+            .withCacheConfiguration(POSTADRESSE, standardConfig)
             .withCacheConfiguration(USERS_GROUPS, standardConfig)
             .withCacheConfiguration(USER_INFO, standardConfig)
             .withCacheConfiguration(USER_SLUTTDATO, standardConfig)

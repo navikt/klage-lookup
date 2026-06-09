@@ -84,6 +84,18 @@ class TokenUtil(
         return response.access_token!!
     }
 
+    fun getOnBehalfOfTokenWithRegoppslagScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["regoppslag-onbehalfof"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
+    fun getAppAccessTokenWithRegoppslagScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["regoppslag-maskintilmaskin"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
     fun getIdent(): String? =
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("NAVident")?.toString()
