@@ -1,7 +1,7 @@
 package no.nav.klage.lookup.config
 
-import no.nav.klage.lookup.api.access.AccessToPersonController
-import org.springdoc.core.models.GroupedOpenApi
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Info
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -9,11 +9,12 @@ import org.springframework.context.annotation.Configuration
 class OpenApiConfig {
 
     @Bean
-    fun api(): GroupedOpenApi {
-        return GroupedOpenApi.builder()
-            .packagesToScan(AccessToPersonController::class.java.packageName)
-            .group("access")
-            .pathsToMatch("/**")
-            .build()
+    fun openApi(): OpenAPI {
+        return OpenAPI()
+            .info(
+                Info()
+                    .title("klage-lookup")
+                    .description("API for klage-lookup")
+            )
     }
 }
