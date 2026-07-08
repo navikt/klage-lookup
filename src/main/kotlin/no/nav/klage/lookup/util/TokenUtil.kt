@@ -54,6 +54,12 @@ class TokenUtil(
         return response.access_token!!
     }
 
+    fun getAppAccessTokenWithMicrosoftGraphScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["azure-maskintilmaskin"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
     fun getSaksbehandlerAccessTokenWithPdlScope(): String {
         val clientProperties = clientConfigurationProperties.registration["pdl-onbehalfof"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)

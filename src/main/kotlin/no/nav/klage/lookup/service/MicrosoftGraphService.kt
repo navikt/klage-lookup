@@ -34,8 +34,12 @@ class MicrosoftGraphService(
         excludes = [EnhetNotFoundException::class]
     )
     fun getAnsatteInEnhet(enhetsnummer: String): MicrosoftGraphUserList {
-
-        val bearerToken = "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithMicrosoftGraphScope()}"
+        val useObo = tokenUtil.getIdent() != null
+        val bearerToken = if (useObo) {
+            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithMicrosoftGraphScope()}"
+        } else {
+            "Bearer ${tokenUtil.getAppAccessTokenWithMicrosoftGraphScope()}"
+        }
 
         val ansattList = try {
             meterRegistry.timedCall(MICROSOFT_GRAPH_TIMER, "ansatteInEnhet") {
