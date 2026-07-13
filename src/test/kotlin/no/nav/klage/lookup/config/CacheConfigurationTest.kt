@@ -61,6 +61,7 @@ class CacheConfigurationTest {
 
         assertThat(cacheNames).containsExactlyInAnyOrder(
             CacheConfiguration.ACCESS_TO_PERSON,
+            CacheConfiguration.KAN_REPRESENTERE,
             CacheConfiguration.USERS_GROUPS,
             CacheConfiguration.USER_INFO,
             CacheConfiguration.USER_SLUTTDATO,
