@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager
+import org.springframework.cache.get
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -73,14 +74,13 @@ class ReprApiServiceTest {
 
     @Test
     fun `kanRepresentere caches response separately per TokenX subject`() {
-        //TODO: Juster denne testen, den er uoversiktlig nå.
         AnnotationConfigApplicationContext(CachingTestConfig::class.java).use { context ->
             val service = context.getBean(ReprApiService::class.java)
             val client = context.getBean(ReprApiClient::class.java)
             val tokenUtil = context.getBean(TokenUtil::class.java)
             val cacheManager = context.getBean(CacheManager::class.java)
 
-            val firstSubjectResponse = RepresentasjonsforholdDto(
+            val expectedFirstSubjectResponse = RepresentasjonsforholdDto(
                 fullmakt = listOf(
                     FullmaktsforholdDto(
                         fullmaktsgiver = "12345678901",
@@ -92,7 +92,7 @@ class ReprApiServiceTest {
                 vergemaal = emptyList(),
             )
 
-            val secondSubjectResponse = RepresentasjonsforholdDto(
+            val expectedSecondSubjectResponse = RepresentasjonsforholdDto(
                 fullmakt = emptyList(),
                 vergemaal = listOf(
                     VergemaalsforholdDto(
@@ -104,41 +104,44 @@ class ReprApiServiceTest {
                 ),
             )
 
-            every { tokenUtil.getSubjectFromTokenXToken() } returnsMany listOf(
-                "12345678901",
-                "12345678901",
-                "01987654321",
-                "01987654321",
-            )
-            every { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() } returnsMany listOf(
-                "token-x-obo-1",
-                "token-x-obo-2",
-            )
-            every { client.kanRepresentere("Bearer token-x-obo-1") } returns firstSubjectResponse
-            every { client.kanRepresentere("Bearer token-x-obo-2") } returns secondSubjectResponse
+            every { tokenUtil.getSubjectFromTokenXToken() } returns "12345678901"
+            every { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() } returns "token-x-obo-1"
+            every { client.kanRepresentere("Bearer token-x-obo-1") } returns expectedFirstSubjectResponse
 
-            val firstSubjectFirstCall = service.kanRepresentere()
-            val firstSubjectSecondCall = service.kanRepresentere()
-            val secondSubjectFirstCall = service.kanRepresentere()
-            val secondSubjectSecondCall = service.kanRepresentere()
+            val firstResponse = service.kanRepresentere()
+            assertThat(firstResponse).isEqualTo(expectedFirstSubjectResponse)
 
-            assertThat(firstSubjectFirstCall).isEqualTo(firstSubjectResponse)
-            assertThat(firstSubjectSecondCall).isEqualTo(firstSubjectResponse)
-            assertThat(secondSubjectFirstCall).isEqualTo(secondSubjectResponse)
-            assertThat(secondSubjectSecondCall).isEqualTo(secondSubjectResponse)
+            val secondResponse = service.kanRepresentere()
+            assertThat(secondResponse).isEqualTo(expectedFirstSubjectResponse)
+
             assertThat(
                 cacheManager.getCache(KAN_REPRESENTERE)
-                    ?.get("kanRepresentere:12345678901", RepresentasjonsforholdDto::class.java)
-            ).isEqualTo(firstSubjectResponse)
+                    ?.get<RepresentasjonsforholdDto>("kanRepresentere:12345678901")
+            ).isEqualTo(expectedFirstSubjectResponse)
+
+            verify(exactly = 1) { client.kanRepresentere("Bearer token-x-obo-1") }
+
+            every { tokenUtil.getSubjectFromTokenXToken() } returns "01987654321"
+            every { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() } returns "token-x-obo-2"
+            every { client.kanRepresentere("Bearer token-x-obo-2") } returns expectedSecondSubjectResponse
+
+            val thirdResponse = service.kanRepresentere()
+            assertThat(thirdResponse).isEqualTo(expectedSecondSubjectResponse)
+
+            val fourthResponse = service.kanRepresentere()
+            assertThat(fourthResponse).isEqualTo(expectedSecondSubjectResponse)
+
             assertThat(
                 cacheManager.getCache(KAN_REPRESENTERE)
-                    ?.get("kanRepresentere:01987654321", RepresentasjonsforholdDto::class.java)
-            ).isEqualTo(secondSubjectResponse)
+                    ?.get<RepresentasjonsforholdDto>("kanRepresentere:01987654321")
+            ).isEqualTo(expectedSecondSubjectResponse)
+
+            verify(exactly = 1) { client.kanRepresentere("Bearer token-x-obo-2") }
+
+            every { client.kanRepresentere("Bearer token-x-obo-2") } returns expectedSecondSubjectResponse
 
             verify(exactly = 4) { tokenUtil.getSubjectFromTokenXToken() }
             verify(exactly = 2) { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() }
-            verify(exactly = 1) { client.kanRepresentere("Bearer token-x-obo-1") }
-            verify(exactly = 1) { client.kanRepresentere("Bearer token-x-obo-2") }
         }
     }
 
