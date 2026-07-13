@@ -102,6 +102,12 @@ class TokenUtil(
         return response.access_token!!
     }
 
+    fun getOnBehalfOfFromTokenXTokenWithReprApiScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["repr-api-token-x-onbehalfof"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
     fun getIdent(): String? =
         tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
             ?.jwtTokenClaims?.get("NAVident")?.toString()
