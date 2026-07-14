@@ -16,11 +16,11 @@ class TokenUtil(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val tokenXIssuer = "tokenx"
     }
 
     fun getSubjectFromTokenXToken(): String {
-        return tokenValidationContextHolder.getTokenValidationContext().getClaims(tokenXIssuer).getStringClaim("pid")
+        return tokenValidationContextHolder.getTokenValidationContext().getClaims(SecurityConfiguration.TOKEN_X)
+            .getStringClaim("pid")
     }
 
     fun getSaksbehandlerAccessTokenWithTilgangsmaskinenScope(): String {

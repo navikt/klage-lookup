@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@ProtectedWithClaims(issuer = SecurityConfiguration.TOKEN_X)
+@ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
 @RestController
 @RequestMapping
 class PostadresseController(
