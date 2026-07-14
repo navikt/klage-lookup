@@ -70,6 +70,7 @@ spec:
         - application: kabal-search
         - application: kabin-api
         - application: kaka-api
+        - application: klage-dittnav-api
         - application: tokenx-token-generator
           namespace: nais
     outbound:

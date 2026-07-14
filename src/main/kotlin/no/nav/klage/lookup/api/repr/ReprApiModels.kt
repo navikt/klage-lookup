@@ -2,7 +2,6 @@ package no.nav.klage.lookup.api.repr
 
 import java.io.Serializable
 
-//TODO: Håndter tema
 data class RepresentasjonsforholdDto(
     val fullmakt: List<FullmaktsforholdDto>,
     val vergemaal: List<VergemaalsforholdDto>,
