@@ -33,6 +33,9 @@ no.nav.security.jwt:
   issuer.aad:
     discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
     accepted_audience: ${AZURE_APP_CLIENT_ID}
+  issuer.tokenx:
+    discoveryurl: ${TOKEN_X_WELL_KNOWN_URL}
+    accepted_audience: ${TOKEN_X_CLIENT_ID}
   client:
     registration:
       azure-onbehalfof:
@@ -148,12 +151,27 @@ no.nav.security.jwt:
           client-jwk: ${AZURE_APP_JWK}
           client-auth-method: private_key_jwt
 
+          #TokenX
+      repr-api-token-x-onbehalfof:
+        token-endpoint-url: ${TOKEN_X_TOKEN_ENDPOINT}
+        grant_type: urn:ietf:params:oauth:grant-type:token-exchange
+        client_assertion_type: urn:ietf:params:oauth:client-assertion-type:jwt-bearer
+        subject_token_type: urn:ietf:params:oauth:token-type:jwt
+        audience: ${REPR_API_AUDIENCE}
+        authentication:
+          client-id: ${TOKEN_X_CLIENT_ID}
+          client-jwk: ${TOKEN_X_PRIVATE_JWK}
+          client-auth-method: private_key_jwt
+        token-exchange:
+          audience: ${REPR_API_AUDIENCE}
+
 
 TILGANGSMASKINEN_BASE_URL: http://populasjonstilgangskontroll.tilgangsmaskin
 ENTRA_PROXY_BASE_URL: http://entra-proxy.sikkerhetstjenesten
 MICROSOFT_GRAPH_URL: https://graph.microsoft.com/v1.0
 SKJERMING_BASE_URL: http://skjermede-personer-pip.nom
 KABAL_API_BASE_URL: http://kabal-api
+REPR_API_BASE_URL: http://repr-api.repr
 
 SKJERMEDE_PERSONER_KAFKA_TOPIC: nom.skjermede-personer-v1
 LEESAH_KAFKA_TOPIC: pdl.leesah-v1

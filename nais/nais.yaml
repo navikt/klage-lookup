@@ -23,6 +23,8 @@ spec:
         {{/each}}
         extra:
           - NAVident
+  tokenx:
+    enabled: true
   kafka:
     pool: {{kafka_pool}}
   port: 8080
@@ -68,6 +70,9 @@ spec:
         - application: kabal-search
         - application: kabin-api
         - application: kaka-api
+        - application: klage-dittnav-api
+        - application: tokenx-token-generator
+          namespace: nais
     outbound:
       rules:
         - application: populasjonstilgangskontroll
@@ -79,6 +84,8 @@ spec:
         - application: kabal-api
         - application: logging
           namespace: nais-system
+        - application: repr-api
+          namespace: repr
       external:
         - host: login.microsoftonline.com
       {{#each externalHosts}}

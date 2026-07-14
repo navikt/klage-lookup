@@ -18,6 +18,11 @@ class TokenUtil(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
+    fun getSubjectFromTokenXToken(): String {
+        return tokenValidationContextHolder.getTokenValidationContext().getClaims(SecurityConfiguration.TOKEN_X)
+            .getStringClaim("pid")
+    }
+
     fun getSaksbehandlerAccessTokenWithTilgangsmaskinenScope(): String {
         val clientProperties = clientConfigurationProperties.registration["tilgangsmaskinen-onbehalfof"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
@@ -98,6 +103,12 @@ class TokenUtil(
 
     fun getAppAccessTokenWithRegoppslagScope(): String {
         val clientProperties = clientConfigurationProperties.registration["regoppslag-maskintilmaskin"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
+    fun getOnBehalfOfFromTokenXTokenWithReprApiScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["repr-api-token-x-onbehalfof"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
         return response.access_token!!
     }
