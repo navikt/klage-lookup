@@ -1,7 +1,8 @@
 package no.nav.klage.lookup.service.reprapi
 
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.klage.lookup.api.repr.RepresentasjonsforholdDto
+import no.nav.klage.lookup.api.repr.RepresentasjonsforholdView
+import no.nav.klage.lookup.api.repr.toRepresentasjonsforholdView
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.KAN_REPRESENTERE
 import no.nav.klage.lookup.config.reprapi.ReprApiClient
 import no.nav.klage.lookup.util.TokenUtil
@@ -21,12 +22,12 @@ class ReprApiService(
     }
 
     @Cacheable(value = [KAN_REPRESENTERE], key = "#root.target.cacheKeyForKanRepresentere()")
-    fun kanRepresentere(): RepresentasjonsforholdDto {
+    fun kanRepresentere(): RepresentasjonsforholdView {
         return meterRegistry.timedCall(REPR_API_TIMER, ::kanRepresentere.name) {
             reprApiClient.kanRepresentere(
                 bearerToken = "Bearer ${tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope()}",
             )
-        }
+        }.toRepresentasjonsforholdView()
     }
 
     fun cacheKeyForKanRepresentere(): String {

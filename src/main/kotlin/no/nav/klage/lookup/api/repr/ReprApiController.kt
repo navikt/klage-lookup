@@ -17,7 +17,7 @@ class ReprApiController(
 
     @Operation(summary = "Hent representasjonsforhold for innlogget bruker, fungerer for sluttbruker med token-x-innlogging")
     @GetMapping("/representasjon/ekstern/kan-representere")
-    fun getRepresentasjonsforhold(): RepresentasjonsforholdDto {
+    fun getRepresentasjonsforhold(): RepresentasjonsforholdView {
         return reprApiService.kanRepresentere()
     }
 }
