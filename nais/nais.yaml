@@ -71,6 +71,7 @@ spec:
         - application: kabin-api
         - application: kaka-api
         - application: klage-dittnav-api
+        - application: klage-arkiver-journalpost
         - application: tokenx-token-generator
           namespace: nais
     outbound:
