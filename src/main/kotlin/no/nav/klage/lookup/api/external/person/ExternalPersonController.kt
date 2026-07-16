@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController
 @ProtectedWithClaims(issuer = SecurityConfiguration.TOKEN_X, claimMap = ["acr=Level4"])
 @RestController
 @RequestMapping
-class PersonController(
+class ExternalPersonController(
     private val personService: PersonService,
 ) {
     @Operation(summary = "Get person info. Only accessible for reflective operation on logged in user and fullmektige.")
-    @PostMapping("/person")
+    @PostMapping("/external/person")
     fun getPerson(
         @RequestBody input: ExternalPersonRequest,
     ): ExternalPersonResponse {
