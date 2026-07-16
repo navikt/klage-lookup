@@ -27,6 +27,7 @@ class CacheConfiguration(
         const val GROUP_MEMBERS = "groupMembers"
         const val ANSATTE_IN_ENHET = "ansatteInEnhet"
         const val PERSON = "person"
+        const val PERSON_EXTERNAL = "personExternal"
         const val SKJERMET = "skjermet"
         const val AKTOER_FOR_SAK = "aktoerForSak"
         const val AKTOER_ID_TO_FNR = "aktoerIdToFnr"

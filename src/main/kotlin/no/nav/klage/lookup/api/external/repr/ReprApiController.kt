@@ -1,4 +1,4 @@
-package no.nav.klage.lookup.api.repr
+package no.nav.klage.lookup.api.external.repr
 
 import io.swagger.v3.oas.annotations.Operation
 import no.nav.klage.lookup.config.SecurityConfiguration
@@ -16,7 +16,7 @@ class ReprApiController(
 ) {
 
     @Operation(summary = "Hent representasjonsforhold for innlogget bruker, fungerer for sluttbruker med token-x-innlogging")
-    @GetMapping("/representasjon/ekstern/kan-representere")
+    @GetMapping("ekstern/representasjon/kan-representere")
     fun getRepresentasjonsforhold(): RepresentasjonsforholdView {
         return reprApiService.kanRepresentere()
     }

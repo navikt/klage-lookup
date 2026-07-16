@@ -1,8 +1,8 @@
 package no.nav.klage.lookup.service.reprapi
 
 import io.micrometer.core.instrument.MeterRegistry
-import no.nav.klage.lookup.api.repr.RepresentasjonsforholdView
-import no.nav.klage.lookup.api.repr.toRepresentasjonsforholdView
+import no.nav.klage.lookup.api.external.repr.RepresentasjonsforholdView
+import no.nav.klage.lookup.api.external.repr.toRepresentasjonsforholdView
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.KAN_REPRESENTERE
 import no.nav.klage.lookup.config.reprapi.ReprApiClient
 import no.nav.klage.lookup.util.TokenUtil

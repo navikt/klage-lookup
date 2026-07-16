@@ -1,5 +1,6 @@
 package no.nav.klage.lookup.service.pdl
 
+import no.nav.klage.lookup.api.external.person.ExternalPersonResponse
 import no.nav.klage.lookup.service.pdl.graphql.PdlPerson
 
 fun toPerson(
@@ -22,6 +23,17 @@ fun toPerson(
         doed = person.second.doedsfall.firstOrNull()?.doedsdato,
         sikkerhetstiltak = person.second.sikkerhetstiltak.firstOrNull()?.mapToSikkerhetstiltak(),
         egenAnsatt = skjermet,
+    )
+}
+
+fun PdlPerson.toExternalPersonResponse(fnr: String): ExternalPersonResponse {
+    val preferredName = preferredName(this)
+    return ExternalPersonResponse(
+        foedselsnr = fnr,
+        fornavn = preferredName?.fornavn ?: "mangler navn",
+        mellomnavn = preferredName?.mellomnavn,
+        etternavn = preferredName?.etternavn ?: "mangler etternavn",
+        sammensattNavn = preferredName?.sammensattNavn() ?: "mangler navn",
     )
 }
 

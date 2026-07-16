@@ -1,15 +1,21 @@
 package no.nav.klage.lookup.service
 
 import io.micrometer.core.instrument.MeterRegistry
+import no.nav.klage.kodeverk.Tema
+import no.nav.klage.lookup.api.external.person.ExternalPersonResponse
 import no.nav.klage.lookup.api.person.PersonBulkResponse
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.AKTOER_ID_TO_FNR
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.IDENT_TO_AKTOER_ID
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.PERSON
+import no.nav.klage.lookup.config.CacheConfiguration.Companion.PERSON_EXTERNAL
 import no.nav.klage.lookup.service.kabalapi.KabalApiService
 import no.nav.klage.lookup.service.pdl.PdlFacade
 import no.nav.klage.lookup.service.pdl.Person
+import no.nav.klage.lookup.service.pdl.toExternalPersonResponse
 import no.nav.klage.lookup.service.pdl.toPerson
+import no.nav.klage.lookup.service.reprapi.ReprApiService
 import no.nav.klage.lookup.service.skjerming.SkjermingService
+import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
 import no.nav.klage.lookup.util.timedCall
@@ -25,6 +31,8 @@ class PersonService(
     private val kabalApiService: KabalApiService,
     private val cacheManager: CacheManager,
     private val meterRegistry: MeterRegistry,
+    private val tokenUtil: TokenUtil,
+    private val reprApiService: ReprApiService,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -42,6 +50,28 @@ class PersonService(
                 skjermet = skjermingService.skjermet(foedselsnr = fnr),
             )
         }
+    }
+
+    @Cacheable(PERSON_EXTERNAL)
+    @Retryable
+    fun getPersonForExternalController(fnr: String, tema: Tema?): ExternalPersonResponse {
+        val currentUser = tokenUtil.getSubjectFromTokenXToken()
+        if (currentUser != fnr) {
+            if (tema == null) {
+                throw FullmaktInputException("Trenger tema for å verifisere fullmakt")
+            }
+
+            if (!representasjonIsValid(
+                    representasjonsgiverFnr = fnr,
+                    tema = tema
+                )
+            ) {
+                throw FullmaktMissingAccessException("Mangler fullmakt for oppgitt bruker")
+            }
+        }
+
+        val pdlResults = pdlFacade.getPerson(fnr)
+        return pdlResults.toExternalPersonResponse(fnr)
     }
 
     @Retryable
@@ -104,4 +134,22 @@ class PersonService(
             kabalApiService.setPersonProtectionChanged(fnr)
         }
     }
+
+    private fun representasjonIsValid(representasjonsgiverFnr: String, tema: Tema): Boolean {
+        val usersRepresentasjonsforhold = reprApiService.kanRepresentere()
+        val vergemaalExists =
+            usersRepresentasjonsforhold.vergemaal.find { it.vergehaver == representasjonsgiverFnr }?.skriverettigheter?.contains(
+                tema
+            ) ?: false
+        val fullmaktExists =
+            usersRepresentasjonsforhold.fullmakt.find { it.fullmaktsgiver == representasjonsgiverFnr }?.skriverettigheter?.contains(
+                tema
+            ) ?: false
+
+        return vergemaalExists || fullmaktExists
+    }
+
+    class FullmaktMissingAccessException(msg: String) : RuntimeException(msg)
+
+    class FullmaktInputException(msg: String) : RuntimeException(msg)
 }

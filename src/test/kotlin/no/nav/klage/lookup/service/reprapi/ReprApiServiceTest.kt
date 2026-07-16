@@ -4,7 +4,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import no.nav.klage.lookup.api.repr.*
+import no.nav.klage.lookup.api.external.repr.*
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.KAN_REPRESENTERE
 import no.nav.klage.lookup.config.reprapi.ReprApiClient
 import no.nav.klage.lookup.util.TokenUtil
