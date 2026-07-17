@@ -43,8 +43,8 @@ class PersonService(
 
     @Cacheable(PERSON)
     @Retryable
-    fun getPersonWithAllInfo(fnr: String): PersonWithAllInfo {
-        return meterRegistry.timedCall(PERSON_TIMER, "getPerson") {
+fun getPersonWithAllInfo(fnr: String): PersonWithAllInfo {
+        return meterRegistry.timedCall(PERSON_TIMER, ::getPersonWithAllInfo.name) {
             toPersonWithAllInfo(
                 person = fnr to pdlFacade.getPerson(fnr),
                 skjermet = skjermingService.skjermet(foedselsnr = fnr),
