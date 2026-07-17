@@ -27,6 +27,7 @@ class CacheConfiguration(
         const val GROUP_MEMBERS = "groupMembers"
         const val ANSATTE_IN_ENHET = "ansatteInEnhet"
         const val PERSON = "person"
+        const val PERSON_EXTERNAL = "personExternal"
         const val SKJERMET = "skjermet"
         const val AKTOER_FOR_SAK = "aktoerForSak"
         const val AKTOER_ID_TO_FNR = "aktoerIdToFnr"
@@ -61,6 +62,7 @@ class CacheConfiguration(
             .withCacheConfiguration(GROUP_MEMBERS, standardConfig)
             .withCacheConfiguration(ANSATTE_IN_ENHET, standardConfig)
             .withCacheConfiguration(PERSON, fourHoursConfig)
+            .withCacheConfiguration(PERSON_EXTERNAL, fourHoursConfig)
             .withCacheConfiguration(AKTOER_ID_TO_FNR, oneWeekConfig)
             .withCacheConfiguration(IDENT_TO_AKTOER_ID, oneWeekConfig)
             .withCacheConfiguration(AKTOER_FOR_SAK, oneMonthConfig)

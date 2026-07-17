@@ -1,14 +1,15 @@
 package no.nav.klage.lookup.service.pdl
 
+import no.nav.klage.lookup.api.external.person.Person
 import no.nav.klage.lookup.service.pdl.graphql.PdlPerson
 
-fun toPerson(
+fun toPersonWithAllInfo(
     person: Pair<String, PdlPerson>,
     skjermet: Boolean,
-): Person {
+): PersonWithAllInfo {
     val preferredName = preferredName(person.second)
 
-    return Person(
+    return PersonWithAllInfo(
         foedselsnr = person.first,
         fornavn = preferredName?.fornavn ?: "mangler navn",
         mellomnavn = preferredName?.mellomnavn,
@@ -22,6 +23,17 @@ fun toPerson(
         doed = person.second.doedsfall.firstOrNull()?.doedsdato,
         sikkerhetstiltak = person.second.sikkerhetstiltak.firstOrNull()?.mapToSikkerhetstiltak(),
         egenAnsatt = skjermet,
+    )
+}
+
+fun PdlPerson.toPerson(fnr: String): Person {
+    val preferredName = preferredName(this)
+    return Person(
+        foedselsnr = fnr,
+        fornavn = preferredName?.fornavn ?: "mangler navn",
+        mellomnavn = preferredName?.mellomnavn,
+        etternavn = preferredName?.etternavn ?: "mangler etternavn",
+        sammensattNavn = preferredName?.sammensattNavn() ?: "mangler navn",
     )
 }
 
@@ -41,9 +53,9 @@ private fun PdlPerson.Navn.sammensattNavn(): String =
         "$fornavn $etternavn"
     }
 
-private fun PdlPerson.Sikkerhetstiltak.mapToSikkerhetstiltak(): Person.Sikkerhetstiltak =
-    Person.Sikkerhetstiltak(
-        tiltakstype = Person.Sikkerhetstiltak.Tiltakstype.valueOf(this.tiltakstype.name),
+private fun PdlPerson.Sikkerhetstiltak.mapToSikkerhetstiltak(): PersonWithAllInfo.Sikkerhetstiltak =
+    PersonWithAllInfo.Sikkerhetstiltak(
+        tiltakstype = PersonWithAllInfo.Sikkerhetstiltak.Tiltakstype.valueOf(this.tiltakstype.name),
         beskrivelse = this.beskrivelse,
         gyldigFraOgMed = this.gyldigFraOgMed,
         gyldigTilOgMed = this.gyldigTilOgMed

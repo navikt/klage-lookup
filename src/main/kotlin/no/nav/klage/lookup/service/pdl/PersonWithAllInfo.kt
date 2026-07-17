@@ -3,7 +3,7 @@ package no.nav.klage.lookup.service.pdl
 import java.io.Serializable
 import java.time.LocalDate
 
-data class Person(
+data class PersonWithAllInfo(
     val foedselsnr: String,
     val fornavn: String,
     val mellomnavn: String?,
