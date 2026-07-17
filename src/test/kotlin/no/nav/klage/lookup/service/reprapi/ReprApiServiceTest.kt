@@ -62,15 +62,6 @@ class ReprApiServiceTest {
     }
 
     @Test
-    fun `cacheKeyForKanRepresentere includes TokenX subject`() {
-        every { tokenUtil.getSubjectFromTokenXToken() } returns "12345678901"
-
-        val cacheKey = reprApiService.cacheKeyForKanRepresentere()
-
-        assertThat(cacheKey).isEqualTo("kanRepresentere:12345678901")
-    }
-
-    @Test
     fun `kanRepresentere caches response separately per TokenX subject`() {
         AnnotationConfigApplicationContext(CachingTestConfig::class.java).use { context ->
             val service = context.getBean(ReprApiService::class.java)
@@ -114,7 +105,7 @@ class ReprApiServiceTest {
 
             assertThat(
                 cacheManager.getCache(KAN_REPRESENTERE)
-                    ?.get<RepresentasjonsforholdView>("kanRepresentere:12345678901")
+                    ?.get<RepresentasjonsforholdView>("12345678901")
             ).isEqualTo(expectedFirstSubjectResponse.toRepresentasjonsforholdView())
 
             verify(exactly = 1) { client.kanRepresentere("Bearer token-x-obo-1") }
@@ -131,7 +122,7 @@ class ReprApiServiceTest {
 
             assertThat(
                 cacheManager.getCache(KAN_REPRESENTERE)
-                    ?.get<RepresentasjonsforholdView>("kanRepresentere:01987654321")
+                    ?.get<RepresentasjonsforholdView>("01987654321")
             ).isEqualTo(expectedSecondSubjectResponse.toRepresentasjonsforholdView())
 
             verify(exactly = 1) { client.kanRepresentere("Bearer token-x-obo-2") }

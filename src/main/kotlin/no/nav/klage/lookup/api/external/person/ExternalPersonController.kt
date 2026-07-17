@@ -20,8 +20,8 @@ class ExternalPersonController(
     @PostMapping("/external/person")
     fun getPerson(
         @RequestBody input: ExternalPersonRequest,
-    ): ExternalPersonResponse {
-        return personService.getPersonForExternalController(
+    ): Person {
+        return personService.getPerson(
             fnr = input.fnr,
             tema = input.tema
         )

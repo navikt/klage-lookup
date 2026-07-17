@@ -2,7 +2,7 @@ package no.nav.klage.lookup.service
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.klage.kodeverk.Tema
-import no.nav.klage.lookup.api.external.person.ExternalPersonResponse
+import no.nav.klage.lookup.api.external.person.Person
 import no.nav.klage.lookup.api.person.PersonBulkResponse
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.AKTOER_ID_TO_FNR
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.IDENT_TO_AKTOER_ID
@@ -10,9 +10,9 @@ import no.nav.klage.lookup.config.CacheConfiguration.Companion.PERSON
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.PERSON_EXTERNAL
 import no.nav.klage.lookup.service.kabalapi.KabalApiService
 import no.nav.klage.lookup.service.pdl.PdlFacade
-import no.nav.klage.lookup.service.pdl.Person
-import no.nav.klage.lookup.service.pdl.toExternalPersonResponse
+import no.nav.klage.lookup.service.pdl.PersonWithAllInfo
 import no.nav.klage.lookup.service.pdl.toPerson
+import no.nav.klage.lookup.service.pdl.toPersonWithAllInfo
 import no.nav.klage.lookup.service.reprapi.ReprApiService
 import no.nav.klage.lookup.service.skjerming.SkjermingService
 import no.nav.klage.lookup.util.TokenUtil
@@ -43,18 +43,21 @@ class PersonService(
 
     @Cacheable(PERSON)
     @Retryable
-    fun getPerson(fnr: String): Person {
+    fun getPersonWithAllInfo(fnr: String): PersonWithAllInfo {
         return meterRegistry.timedCall(PERSON_TIMER, "getPerson") {
-            toPerson(
+            toPersonWithAllInfo(
                 person = fnr to pdlFacade.getPerson(fnr),
                 skjermet = skjermingService.skjermet(foedselsnr = fnr),
             )
         }
     }
 
-    @Cacheable(PERSON_EXTERNAL)
+    @Cacheable(
+        cacheNames = [PERSON_EXTERNAL],
+        key = "{#fnr, #tema, @tokenUtil.getSubjectFromTokenXToken()}"
+    )
     @Retryable
-    fun getPersonForExternalController(fnr: String, tema: Tema?): ExternalPersonResponse {
+    fun getPerson(fnr: String, tema: Tema?): Person {
         val currentUser = tokenUtil.getSubjectFromTokenXToken()
         if (currentUser != fnr) {
             if (tema == null) {
@@ -71,7 +74,7 @@ class PersonService(
         }
 
         val pdlResults = pdlFacade.getPerson(fnr)
-        return pdlResults.toExternalPersonResponse(fnr)
+        return pdlResults.toPerson(fnr)
     }
 
     @Retryable
@@ -91,7 +94,7 @@ class PersonService(
                 teamLogger.warn("Skjerming bulk response missing idents: $missingFromSkjerming")
             }
 
-            val hits = mutableListOf<Person>()
+            val hits = mutableListOf<PersonWithAllInfo>()
             val misses = mutableListOf<String>()
             pdlResults.forEach { result ->
                 val pdlPerson = result.person
@@ -100,7 +103,7 @@ class PersonService(
                     teamLogger.warn("No person returned from PDL for ident=${result.ident}, code=${result.code}")
                     misses += result.ident
                 } else {
-                    hits += toPerson(
+                    hits += toPersonWithAllInfo(
                         person = result.ident to pdlPerson,
                         skjermet = skjermingMap[result.ident] ?: false,
                     )
@@ -137,14 +140,12 @@ class PersonService(
 
     private fun representasjonIsValid(representasjonsgiverFnr: String, tema: Tema): Boolean {
         val usersRepresentasjonsforhold = reprApiService.kanRepresentere()
-        val vergemaalExists =
-            usersRepresentasjonsforhold.vergemaal.find { it.vergehaver == representasjonsgiverFnr }?.skriverettigheter?.contains(
-                tema
-            ) ?: false
-        val fullmaktExists =
-            usersRepresentasjonsforhold.fullmakt.find { it.fullmaktsgiver == representasjonsgiverFnr }?.skriverettigheter?.contains(
-                tema
-            ) ?: false
+        val vergemaalExists = usersRepresentasjonsforhold.vergemaal.any {
+            it.vergehaver == representasjonsgiverFnr && tema in it.skriverettigheter
+        }
+        val fullmaktExists = usersRepresentasjonsforhold.fullmakt.any {
+            it.fullmaktsgiver == representasjonsgiverFnr && tema in it.skriverettigheter
+        }
 
         return vergemaalExists || fullmaktExists
     }

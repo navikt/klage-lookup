@@ -3,7 +3,7 @@ package no.nav.klage.lookup.api.person
 import io.swagger.v3.oas.annotations.Operation
 import no.nav.klage.lookup.config.SecurityConfiguration
 import no.nav.klage.lookup.service.PersonService
-import no.nav.klage.lookup.service.pdl.Person
+import no.nav.klage.lookup.service.pdl.PersonWithAllInfo
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -21,8 +21,8 @@ class PersonController(
     @PostMapping("/person")
     fun getPerson(
         @RequestBody input: PersonRequest,
-    ): Person {
-        return personService.getPerson(
+    ): PersonWithAllInfo {
+        return personService.getPersonWithAllInfo(
             fnr = input.fnr,
         )
     }

@@ -68,6 +68,7 @@ class CacheConfigurationTest {
             CacheConfiguration.ANSATTE_IN_ENHET,
             CacheConfiguration.GROUP_MEMBERS,
             CacheConfiguration.PERSON,
+            CacheConfiguration.PERSON_EXTERNAL,
             CacheConfiguration.SKJERMET,
             CacheConfiguration.AKTOER_FOR_SAK,
             CacheConfiguration.IDENT_TO_AKTOER_ID,
