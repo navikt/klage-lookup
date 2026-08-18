@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RestController
 
 @ProtectedWithClaims(issuer = SecurityConfiguration.TOKEN_X, claimMap = ["acr=Level4"])
 @RestController
-@RequestMapping
-class ReprApiController(
+@RequestMapping("/external")
+class ExternalReprApiController(
     private val reprApiService: ReprApiService,
 ) {
 
     @Operation(summary = "Hent representasjonsforhold for innlogget bruker, fungerer for sluttbruker med token-x-innlogging")
-    @GetMapping("ekstern/representasjon/kan-representere")
+    @GetMapping("/representasjon/kan-representere")
     fun getRepresentasjonsforhold(): RepresentasjonsforholdView {
         return reprApiService.kanRepresentere()
     }
