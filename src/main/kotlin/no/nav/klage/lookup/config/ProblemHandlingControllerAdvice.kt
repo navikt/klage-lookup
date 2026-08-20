@@ -1,5 +1,6 @@
 package no.nav.klage.lookup.config
 
+import no.nav.klage.lookup.service.PersonService
 import no.nav.klage.lookup.service.nom.NomAnsattNotFoundException
 import no.nav.klage.lookup.service.pdl.PDLPersonNotFoundException
 import no.nav.klage.lookup.service.regoppslag.*
@@ -94,6 +95,20 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
         ex: RegoppslagInternTekniskFeilException,
     ): ProblemDetail {
         return create(HttpStatus.INTERNAL_SERVER_ERROR, ex)
+    }
+
+    @ExceptionHandler
+    fun handleFullmaktMissingAccessException(
+        ex: PersonService.FullmaktMissingAccessException,
+    ): ProblemDetail {
+        return create(HttpStatus.FORBIDDEN, ex)
+    }
+
+    @ExceptionHandler
+    fun handleFullmaktInputException(
+        ex: PersonService.FullmaktInputException,
+    ): ProblemDetail {
+        return create(HttpStatus.BAD_REQUEST, ex)
     }
 
     private fun create(httpStatus: HttpStatus, ex: Exception): ProblemDetail {

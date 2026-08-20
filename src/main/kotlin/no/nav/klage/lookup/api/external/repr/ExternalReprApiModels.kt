@@ -1,4 +1,4 @@
-package no.nav.klage.lookup.api.repr
+package no.nav.klage.lookup.api.external.repr
 
 import no.nav.klage.kodeverk.Tema
 import java.io.Serializable
