@@ -6,10 +6,8 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.service.annotation.GetExchange
 
 interface ReprApiClient {
-
     @GetExchange("/api/v2/eksternbruker/kan-representere")
     fun kanRepresentere(
         @RequestHeader(AUTHORIZATION) bearerToken: String,
     ): RepresentasjonsforholdDto
 }
-

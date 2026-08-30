@@ -2,7 +2,13 @@ package no.nav.klage.lookup.service.nom
 
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USER_SLUTTDATO
 import no.nav.klage.lookup.config.nom.NomClient
-import no.nav.klage.lookup.service.nom.graphql.*
+import no.nav.klage.lookup.service.nom.graphql.Ansatt
+import no.nav.klage.lookup.service.nom.graphql.GetAnsattResponse
+import no.nav.klage.lookup.service.nom.graphql.GetAnsatteDataWrapper
+import no.nav.klage.lookup.service.nom.graphql.GetAnsatteResponse
+import no.nav.klage.lookup.service.nom.graphql.Ressurs
+import no.nav.klage.lookup.service.nom.graphql.getAnsattQuery
+import no.nav.klage.lookup.service.nom.graphql.getAnsatteQuery
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
@@ -18,7 +24,6 @@ class NomFacade(
     private val tokenUtil: TokenUtil,
     private val cacheManager: CacheManager,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -27,13 +32,14 @@ class NomFacade(
 
     @Cacheable(USER_SLUTTDATO)
     @Retryable(
-        excludes = [NomAnsattNotFoundException::class]
+        excludes = [NomAnsattNotFoundException::class],
     )
     fun getAnsattInfoFromNom(navIdent: String): Ansatt {
-        val ansatt = nomClient.hentAnsatt(
-            bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithNomScope()}",
-            getAnsattQuery(navIdent = navIdent)
-        )
+        val ansatt =
+            nomClient.hentAnsatt(
+                bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithNomScope()}",
+                query = getAnsattQuery(navIdent = navIdent),
+            )
         return ansatt.getRessursOrThrowError(navIdent)
     }
 
@@ -56,17 +62,18 @@ class NomFacade(
         logger.debug("Cached entries: $cached. Uncached entries: $uncached")
 
         // Fetch uncached from NOM and update cache
-        val newlyFetched = if (uncached.isNotEmpty()) {
-            val response = fetchAnsatteFromNom(uncached)
-            response.data?.ressurser?.forEach { ressurs ->
-                ressurs.ressurs?.let { ansatt ->
-                    cache.put(ressurs.id, ansatt)
+        val newlyFetched =
+            if (uncached.isNotEmpty()) {
+                val response = fetchAnsatteFromNom(uncached)
+                response.data?.ressurser?.forEach { ressurs ->
+                    ressurs.ressurs?.let { ansatt ->
+                        cache.put(ressurs.id, ansatt)
+                    }
                 }
+                response
+            } else {
+                GetAnsatteResponse(data = GetAnsatteDataWrapper(ressurser = emptyList()), errors = null)
             }
-            response
-        } else {
-            GetAnsatteResponse(data = GetAnsatteDataWrapper(ressurser = emptyList()), errors = null)
-        }
 
         // Combine cached and newly fetched
         val combinedRessurser = mutableListOf<Ressurs>()
@@ -77,16 +84,15 @@ class NomFacade(
 
         return GetAnsatteResponse(
             data = GetAnsatteDataWrapper(ressurser = combinedRessurser),
-            errors = newlyFetched.errors
+            errors = newlyFetched.errors,
         )
     }
 
-    private fun fetchAnsatteFromNom(navIdentList: List<String>): GetAnsatteResponse {
-        return nomClient.hentAnsatte(
+    private fun fetchAnsatteFromNom(navIdentList: List<String>): GetAnsatteResponse =
+        nomClient.hentAnsatte(
             bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithNomScope()}",
-            getAnsatteQuery(navIdenter = navIdentList)
+            query = getAnsatteQuery(navIdenter = navIdentList),
         )
-    }
 
     private fun GetAnsattResponse.getRessursOrThrowError(navIdent: String): Ansatt =
         if (this.errors.isNullOrEmpty() && this.data != null && this.data.ressurs != null) {

@@ -14,43 +14,35 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping
 class PersonController(
-    private val personService: PersonService
+    private val personService: PersonService,
 ) {
-
     @Operation(summary = "Get person. Word of caution: client needs to have proper access control.")
     @PostMapping("/person")
     fun getPerson(
         @RequestBody input: PersonRequest,
-    ): PersonWithAllInfo {
-        return personService.getPersonWithAllInfo(
+    ): PersonWithAllInfo =
+        personService.getPersonWithAllInfo(
             fnr = input.fnr,
         )
-    }
 
     @Operation(summary = "Get persons in bulk. Word of caution: client needs to have proper access control.")
     @PostMapping("/person-bulk")
     fun getPersonBulk(
         @RequestBody input: PersonBulkRequest,
-    ): PersonBulkResponse {
-        return personService.getPersonBulk(
+    ): PersonBulkResponse =
+        personService.getPersonBulk(
             fnrList = input.fnrList,
         )
-    }
 
     @Operation(summary = "Get fødselsnummer from ident.")
     @PostMapping("/foedselsnummer")
     fun getFoedselsnummerFromIdent(
         @RequestBody input: IdentRequest,
-    ): FnrResponse {
-        return FnrResponse(personService.getFoedselsnummerFromIdent(ident = input.ident))
-    }
+    ): FnrResponse = FnrResponse(personService.getFoedselsnummerFromIdent(ident = input.ident))
 
     @Operation(summary = "Get aktør ID from ident.")
     @PostMapping("/aktoerid")
     fun getAktoerIdFromIdent(
         @RequestBody input: IdentRequest,
-    ): AktoerIdResponse {
-        return AktoerIdResponse(personService.getAktoerIdFromIdent(ident = input.ident))
-    }
-
+    ): AktoerIdResponse = AktoerIdResponse(personService.getAktoerIdFromIdent(ident = input.ident))
 }

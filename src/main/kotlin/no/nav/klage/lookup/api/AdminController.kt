@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
-
 @ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
 @RestController
 @RequestMapping("/admin")
@@ -17,7 +16,6 @@ class AdminController(
     private val saksbehandlerService: SaksbehandlerService,
     private val cacheService: CacheService,
 ) {
-
     @GetMapping("/evict-cache")
     fun evictCache(
         @RequestParam(value = "cacheName", required = false) cacheName: String?,

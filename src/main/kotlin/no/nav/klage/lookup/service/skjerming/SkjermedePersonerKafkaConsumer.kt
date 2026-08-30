@@ -13,18 +13,20 @@ import tools.jackson.module.kotlin.KotlinModule
 class SkjermedePersonerKafkaConsumer(
     private val skjermingService: SkjermingService,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
         private val teamLogger = getTeamLogger()
         private val mapper =
-            JsonMapper.builder().addModule(
-            KotlinModule.Builder()
-                .configure(KotlinFeature.SingletonSupport, false)
-                .configure(KotlinFeature.StrictNullChecks, false)
-                .build()
-            ).build()
+            JsonMapper
+                .builder()
+                .addModule(
+                    KotlinModule
+                        .Builder()
+                        .configure(feature = KotlinFeature.SingletonSupport, enabled = false)
+                        .configure(feature = KotlinFeature.StrictNullChecks, enabled = false)
+                        .build(),
+                ).build()
     }
 
     @KafkaListener(
@@ -37,7 +39,7 @@ class SkjermedePersonerKafkaConsumer(
         runCatching {
             val foedselsnr = skjermetPersonRecord.key()
             logger.debug("Received skjermet person record. Processing.")
-            //Handle tombstone
+            // Handle tombstone
             if (skjermetPersonRecord.value() == null) {
                 skjermingService.removeSkjermetPerson(foedselsnr)
             } else {

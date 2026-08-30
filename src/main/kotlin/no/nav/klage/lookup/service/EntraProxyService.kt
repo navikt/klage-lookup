@@ -24,7 +24,6 @@ class EntraProxyService(
     private val meterRegistry: MeterRegistry,
     private val tokenUtil: TokenUtil,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -36,76 +35,81 @@ class EntraProxyService(
     @Retryable
     fun getGroupMembers(gruppeNavn: String): List<EntraProxyAnsatt> {
         val useObo = tokenUtil.getIdent() != null
-        val bearerToken = if (useObo) {
-            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
-        } else {
-            "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
-        }
-        val groupMembers = try {
-            meterRegistry.timedCall(ENTRAPROXY_TIMER, "getGroupMembers") {
-                entraProxyClient.getGroupMembers(
-                    bearerToken = bearerToken,
-                    gruppeNavn = gruppeNavn
-                )
+        val bearerToken =
+            if (useObo) {
+                "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
+            } else {
+                "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
             }
-        } catch (e: Exception) {
-            logger.error("Failed to retrieve members of group '$gruppeNavn'", e)
-            throw e
-        }
+        val groupMembers =
+            try {
+                meterRegistry.timedCall(timerName = ENTRAPROXY_TIMER, method = "getGroupMembers") {
+                    entraProxyClient.getGroupMembers(
+                        bearerToken = bearerToken,
+                        gruppeNavn = gruppeNavn,
+                    )
+                }
+            } catch (e: Exception) {
+                logger.error("Failed to retrieve members of group '$gruppeNavn'", e)
+                throw e
+            }
 
         return groupMembers
     }
 
     @Cacheable(USER_INFO)
     @Retryable(
-        excludes = [UserNotFoundException::class]
+        excludes = [UserNotFoundException::class],
     )
     fun getUserInfo(navIdent: String): EntraProxyUtvidetAnsatt {
         val useObo = tokenUtil.getIdent() != null
-        val bearerToken = if (useObo) {
-            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
-        } else {
-            "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
-        }
-
-        val userInfo: EntraProxyUtvidetAnsatt? = try {
-            meterRegistry.timedCall(ENTRAPROXY_TIMER, "getUserInfo") {
-                entraProxyClient.getAnsattInfo(
-                    bearerToken = bearerToken,
-                    navIdent = navIdent
-                )
+        val bearerToken =
+            if (useObo) {
+                "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope()}"
+            } else {
+                "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
             }
-        } catch (e: HttpClientErrorException) {
-            logger.debug("Failed to retrieve user info for navIdent '$navIdent'", e)
-            throw UserNotFoundException("User info for navIdent '$navIdent' not found")
-        } catch (e: Exception) {
-            logger.error("Unexpected error when retrieving user info for navIdent '$navIdent'", e)
-            throw e
-        }
+
+        val userInfo: EntraProxyUtvidetAnsatt? =
+            try {
+                meterRegistry.timedCall(timerName = ENTRAPROXY_TIMER, method = "getUserInfo") {
+                    entraProxyClient.getAnsattInfo(
+                        bearerToken = bearerToken,
+                        navIdent = navIdent,
+                    )
+                }
+            } catch (e: HttpClientErrorException) {
+                logger.debug("Failed to retrieve user info for navIdent '$navIdent'", e)
+                throw UserNotFoundException("User info for navIdent '$navIdent' not found")
+            } catch (e: Exception) {
+                logger.error("Unexpected error when retrieving user info for navIdent '$navIdent'", e)
+                throw e
+            }
 
         return userInfo ?: throw UserNotFoundException("User info for navIdent '$navIdent' not found")
     }
 
     @Cacheable(USERS_GROUPS)
     @Retryable(
-        excludes = [UserNotFoundException::class]
+        excludes = [UserNotFoundException::class],
     )
     fun getUsersGroups(navIdent: String): List<EntraProxyRolle> {
         val bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
-        val usersRoles = try {
-            meterRegistry.timedCall(ENTRAPROXY_TIMER, "getUsersRoles") {
-                entraProxyClient.getAnsattTilganger(
-                    bearerToken = bearerToken,
-                    navIdent = navIdent,
-                )
+        val usersRoles =
+            try {
+                meterRegistry.timedCall(timerName = ENTRAPROXY_TIMER, method = "getUsersRoles") {
+                    entraProxyClient.getAnsattTilganger(
+                        bearerToken = bearerToken,
+                        navIdent = navIdent,
+                    )
+                }
+            } catch (e: HttpClientErrorException) {
+                logger.debug("Client error when retrieving roles for navIdent $navIdent, throwing UserNotFoundException", e)
+                throw UserNotFoundException("User groups/roles for navIdent '$navIdent' not found")
+            } catch (e: Exception) {
+                logger.error("Unexpected error when retrieving roles for navIdent '$navIdent'", e)
+                throw e
             }
-        } catch (e: HttpClientErrorException) {
-            logger.debug("Client error when retrieving roles for navIdent $navIdent, throwing UserNotFoundException", e)
-            throw UserNotFoundException("User groups/roles for navIdent '$navIdent' not found")
-        } catch (e: Exception) {
-            logger.error("Unexpected error when retrieving roles for navIdent '$navIdent'", e)
-            throw e
-        }
         return usersRoles
     }
 }

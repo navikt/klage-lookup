@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.service.annotation.PostExchange
 
 interface SkjermingClient {
-
     @PostExchange("/skjermet")
     fun skjermet(
         @RequestHeader(AUTHORIZATION) bearerToken: String,

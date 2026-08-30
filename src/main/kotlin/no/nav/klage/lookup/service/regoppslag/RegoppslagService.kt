@@ -19,7 +19,6 @@ class RegoppslagService(
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
 ) {
-
     companion object {
         private const val REGOPPSLAG_TIMER = "regoppslag.response.time"
 
@@ -38,14 +37,15 @@ class RegoppslagService(
     fun getPostadresse(request: PostadresseRequest): PostadresseResponse {
         logger.debug("Getting postadresse")
         val useObo = tokenUtil.getIdent() != null
-        val bearerToken = if (useObo) {
-            "Bearer ${tokenUtil.getOnBehalfOfTokenWithRegoppslagScope()}"
-        } else {
-            "Bearer ${tokenUtil.getAppAccessTokenWithRegoppslagScope()}"
-        }
+        val bearerToken =
+            if (useObo) {
+                "Bearer ${tokenUtil.getOnBehalfOfTokenWithRegoppslagScope()}"
+            } else {
+                "Bearer ${tokenUtil.getAppAccessTokenWithRegoppslagScope()}"
+            }
 
         return try {
-            meterRegistry.timedCall(REGOPPSLAG_TIMER, ::getPostadresse.name) {
+            meterRegistry.timedCall(timerName = REGOPPSLAG_TIMER, method = ::getPostadresse.name) {
                 regoppslagClient.hentPostadresse(
                     bearerToken = bearerToken,
                     request = request,
@@ -54,13 +54,19 @@ class RegoppslagService(
         } catch (ex: RestClientResponseException) {
             when (ex.statusCode.value()) {
                 HttpStatus.NO_CONTENT.value() -> throw RegoppslagAdresseFiltrertException(ADRESSE_FILTRERT_BORT)
+
                 HttpStatus.BAD_REQUEST.value() -> throw RegoppslagUgyldigInputException(UGYLDIG_INPUT)
+
                 HttpStatus.UNAUTHORIZED.value() -> throw RegoppslagIngenTilgangException(INGEN_TILGANG)
+
                 HttpStatus.FORBIDDEN.value() -> throw RegoppslagTilgangAvvistException(TILGANG_AVVIST)
+
                 HttpStatus.NOT_FOUND.value() -> throw RegoppslagUkjentAdresseException(UKJENT_ADRESSE)
+
                 HttpStatus.GONE.value() -> throw RegoppslagPersonDoedException(PERSON_ER_DOED)
+
                 HttpStatus.INTERNAL_SERVER_ERROR.value() -> throw RegoppslagInternTekniskFeilException(
-                    INTERN_TEKNISK_FEIL
+                    INTERN_TEKNISK_FEIL,
                 )
 
                 else -> throw ex
@@ -69,17 +75,30 @@ class RegoppslagService(
     }
 }
 
-class RegoppslagAdresseFiltrertException(msg: String) : RuntimeException(msg)
+class RegoppslagAdresseFiltrertException(
+    msg: String,
+) : RuntimeException(msg)
 
-class RegoppslagUgyldigInputException(msg: String) : RuntimeException(msg)
+class RegoppslagUgyldigInputException(
+    msg: String,
+) : RuntimeException(msg)
 
-class RegoppslagIngenTilgangException(msg: String) : RuntimeException(msg)
+class RegoppslagIngenTilgangException(
+    msg: String,
+) : RuntimeException(msg)
 
-class RegoppslagTilgangAvvistException(msg: String) : RuntimeException(msg)
+class RegoppslagTilgangAvvistException(
+    msg: String,
+) : RuntimeException(msg)
 
-class RegoppslagUkjentAdresseException(msg: String) : RuntimeException(msg)
+class RegoppslagUkjentAdresseException(
+    msg: String,
+) : RuntimeException(msg)
 
-class RegoppslagPersonDoedException(msg: String) : RuntimeException(msg)
+class RegoppslagPersonDoedException(
+    msg: String,
+) : RuntimeException(msg)
 
-class RegoppslagInternTekniskFeilException(msg: String) : RuntimeException(msg)
-
+class RegoppslagInternTekniskFeilException(
+    msg: String,
+) : RuntimeException(msg)

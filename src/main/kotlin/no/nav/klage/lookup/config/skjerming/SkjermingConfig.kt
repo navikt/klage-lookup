@@ -10,18 +10,19 @@ import org.springframework.web.service.invoker.createClient
 
 @Configuration
 class SkjermingConfig {
-
     @Bean
     fun skjermingClient(
         @Value($$"${SKJERMING_BASE_URL}")
-        skjermingUrl: String
+        skjermingUrl: String,
     ): SkjermingClient {
         val restClient = RestClient.create(skjermingUrl)
 
         // Create factory for client proxies
-        val proxyFactory = HttpServiceProxyFactory.builder()
-            .exchangeAdapter(RestClientAdapter.create(restClient))
-            .build()
+        val proxyFactory =
+            HttpServiceProxyFactory
+                .builder()
+                .exchangeAdapter(RestClientAdapter.create(restClient))
+                .build()
 
         return proxyFactory.createClient<SkjermingClient>()
     }

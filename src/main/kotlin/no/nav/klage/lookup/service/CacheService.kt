@@ -8,13 +8,15 @@ import org.springframework.stereotype.Service
 class CacheService(
     private val cacheManager: RedisCacheManager,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun evictSingleCacheValue(cacheName: String, cacheKey: String) {
+    fun evictSingleCacheValue(
+        cacheName: String,
+        cacheKey: String,
+    ) {
         if (!cacheManager.cacheNames.contains(cacheName)) {
             throw RuntimeException("Cache $cacheName not found")
         }

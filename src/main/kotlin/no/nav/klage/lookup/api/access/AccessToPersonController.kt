@@ -18,15 +18,15 @@ class AccessToPersonController(
     private val accessToPersonService: AccessToPersonService,
     private val tokenUtil: TokenUtil,
 ) {
-
     @Operation(summary = "Verify access to person")
     @PostMapping("/access-to-person")
     fun getNavIdentAccessToUser(
         @RequestBody input: AccessRequest,
-    ): Access {
-        return accessToPersonService.getNavIdentAccessToUser(
+    ): Access =
+        accessToPersonService.getNavIdentAccessToUser(
             brukerId = input.brukerId,
-            navIdent = input.navIdent ?: tokenUtil.getIdent() ?: throw IllegalArgumentException("navIdent must be provided if no innlogget ident is found"),
+            navIdent =
+                input.navIdent ?: tokenUtil.getIdent()
+                    ?: throw IllegalArgumentException("navIdent must be provided if no innlogget ident is found"),
         )
-    }
 }

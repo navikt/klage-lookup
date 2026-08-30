@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.service.annotation.PostExchange
 
 interface RegoppslagClient {
-
     @PostExchange("/rest/postadresse")
     fun hentPostadresse(
         @RequestHeader(AUTHORIZATION) bearerToken: String,

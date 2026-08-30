@@ -1,7 +1,16 @@
 package no.nav.klage.lookup.service
 
 import no.nav.klage.kodeverk.AzureGroup
-import no.nav.klage.lookup.api.user.*
+import no.nav.klage.lookup.api.user.BatchedGroupsHitResponse
+import no.nav.klage.lookup.api.user.BatchedGroupsResponse
+import no.nav.klage.lookup.api.user.BatchedSluttdatoResponse
+import no.nav.klage.lookup.api.user.Enhet
+import no.nav.klage.lookup.api.user.ExtendedUserResponse
+import no.nav.klage.lookup.api.user.ExtendedUsersResponse
+import no.nav.klage.lookup.api.user.GroupsResponse
+import no.nav.klage.lookup.api.user.SluttdatoResponse
+import no.nav.klage.lookup.api.user.UserResponse
+import no.nav.klage.lookup.api.user.UsersResponse
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import no.nav.klage.lookup.config.microsoftgraph.MicrosoftGraphUser
@@ -74,8 +83,8 @@ class SaksbehandlerService(
         return getGroupsForUser(navIdent = tokenUtil.getIdent()!!).groupIds.contains(AzureGroup.KABAL_ADMIN.id)
     }
 
-    fun getGroupsForUser(navIdent: String): GroupsResponse {
-        return if (tokenUtil.getIdent() == navIdent) {
+    fun getGroupsForUser(navIdent: String): GroupsResponse =
+        if (tokenUtil.getIdent() == navIdent) {
             logger.debug("Getting groups for logged in user with NAVident '{}'", navIdent)
             val userGroups = tokenUtil.getGroups()
             teamLogger.debug("Found groups for logged in user {}: {}", tokenUtil.getIdent(), userGroups)
@@ -84,27 +93,27 @@ class SaksbehandlerService(
             logger.debug("Getting groups for user with NAVident '{}'", navIdent)
             val userGroups = entraProxyService.getUsersGroups(navIdent = navIdent)
             GroupsResponse(
-                groupIds = userGroups.mapNotNull { userGroup ->
-                    AzureGroup.entries.find { it.reference == userGroup.rolle }?.id
-                }
+                groupIds =
+                    userGroups.mapNotNull { userGroup ->
+                        AzureGroup.entries.find { it.reference == userGroup.rolle }?.id
+                    },
             )
         }
-    }
 
-    fun getUserInfo(navIdent: String): ExtendedUserResponse {
-        return if (tokenUtil.getIdent() == navIdent) {
+    fun getUserInfo(navIdent: String): ExtendedUserResponse =
+        if (tokenUtil.getIdent() == navIdent) {
             logger.debug("Getting user info for logged in user with NAVident '{}'", navIdent)
             entraProxyService.getUserInfo(tokenUtil.getIdent()!!).toUserResponse()
         } else {
             logger.debug("Getting user info for user with NAVident '{}'", navIdent)
             entraProxyService.getUserInfo(navIdent).toUserResponse()
         }
-    }
 
     fun getUserInfoBatched(navIdentList: List<String>): ExtendedUsersResponse {
-        val lookupResults = navIdentList
-            .distinct()
-            .map { navIdent -> navIdent to runCatching { getUserInfo(navIdent) } }
+        val lookupResults =
+            navIdentList
+                .distinct()
+                .map { navIdent -> navIdent to runCatching { getUserInfo(navIdent) } }
 
         val (successfulLookups, failedLookups) = lookupResults.partition { (_, result) -> result.isSuccess }
 
@@ -115,39 +124,40 @@ class SaksbehandlerService(
     }
 
     fun getGroupsForUsersBatched(navIdentList: List<String>): BatchedGroupsResponse {
-        val lookupResults = navIdentList
-            .distinct()
-            .associateWith { navIdent -> runCatching { getGroupsForUser(navIdent) } }
+        val lookupResults =
+            navIdentList
+                .distinct()
+                .associateWith { navIdent -> runCatching { getGroupsForUser(navIdent) } }
 
         return BatchedGroupsResponse(
-            hits = lookupResults.mapNotNull { (navIdent, result) ->
-                result.getOrNull()?.let { groupsResponse ->
-                    BatchedGroupsHitResponse(
-                        navIdent = navIdent,
-                        groupIds = groupsResponse.groupIds,
-                    )
-                }
-            },
+            hits =
+                lookupResults.mapNotNull { (navIdent, result) ->
+                    result.getOrNull()?.let { groupsResponse ->
+                        BatchedGroupsHitResponse(
+                            navIdent = navIdent,
+                            groupIds = groupsResponse.groupIds,
+                        )
+                    }
+                },
             misses = lookupResults.filterValues { it.isFailure }.keys.toList(),
         )
     }
 
-    fun getUsersInEnhet(enhetsnummer: String): UsersResponse {
-        return UsersResponse(
-            microsoftGraphService.getAnsatteInEnhet(enhetsnummer = enhetsnummer).value?.map { it.toUserResponse() }
+    fun getUsersInEnhet(enhetsnummer: String): UsersResponse =
+        UsersResponse(
+            microsoftGraphService
+                .getAnsatteInEnhet(enhetsnummer = enhetsnummer)
+                .value
+                ?.map { it.toUserResponse() }
                 .orEmpty(),
         )
-    }
 
-    fun getUsersInGroup(azureGroup: AzureGroup): UsersResponse {
-        return UsersResponse(
-            users = entraProxyService.getGroupMembers(gruppeNavn = azureGroup.reference).map { it.toUserResponse() }
+    fun getUsersInGroup(azureGroup: AzureGroup): UsersResponse =
+        UsersResponse(
+            users = entraProxyService.getGroupMembers(gruppeNavn = azureGroup.reference).map { it.toUserResponse() },
         )
-    }
 
-    fun getSluttdatoForUser(navIdent: String): SluttdatoResponse {
-        return nomFacade.getAnsattInfoFromNom(navIdent = navIdent).toSluttdatoResponse()
-    }
+    fun getSluttdatoForUser(navIdent: String): SluttdatoResponse = nomFacade.getAnsattInfoFromNom(navIdent = navIdent).toSluttdatoResponse()
 
     fun getSluttdatoForUsers(navIdentList: List<String>): BatchedSluttdatoResponse {
         val response = nomFacade.getAnsatteInfoFromNom(navIdentList = navIdentList.distinct())
@@ -162,54 +172,51 @@ class SaksbehandlerService(
         )
     }
 
-    private fun Ansatt.toSluttdatoResponse(): SluttdatoResponse {
-        return SluttdatoResponse(
+    private fun Ansatt.toSluttdatoResponse(): SluttdatoResponse =
+        SluttdatoResponse(
             navIdent = navident,
             sluttdato = sluttdato,
         )
-    }
 
-    private fun EntraProxyUtvidetAnsatt.toUserResponse(): ExtendedUserResponse {
-        return ExtendedUserResponse(
+    private fun EntraProxyUtvidetAnsatt.toUserResponse(): ExtendedUserResponse =
+        ExtendedUserResponse(
             navIdent = this.navIdent,
             fornavn = this.fornavn,
             etternavn = this.etternavn,
             sammensattNavn = this.visningNavn,
-            enhet = Enhet(
-                enhetNr = this.enhet.enhetnummer,
-                enhetNavn = this.enhet.navn,
-            ),
+            enhet =
+                Enhet(
+                    enhetNr = this.enhet.enhetnummer,
+                    enhetNavn = this.enhet.navn,
+                ),
         )
-    }
 
-    private fun MicrosoftGraphUser.toUserResponse(): UserResponse {
-        return UserResponse(
+    private fun MicrosoftGraphUser.toUserResponse(): UserResponse =
+        UserResponse(
             navIdent = this.onPremisesSamAccountName,
             fornavn = this.givenName,
             etternavn = this.surname,
             sammensattNavn = this.displayName,
         )
-    }
 
-    private fun EntraProxyAnsatt.toUserResponse(): UserResponse {
-        return UserResponse(
+    private fun EntraProxyAnsatt.toUserResponse(): UserResponse =
+        UserResponse(
             navIdent = this.navIdent,
             fornavn = this.fornavn,
             etternavn = this.etternavn,
             sammensattNavn = this.visningNavn,
         )
-    }
 
-    private fun List<String>.toGroupsResponse(): GroupsResponse {
-        return GroupsResponse(
-            groupIds = this.mapNotNull {
-                getAzureGroupFromGroupId(it)?.id
-            }
+    private fun List<String>.toGroupsResponse(): GroupsResponse =
+        GroupsResponse(
+            groupIds =
+                this.mapNotNull {
+                    getAzureGroupFromGroupId(it)?.id
+                },
         )
-    }
 
-    fun getAzureGroupFromGroupId(groupId: String): AzureGroup? {
-        return when (groupId) {
+    fun getAzureGroupFromGroupId(groupId: String): AzureGroup? =
+        when (groupId) {
             kabalOppgavestyringAlleEnheterRoleId -> AzureGroup.KABAL_OPPGAVESTYRING_ALLE_ENHETER
             kabalMaltekstredigeringRoleId -> AzureGroup.KABAL_MALTEKSTREDIGERING
             kabalSaksbehandlerRoleId -> AzureGroup.KABAL_SAKSBEHANDLING
@@ -232,5 +239,4 @@ class SaksbehandlerService(
             kakaExcelUttrekkUtenFritekstRoleId -> AzureGroup.KAKA_EXCEL_UTTREKK_UTEN_FRITEKST
             else -> null
         }
-    }
 }

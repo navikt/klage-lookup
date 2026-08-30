@@ -23,7 +23,6 @@ class SkjermingService(
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -33,7 +32,7 @@ class SkjermingService(
     @Cacheable(SKJERMET)
     @Retryable
     fun skjermet(foedselsnr: String): Boolean =
-        meterRegistry.timedCall(SKJERMING_TIMER, "skjermet") {
+        meterRegistry.timedCall(timerName = SKJERMING_TIMER, method = "skjermet") {
             skjermingClient.skjermet(
                 bearerToken = tokenUtil.getAppAccessTokenWithSkjermingPipScope(),
                 personident = SkjermingRequest(personident = foedselsnr),
@@ -42,14 +41,17 @@ class SkjermingService(
 
     @Retryable
     fun skjermetBulk(foedselsnrList: List<String>): Map<String, Boolean> =
-        meterRegistry.timedCall(SKJERMING_TIMER, "skjermetBulk") {
+        meterRegistry.timedCall(timerName = SKJERMING_TIMER, method = "skjermetBulk") {
             skjermingClient.skjermetBulk(
                 bearerToken = tokenUtil.getAppAccessTokenWithSkjermingPipScope(),
                 skjermingBulkRequest = SkjermingBulkRequest(personidenter = foedselsnrList),
             )
         }
 
-    fun updateSkjermetPerson(foedselsnr: String, skjermetPerson: SkjermetPerson) {
+    fun updateSkjermetPerson(
+        foedselsnr: String,
+        skjermetPerson: SkjermetPerson,
+    ) {
         logger.debug("Update skjermet person in cache, and notify kabal-api.")
         cacheManager.getCache(SKJERMET)!!.put(foedselsnr, skjermetPerson.skjermet())
         cacheManager.getCache(PERSON)!!.evictIfPresent(foedselsnr)

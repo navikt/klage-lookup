@@ -41,27 +41,24 @@ data class VergemaalsforholdView(
     val skriverettigheter: Set<Tema>,
 ) : Serializable
 
-fun RepresentasjonsforholdDto.toRepresentasjonsforholdView(): RepresentasjonsforholdView {
-    return RepresentasjonsforholdView(
+fun RepresentasjonsforholdDto.toRepresentasjonsforholdView(): RepresentasjonsforholdView =
+    RepresentasjonsforholdView(
         fullmakt = fullmakt.map { it.toFullmaktsforholdView() },
         vergemaal = vergemaal.map { it.toVergemaalsforholdView() },
     )
-}
 
-fun FullmaktsforholdDto.toFullmaktsforholdView(): FullmaktsforholdView {
-    return FullmaktsforholdView(
+fun FullmaktsforholdDto.toFullmaktsforholdView(): FullmaktsforholdView =
+    FullmaktsforholdView(
         fullmaktsgiver = fullmaktsgiver,
         fullmektig = fullmektig,
         leserettigheter = leserettigheter.map { Tema.fromNavn(it) }.toSet(),
         skriverettigheter = skriverettigheter.map { Tema.fromNavn(it) }.toSet(),
     )
-}
 
-fun VergemaalsforholdDto.toVergemaalsforholdView(): VergemaalsforholdView {
-    return VergemaalsforholdView(
+fun VergemaalsforholdDto.toVergemaalsforholdView(): VergemaalsforholdView =
+    VergemaalsforholdView(
         vergehaver = vergehaver,
         verge = verge,
         leserettigheter = leserettigheter.map { Tema.fromNavn(it) }.toSet(),
         skriverettigheter = skriverettigheter.map { Tema.fromNavn(it) }.toSet(),
     )
-}

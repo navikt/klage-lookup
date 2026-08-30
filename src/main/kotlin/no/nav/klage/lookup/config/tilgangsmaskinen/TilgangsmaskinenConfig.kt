@@ -9,19 +9,20 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 import org.springframework.web.service.invoker.createClient
 
 @Configuration
-class TilgangsmaskinenConfig{
-
+class TilgangsmaskinenConfig {
     @Bean
     fun tilgangsmaskinenClient(
         @Value($$"${TILGANGSMASKINEN_BASE_URL}")
-        tilgangsmaskinenUrl: String
+        tilgangsmaskinenUrl: String,
     ): TilgangsmaskinenService {
         val restClient = RestClient.create(tilgangsmaskinenUrl)
 
         // Create factory for client proxies
-        val proxyFactory = HttpServiceProxyFactory.builder()
-            .exchangeAdapter(RestClientAdapter.create(restClient))
-            .build()
+        val proxyFactory =
+            HttpServiceProxyFactory
+                .builder()
+                .exchangeAdapter(RestClientAdapter.create(restClient))
+                .build()
 
         return proxyFactory.createClient<TilgangsmaskinenService>()
     }

@@ -21,7 +21,6 @@ class AccessToPersonService(
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -38,22 +37,23 @@ class AccessToPersonService(
         val deniedReasons = mutableSetOf<String>()
 
         val useObo = tokenUtil.getIdent() != null
-        val bearerToken = if (useObo) {
-            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithTilgangsmaskinenScope()}"
-        } else {
-            "Bearer ${tokenUtil.getAppAccessTokenWithTilgangsmaskinenScope()}"
-        }
+        val bearerToken =
+            if (useObo) {
+                "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithTilgangsmaskinenScope()}"
+            } else {
+                "Bearer ${tokenUtil.getAppAccessTokenWithTilgangsmaskinenScope()}"
+            }
 
         try {
             if (useObo) {
-                meterRegistry.timedCall(TILGANGSMASKINEN_TIMER, "validateAccessWithObo") {
+                meterRegistry.timedCall(timerName = TILGANGSMASKINEN_TIMER, method = "validateAccessWithObo") {
                     tilgangsmaskinenService.validateAccessWithObo(
                         oboBearerToken = bearerToken,
                         brukerId = brukerId,
                     )
                 }
             } else {
-                meterRegistry.timedCall(TILGANGSMASKINEN_TIMER, "validateAccess") {
+                meterRegistry.timedCall(timerName = TILGANGSMASKINEN_TIMER, method = "validateAccess") {
                     tilgangsmaskinenService.validateAccess(
                         clientBearerToken = bearerToken,
                         brukerId = brukerId,
@@ -63,17 +63,19 @@ class AccessToPersonService(
             }
         } catch (ex: RestClientResponseException) {
             if (ex.statusCode == HttpStatus.FORBIDDEN) {
-                val reason = try {
-                    val errorResponse = jacksonObjectMapper().readValue(
-                        ex.responseBodyAsString,
-                        TilgangsmaskinenErrorResponse::class.java
-                    )
-                    errorResponse.begrunnelse
-                } catch (parseEx: Exception) {
-                    logger.warn("Could not parse Tilgangsmaskinen error. See team-logs for details.")
-                    teamLogger.warn("Could not parse Tilgangsmaskinen error.", parseEx)
-                    "Kunne ikke verifisere tilgang - kontakt Team Klage."
-                }
+                val reason =
+                    try {
+                        val errorResponse =
+                            jacksonObjectMapper().readValue(
+                                ex.responseBodyAsString,
+                                TilgangsmaskinenErrorResponse::class.java,
+                            )
+                        errorResponse.begrunnelse
+                    } catch (parseEx: Exception) {
+                        logger.warn("Could not parse Tilgangsmaskinen error. See team-logs for details.")
+                        teamLogger.warn("Could not parse Tilgangsmaskinen error.", parseEx)
+                        "Kunne ikke verifisere tilgang - kontakt Team Klage."
+                    }
                 deniedReasons.add(reason)
             } else {
                 logger.error("Unexpected error while calling Tilgangsmaskinen: ${ex.statusCode}")
@@ -90,7 +92,7 @@ class AccessToPersonService(
         } else {
             Access(
                 access = false,
-                reason = deniedReasons.joinToString("; ")
+                reason = deniedReasons.joinToString("; "),
             )
         }
     }

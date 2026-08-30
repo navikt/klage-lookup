@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.service.annotation.PostExchange
 
 interface TilgangsmaskinenService {
-
     @PostExchange("/api/v1/komplett")
     fun validateAccessWithObo(
         @RequestHeader(AUTHORIZATION) oboBearerToken: String,

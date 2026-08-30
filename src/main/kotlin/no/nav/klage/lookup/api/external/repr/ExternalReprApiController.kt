@@ -14,11 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 class ExternalReprApiController(
     private val reprApiService: ReprApiService,
 ) {
-
     @Operation(summary = "Hent representasjonsforhold for innlogget bruker, fungerer for sluttbruker med token-x-innlogging")
     @GetMapping("/representasjon/kan-representere")
-    fun getRepresentasjonsforhold(): RepresentasjonsforholdView {
-        return reprApiService.kanRepresentere()
-    }
+    fun getRepresentasjonsforhold(): RepresentasjonsforholdView = reprApiService.kanRepresentere()
 }
-

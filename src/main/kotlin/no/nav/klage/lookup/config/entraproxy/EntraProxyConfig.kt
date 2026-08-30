@@ -10,18 +10,19 @@ import org.springframework.web.service.invoker.createClient
 
 @Configuration
 class EntraProxyConfig {
-
     @Bean
     fun entraProxyClient(
         @Value($$"${ENTRA_PROXY_BASE_URL}")
-        entraProxyUrl: String
+        entraProxyUrl: String,
     ): EntraProxyClient {
         val restClient = RestClient.create(entraProxyUrl)
 
         // Create factory for client proxies
-        val proxyFactory = HttpServiceProxyFactory.builder()
-            .exchangeAdapter(RestClientAdapter.create(restClient))
-            .build()
+        val proxyFactory =
+            HttpServiceProxyFactory
+                .builder()
+                .exchangeAdapter(RestClientAdapter.create(restClient))
+                .build()
 
         return proxyFactory.createClient<EntraProxyClient>()
     }

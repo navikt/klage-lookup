@@ -16,19 +16,16 @@ class ReprApiService(
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
 ) {
-
     companion object {
         private const val REPR_API_TIMER = "reprapi.response.time"
     }
 
     @Cacheable(value = [KAN_REPRESENTERE], key = "@tokenUtil.getSubjectFromTokenXToken()")
-    fun kanRepresentere(): RepresentasjonsforholdView {
-        return meterRegistry.timedCall(REPR_API_TIMER, ::kanRepresentere.name) {
-            reprApiClient.kanRepresentere(
-                bearerToken = "Bearer ${tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope()}",
-            )
-        }.toRepresentasjonsforholdView()
-    }
+    fun kanRepresentere(): RepresentasjonsforholdView =
+        meterRegistry
+            .timedCall(timerName = REPR_API_TIMER, method = ::kanRepresentere.name) {
+                reprApiClient.kanRepresentere(
+                    bearerToken = "Bearer ${tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope()}",
+                )
+            }.toRepresentasjonsforholdView()
 }
-
-

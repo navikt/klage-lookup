@@ -12,16 +12,16 @@ class TokenUtil(
     private val clientConfigurationProperties: ClientConfigurationProperties,
     private val oAuth2AccessTokenService: OAuth2AccessTokenService,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun getSubjectFromTokenXToken(): String {
-        return tokenValidationContextHolder.getTokenValidationContext().getClaims(SecurityConfiguration.TOKEN_X)
+    fun getSubjectFromTokenXToken(): String =
+        tokenValidationContextHolder
+            .getTokenValidationContext()
+            .getClaims(SecurityConfiguration.TOKEN_X)
             .getStringClaim("pid")
-    }
 
     fun getSaksbehandlerAccessTokenWithTilgangsmaskinenScope(): String {
         val clientProperties = clientConfigurationProperties.registration["tilgangsmaskinen-onbehalfof"]!!
@@ -114,14 +114,21 @@ class TokenUtil(
     }
 
     fun getIdent(): String? =
-        tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
-            ?.jwtTokenClaims?.get("NAVident")?.toString()
+        tokenValidationContextHolder
+            .getTokenValidationContext()
+            .getJwtToken(SecurityConfiguration.ISSUER_AAD)
+            ?.jwtTokenClaims
+            ?.get("NAVident")
+            ?.toString()
 
     @Suppress("UNCHECKED_CAST")
     fun getGroups(): List<String> {
         val groupsClaim =
-            tokenValidationContextHolder.getTokenValidationContext().getJwtToken(SecurityConfiguration.ISSUER_AAD)
-                ?.jwtTokenClaims?.get("groups") ?: emptyList<String>()
+            tokenValidationContextHolder
+                .getTokenValidationContext()
+                .getJwtToken(SecurityConfiguration.ISSUER_AAD)
+                ?.jwtTokenClaims
+                ?.get("groups") ?: emptyList<String>()
         return groupsClaim as List<String>
     }
 }

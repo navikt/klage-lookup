@@ -6,7 +6,7 @@ data class EntraProxyAnsatt(
     val navIdent: String,
     val visningNavn: String,
     val fornavn: String,
-    val etternavn: String
+    val etternavn: String,
 ) : Serializable {
     companion object {
         private const val serialVersionUID: Long = 1L
@@ -43,4 +43,3 @@ data class EntraProxyEnhet(
         private const val serialVersionUID: Long = 1L
     }
 }
-
