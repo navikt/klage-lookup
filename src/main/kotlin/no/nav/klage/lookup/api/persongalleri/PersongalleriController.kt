@@ -16,14 +16,12 @@ import org.springframework.web.bind.annotation.RestController
 class PersongalleriController(
     private val persongalleriService: PersongalleriService,
 ) {
-
     @Operation(summary = "Get persongalleri for a sak")
     @PostMapping("/persongalleri")
     fun getPersongalleri(
         @RequestBody input: Sak,
-    ): PersongalleriResponse {
-        return persongalleriService.getPersongalleri(
+    ): PersongalleriResponse =
+        persongalleriService.getPersongalleri(
             sak = input,
         )
-    }
 }

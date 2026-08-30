@@ -15,13 +15,9 @@ import org.springframework.web.bind.annotation.RestController
 class PostadresseController(
     private val regoppslagService: RegoppslagService,
 ) {
-
     @Operation(summary = "Hent postadresse for oppgitt bruker")
     @PostMapping("/postadresse")
     fun getPostadresse(
         @RequestBody input: PostadresseRequest,
-    ): PostadresseResponse {
-        return regoppslagService.getPostadresse(input)
-    }
+    ): PostadresseResponse = regoppslagService.getPostadresse(input)
 }
-

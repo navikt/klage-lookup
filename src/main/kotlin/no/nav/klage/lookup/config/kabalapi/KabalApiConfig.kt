@@ -10,18 +10,19 @@ import org.springframework.web.service.invoker.createClient
 
 @Configuration
 class KabalApiConfig {
-
     @Bean
     fun kabalApiClient(
         @Value($$"${KABAL_API_BASE_URL}")
-        kabalApiUrl: String
+        kabalApiUrl: String,
     ): KabalApiClient {
         val restClient = RestClient.create(kabalApiUrl)
 
         // Create factory for client proxies
-        val proxyFactory = HttpServiceProxyFactory.builder()
-            .exchangeAdapter(RestClientAdapter.create(restClient))
-            .build()
+        val proxyFactory =
+            HttpServiceProxyFactory
+                .builder()
+                .exchangeAdapter(RestClientAdapter.create(restClient))
+                .build()
 
         return proxyFactory.createClient<KabalApiClient>()
     }

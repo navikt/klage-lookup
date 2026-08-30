@@ -10,18 +10,19 @@ import org.springframework.web.service.invoker.createClient
 
 @Configuration
 class MicrosoftGraphConfig {
-
     @Bean
     fun microsoftGraphClient(
         @Value($$"${MICROSOFT_GRAPH_URL}")
-        microsoftGraphUrl: String
+        microsoftGraphUrl: String,
     ): MicrosoftGraphClient {
         val restClient = RestClient.create(microsoftGraphUrl)
 
         // Create factory for client proxies
-        val proxyFactory = HttpServiceProxyFactory.builder()
-            .exchangeAdapter(RestClientAdapter.create(restClient))
-            .build()
+        val proxyFactory =
+            HttpServiceProxyFactory
+                .builder()
+                .exchangeAdapter(RestClientAdapter.create(restClient))
+                .build()
 
         return proxyFactory.createClient<MicrosoftGraphClient>()
     }

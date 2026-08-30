@@ -22,4 +22,3 @@ data class Postadresse(
     val landkode: String?,
     val land: String?,
 ) : Serializable
-

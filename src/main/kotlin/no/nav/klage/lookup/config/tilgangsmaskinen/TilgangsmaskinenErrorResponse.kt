@@ -11,7 +11,7 @@ data class TilgangsmaskinenErrorResponse(
     val navIdent: String,
     val begrunnelse: String,
     val traceId: String,
-    val kanOverstyres: Boolean
+    val kanOverstyres: Boolean,
 ) {
     enum class AvvisningsKode {
         AVVIST_STRENGT_FORTROLIG_ADRESSE,
@@ -22,6 +22,6 @@ data class TilgangsmaskinenErrorResponse(
         AVVIST_FORTROLIG_ADRESSE,
         AVVIST_UKJENT_BOSTED,
         AVVIST_GEOGRAFISK,
-        AVVIST_HABILITET
+        AVVIST_HABILITET,
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.service.annotation.GetExchange
 
 interface FpsakClient {
-
     @GetExchange("/fpsak/ekstern/api/pip/aktoer-for-sak")
     fun getAktoerForSak(
         @RequestHeader(AUTHORIZATION) bearerToken: String,

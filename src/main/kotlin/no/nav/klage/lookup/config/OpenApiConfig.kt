@@ -7,14 +7,12 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class OpenApiConfig {
-
     @Bean
-    fun openApi(): OpenAPI {
-        return OpenAPI()
+    fun openApi(): OpenAPI =
+        OpenAPI()
             .info(
                 Info()
                     .title("klage-lookup")
-                    .description("API for klage-lookup")
+                    .description("API for klage-lookup"),
             )
-    }
 }

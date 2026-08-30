@@ -6,94 +6,89 @@ import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.lookup.config.SecurityConfiguration
 import no.nav.klage.lookup.service.SaksbehandlerService
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @Tag(name = "user", description = "API for getting info about users")
 @ProtectedWithClaims(issuer = SecurityConfiguration.ISSUER_AAD)
 @RestController
 @RequestMapping
 class UserController(
-
     private val saksbehandlerService: SaksbehandlerService,
 ) {
-
     @Operation(summary = "Get info about user")
     @GetMapping("/users/{navIdent}")
     fun getUserInfo(
         @PathVariable navIdent: String,
-    ): ExtendedUserResponse {
-        return saksbehandlerService.getUserInfo(
+    ): ExtendedUserResponse =
+        saksbehandlerService.getUserInfo(
             navIdent = navIdent,
         )
-    }
 
     @Operation(summary = "Get sluttdato for user")
     @GetMapping("/users/{navIdent}/sluttdato")
     fun getUserSluttdato(
         @PathVariable navIdent: String,
-    ): SluttdatoResponse {
-        return saksbehandlerService.getSluttdatoForUser(
+    ): SluttdatoResponse =
+        saksbehandlerService.getSluttdatoForUser(
             navIdent = navIdent,
         )
-    }
 
     @Operation(summary = "Get info about users")
     @PostMapping("/users")
     fun getUserInfoBatched(
         @RequestBody input: BatchedUserRequest,
-    ): ExtendedUsersResponse {
-        return saksbehandlerService.getUserInfoBatched(
+    ): ExtendedUsersResponse =
+        saksbehandlerService.getUserInfoBatched(
             navIdentList = input.navIdentList,
         )
-    }
 
     @Operation(summary = "Get sluttdato for users")
     @PostMapping("/users/sluttdato")
     fun getUserSluttdatoBatched(
         @RequestBody input: BatchedUserRequest,
-    ): BatchedSluttdatoResponse {
-        return saksbehandlerService.getSluttdatoForUsers(
+    ): BatchedSluttdatoResponse =
+        saksbehandlerService.getSluttdatoForUsers(
             navIdentList = input.navIdentList,
         )
-    }
 
     @Operation(summary = "Get groups for user")
     @GetMapping("/users/{navIdent}/groups")
     fun getGroupsForUser(
         @PathVariable navIdent: String,
-    ): GroupsResponse {
-        return saksbehandlerService.getGroupsForUser(
+    ): GroupsResponse =
+        saksbehandlerService.getGroupsForUser(
             navIdent = navIdent,
         )
-    }
 
     @Operation(summary = "Get groups for users")
     @PostMapping("/users/groups")
     fun getGroupsForUsers(
         @RequestBody input: BatchedUserRequest,
-    ): BatchedGroupsResponse {
-        return saksbehandlerService.getGroupsForUsersBatched(
+    ): BatchedGroupsResponse =
+        saksbehandlerService.getGroupsForUsersBatched(
             navIdentList = input.navIdentList,
         )
-    }
 
     @Operation(summary = "Get users in given enhet")
     @GetMapping("/enheter/{enhetsnummer}/users")
     fun getUsersInEnhet(
         @PathVariable enhetsnummer: String,
-    ): UsersResponse {
-        return saksbehandlerService.getUsersInEnhet(
+    ): UsersResponse =
+        saksbehandlerService.getUsersInEnhet(
             enhetsnummer = enhetsnummer,
         )
-    }
 
     @Operation(summary = "Get users in given Azure group")
     @GetMapping("/groups/{groupId}/users")
     fun getUsersInGroup(
         @PathVariable groupId: String,
-    ): UsersResponse {
-        return saksbehandlerService.getUsersInGroup(
+    ): UsersResponse =
+        saksbehandlerService.getUsersInGroup(
             azureGroup = AzureGroup.of(groupId),
         )
-    }
 }

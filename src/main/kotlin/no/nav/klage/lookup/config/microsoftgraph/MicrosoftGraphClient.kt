@@ -5,15 +5,14 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.service.annotation.GetExchange
 
-
 interface MicrosoftGraphClient {
     @GetExchange("/users")
     fun microsoftGraphQuery(
         @RequestHeader(AUTHORIZATION) bearerToken: String,
         @RequestHeader("ConsistencyLevel") consistencyLevel: String,
-        @RequestParam("\$filter") filter: String,
-        @RequestParam("\$select") select: String,
-        @RequestParam("\$count") count: Boolean,
-        @RequestParam("\$top") top: Int? = null,
+        @RequestParam($$"$filter") filter: String,
+        @RequestParam($$"$select") select: String,
+        @RequestParam($$"$count") count: Boolean,
+        @RequestParam($$"$top") top: Int? = null,
     ): MicrosoftGraphUserList
 }

@@ -20,7 +20,6 @@ class MicrosoftGraphService(
     private val meterRegistry: MeterRegistry,
     private val microsoftGraphClient: MicrosoftGraphClient,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -31,35 +30,36 @@ class MicrosoftGraphService(
 
     @Cacheable(ANSATTE_IN_ENHET)
     @Retryable(
-        excludes = [EnhetNotFoundException::class]
+        excludes = [EnhetNotFoundException::class],
     )
     fun getAnsatteInEnhet(enhetsnummer: String): MicrosoftGraphUserList {
         val useObo = tokenUtil.getIdent() != null
-        val bearerToken = if (useObo) {
-            "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithMicrosoftGraphScope()}"
-        } else {
-            "Bearer ${tokenUtil.getAppAccessTokenWithMicrosoftGraphScope()}"
-        }
-
-        val ansattList = try {
-            meterRegistry.timedCall(MICROSOFT_GRAPH_TIMER, "ansatteInEnhet") {
-                microsoftGraphClient.microsoftGraphQuery(
-                    bearerToken = bearerToken,
-                    consistencyLevel = "eventual",
-                    filter = "streetAddress eq '$enhetsnummer'",
-                    select = USER_SELECT,
-                    count = true,
-                    top = 500
-                )
+        val bearerToken =
+            if (useObo) {
+                "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithMicrosoftGraphScope()}"
+            } else {
+                "Bearer ${tokenUtil.getAppAccessTokenWithMicrosoftGraphScope()}"
             }
 
-        } catch (e: HttpClientErrorException) {
-            logger.debug("Failed to retrieve ansatte in enhet '$enhetsnummer'", e)
-            throw EnhetNotFoundException("Ansatte in enhet '$enhetsnummer' could not be found")
-        } catch (e: Exception) {
-            logger.error("Unexpected error when retrieving ansatte in enhet '$enhetsnummer'", e)
-            throw e
-        }
+        val ansattList =
+            try {
+                meterRegistry.timedCall(timerName = MICROSOFT_GRAPH_TIMER, method = "ansatteInEnhet") {
+                    microsoftGraphClient.microsoftGraphQuery(
+                        bearerToken = bearerToken,
+                        consistencyLevel = "eventual",
+                        filter = "streetAddress eq '$enhetsnummer'",
+                        select = USER_SELECT,
+                        count = true,
+                        top = 500,
+                    )
+                }
+            } catch (e: HttpClientErrorException) {
+                logger.debug("Failed to retrieve ansatte in enhet '$enhetsnummer'", e)
+                throw EnhetNotFoundException("Ansatte in enhet '$enhetsnummer' could not be found")
+            } catch (e: Exception) {
+                logger.error("Unexpected error when retrieving ansatte in enhet '$enhetsnummer'", e)
+                throw e
+            }
 
         return ansattList
     }

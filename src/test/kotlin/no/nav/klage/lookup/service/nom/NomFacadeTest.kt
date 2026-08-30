@@ -18,17 +18,17 @@ import org.springframework.cache.CacheManager
 import java.time.LocalDate
 
 class NomFacadeTest {
-
     private val nomClient = mockk<NomClient>()
     private val tokenUtil = mockk<TokenUtil>()
     private val cacheManager = mockk<CacheManager>()
     private val cache = mockk<Cache>(relaxed = true)
 
-    private val nomFacade = NomFacade(
-        nomClient = nomClient,
-        tokenUtil = tokenUtil,
-        cacheManager = cacheManager,
-    )
+    private val nomFacade =
+        NomFacade(
+            nomClient = nomClient,
+            tokenUtil = tokenUtil,
+            cacheManager = cacheManager,
+        )
 
     @BeforeEach
     fun setUp() {
@@ -52,7 +52,7 @@ class NomFacadeTest {
         )
         assertThat(result.errors).isNull()
 
-        verify(exactly = 0) { nomClient.hentAnsatte(any(), any()) }
+        verify(exactly = 0) { nomClient.hentAnsatte(bearerToken = any(), query = any()) }
         verify(exactly = 0) { cache.put(any(), any()) }
     }
 
@@ -67,15 +67,18 @@ class NomFacadeTest {
                 bearerToken = "Bearer token",
                 query = match { it.variables.navidenter == listOf("A123", "B456") },
             )
-        } returns GetAnsatteResponse(
-            data = GetAnsatteDataWrapper(
-                ressurser = listOf(
-                    Ressurs(id = "A123", ressurs = ansattA),
-                    Ressurs(id = "B456", ressurs = null),
-                )
-            ),
-            errors = null,
-        )
+        } returns
+            GetAnsatteResponse(
+                data =
+                    GetAnsatteDataWrapper(
+                        ressurser =
+                            listOf(
+                                Ressurs(id = "A123", ressurs = ansattA),
+                                Ressurs(id = "B456", ressurs = null),
+                            ),
+                    ),
+                errors = null,
+            )
 
         val result = nomFacade.getAnsatteInfoFromNom(listOf("A123", "B456"))
 
@@ -83,7 +86,7 @@ class NomFacadeTest {
             Ressurs(id = "A123", ressurs = ansattA),
             Ressurs(id = "B456", ressurs = null),
         )
-        verify(exactly = 1) { nomClient.hentAnsatte(any(), any()) }
+        verify(exactly = 1) { nomClient.hentAnsatte(bearerToken = any(), query = any()) }
         verify(exactly = 1) { cache.put("A123", ansattA) }
         verify(exactly = 0) { cache.put("B456", any()) }
     }
@@ -102,15 +105,18 @@ class NomFacadeTest {
                 bearerToken = "Bearer token",
                 query = match { it.variables.navidenter == listOf("B456", "C789") },
             )
-        } returns GetAnsatteResponse(
-            data = GetAnsatteDataWrapper(
-                ressurser = listOf(
-                    Ressurs(id = "B456", ressurs = fetchedAnsatt),
-                    Ressurs(id = "C789", ressurs = null),
-                )
-            ),
-            errors = null,
-        )
+        } returns
+            GetAnsatteResponse(
+                data =
+                    GetAnsatteDataWrapper(
+                        ressurser =
+                            listOf(
+                                Ressurs(id = "B456", ressurs = fetchedAnsatt),
+                                Ressurs(id = "C789", ressurs = null),
+                            ),
+                    ),
+                errors = null,
+            )
 
         val result = nomFacade.getAnsatteInfoFromNom(listOf("A123", "A123", "B456", "C789", "B456"))
 
@@ -119,16 +125,14 @@ class NomFacadeTest {
             Ressurs(id = "B456", ressurs = fetchedAnsatt),
             Ressurs(id = "C789", ressurs = null),
         )
-        verify(exactly = 1) { nomClient.hentAnsatte(any(), any()) }
+        verify(exactly = 1) { nomClient.hentAnsatte(bearerToken = any(), query = any()) }
         verify(exactly = 1) { cache.put("B456", fetchedAnsatt) }
         verify(exactly = 0) { cache.put("C789", any()) }
     }
 
-    private fun ansatt(navIdent: String): Ansatt {
-        return Ansatt(
+    private fun ansatt(navIdent: String): Ansatt =
+        Ansatt(
             navident = navIdent,
             sluttdato = LocalDate.parse("2026-04-17"),
         )
-    }
 }
-

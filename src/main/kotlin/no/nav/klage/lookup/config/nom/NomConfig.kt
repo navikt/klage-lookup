@@ -10,20 +10,23 @@ import org.springframework.web.service.invoker.createClient
 
 @Configuration
 class NomConfig {
-
     @Bean
     fun nomWebClient(
         @Value($$"${NOM_BASE_URL}")
         nomUrl: String,
     ): NomClient {
-        val restClient = RestClient.builder()
-            .baseUrl(nomUrl)
-            .build()
+        val restClient =
+            RestClient
+                .builder()
+                .baseUrl(nomUrl)
+                .build()
 
         // Create factory for client proxies
-        val proxyFactory = HttpServiceProxyFactory.builder()
-            .exchangeAdapter(RestClientAdapter.create(restClient))
-            .build()
+        val proxyFactory =
+            HttpServiceProxyFactory
+                .builder()
+                .exchangeAdapter(RestClientAdapter.create(restClient))
+                .build()
 
         return proxyFactory.createClient<NomClient>()
     }

@@ -1,6 +1,5 @@
 package no.nav.klage.lookup.config
 
-
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
@@ -16,7 +15,6 @@ class CacheConfiguration(
     @Value($$"${STANDARD_TTL_SECONDS}")
     private val standardTTLSeconds: Int,
 ) {
-
     companion object {
         const val ACCESS_TO_PERSON = "accessToPerson"
         const val KAN_REPRESENTERE = "kanRepresentere"
@@ -38,19 +36,28 @@ class CacheConfiguration(
     fun cacheManager(redisConnectionFactory: RedisConnectionFactory): RedisCacheManager {
         val defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
 
-        val standardConfig = RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofSeconds(standardTTLSeconds.toLong()))
+        val standardConfig =
+            RedisCacheConfiguration
+                .defaultCacheConfig()
+                .entryTtl(Duration.ofSeconds(standardTTLSeconds.toLong()))
 
-        val fourHoursConfig = RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofHours(4))
+        val fourHoursConfig =
+            RedisCacheConfiguration
+                .defaultCacheConfig()
+                .entryTtl(Duration.ofHours(4))
 
-        val oneWeekConfig = RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofDays(7))
+        val oneWeekConfig =
+            RedisCacheConfiguration
+                .defaultCacheConfig()
+                .entryTtl(Duration.ofDays(7))
 
-        val oneMonthConfig = RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofDays(30))
+        val oneMonthConfig =
+            RedisCacheConfiguration
+                .defaultCacheConfig()
+                .entryTtl(Duration.ofDays(30))
 
-        return RedisCacheManager.builder(redisConnectionFactory)
+        return RedisCacheManager
+            .builder(redisConnectionFactory)
             .enableStatistics()
             .cacheDefaults(defaultConfig)
             .withCacheConfiguration(ACCESS_TO_PERSON, standardConfig)

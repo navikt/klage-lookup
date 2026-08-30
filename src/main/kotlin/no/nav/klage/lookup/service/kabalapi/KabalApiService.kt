@@ -14,7 +14,6 @@ class KabalApiService(
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -22,7 +21,7 @@ class KabalApiService(
     }
 
     fun setPersonProtectionChanged(foedselsnr: String) {
-        meterRegistry.timedCall(KABAL_API_TIMER, "setPersonProtectionChanged") {
+        meterRegistry.timedCall(timerName = KABAL_API_TIMER, method = "setPersonProtectionChanged") {
             kabalApiClient.setPersonProtectionChanged(
                 bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithKabalApiScope()}",
                 query = KabalApiRequest(foedselsnummer = foedselsnr),

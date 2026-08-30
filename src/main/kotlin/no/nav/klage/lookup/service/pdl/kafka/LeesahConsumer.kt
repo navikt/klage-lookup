@@ -24,17 +24,13 @@ class LeesahConsumer(
         containerFactory = "leesahKafkaListenerContainerFactory",
         topics = [$$"${LEESAH_KAFKA_TOPIC}"],
     )
-    fun listen(
-        cr: ConsumerRecord<String, GenericRecord>,
-    ) {
+    fun listen(cr: ConsumerRecord<String, GenericRecord>) {
         processPersonhendelse(
             personhendelse = cr.value(),
         )
     }
 
-    private fun processPersonhendelse(
-        personhendelse: GenericRecord,
-    ) {
+    private fun processPersonhendelse(personhendelse: GenericRecord) {
         val fnr = personhendelse.fnr
         if (personhendelse.isRelevantForOurCache) {
             logger.debug("Received personhendelse that is possibly relevant for our cache and Kabal.")

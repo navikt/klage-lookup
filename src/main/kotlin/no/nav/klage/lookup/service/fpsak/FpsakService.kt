@@ -18,7 +18,6 @@ class FpsakService(
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -28,12 +27,13 @@ class FpsakService(
     @Cacheable(AKTOER_FOR_SAK)
     @Retryable
     fun getPersongalleriFnrListForSak(saksnummer: String): List<String> {
-        val aktoerIdList = meterRegistry.timedCall(FPSAK_TIMER, ::getPersongalleriFnrListForSak.name) {
-            fpsakClient.getAktoerForSak(
-                bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithFpsakScope()}",
-                saksnummer = saksnummer,
-            )
-        }
+        val aktoerIdList =
+            meterRegistry.timedCall(timerName = FPSAK_TIMER, method = ::getPersongalleriFnrListForSak.name) {
+                fpsakClient.getAktoerForSak(
+                    bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithFpsakScope()}",
+                    saksnummer = saksnummer,
+                )
+            }
         return aktoerIdList.map { pdlFacade.getFoedselsnummerFromIdent(it) }
     }
 }

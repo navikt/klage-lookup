@@ -10,7 +10,6 @@ import org.springframework.web.service.invoker.createClient
 
 @Configuration
 class RegoppslagConfig {
-
     @Bean
     fun regoppslagClient(
         @Value($$"${REGOPPSLAG_URL}")
@@ -18,16 +17,19 @@ class RegoppslagConfig {
         @Value($$"${BEHANDLINGSNUMMER}")
         behandlingsnummer: String,
     ): RegoppslagClient {
-
-        val restClient = RestClient.builder()
-            .baseUrl(regoppslagUrl)
-            .defaultHeader("behandlingsnummer", behandlingsnummer)
-            .build()
+        val restClient =
+            RestClient
+                .builder()
+                .baseUrl(regoppslagUrl)
+                .defaultHeader("behandlingsnummer", behandlingsnummer)
+                .build()
 
         // Create factory for client proxies
-        val proxyFactory = HttpServiceProxyFactory.builder()
-            .exchangeAdapter(RestClientAdapter.create(restClient))
-            .build()
+        val proxyFactory =
+            HttpServiceProxyFactory
+                .builder()
+                .exchangeAdapter(RestClientAdapter.create(restClient))
+                .build()
 
         return proxyFactory.createClient<RegoppslagClient>()
     }

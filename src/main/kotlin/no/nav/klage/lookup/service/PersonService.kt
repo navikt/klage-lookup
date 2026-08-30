@@ -43,21 +43,23 @@ class PersonService(
 
     @Cacheable(PERSON)
     @Retryable
-fun getPersonWithAllInfo(fnr: String): PersonWithAllInfo {
-        return meterRegistry.timedCall(PERSON_TIMER, ::getPersonWithAllInfo.name) {
+    fun getPersonWithAllInfo(fnr: String): PersonWithAllInfo =
+        meterRegistry.timedCall(timerName = PERSON_TIMER, method = ::getPersonWithAllInfo.name) {
             toPersonWithAllInfo(
                 person = fnr to pdlFacade.getPerson(fnr),
                 skjermet = skjermingService.skjermet(foedselsnr = fnr),
             )
         }
-    }
 
     @Cacheable(
         cacheNames = [PERSON_EXTERNAL],
-        key = "{#fnr, #tema, @tokenUtil.getSubjectFromTokenXToken()}"
+        key = "{#fnr, #tema, @tokenUtil.getSubjectFromTokenXToken()}",
     )
     @Retryable
-    fun getPerson(fnr: String, tema: Tema?): Person {
+    fun getPerson(
+        fnr: String,
+        tema: Tema?,
+    ): Person {
         val currentUser = tokenUtil.getSubjectFromTokenXToken()
         if (currentUser != fnr) {
             if (tema == null) {
@@ -66,7 +68,7 @@ fun getPersonWithAllInfo(fnr: String): PersonWithAllInfo {
 
             if (!representasjonIsValid(
                     representasjonsgiverFnr = fnr,
-                    tema = tema
+                    tema = tema,
                 )
             ) {
                 throw FullmaktMissingAccessException("Mangler fullmakt for oppgitt bruker")
@@ -78,19 +80,22 @@ fun getPersonWithAllInfo(fnr: String): PersonWithAllInfo {
     }
 
     @Retryable
-    fun getPersonBulk(fnrList: List<String>): PersonBulkResponse {
-        return meterRegistry.timedCall(PERSON_TIMER, "getPersonBulk") {
+    fun getPersonBulk(fnrList: List<String>): PersonBulkResponse =
+        meterRegistry.timedCall(timerName = PERSON_TIMER, method = "getPersonBulk") {
             val pdlResults = pdlFacade.getPersonBulk(fnrList = fnrList)
             val resolvedIdents = pdlResults.mapNotNull { if (it.person != null) it.ident else null }
-            val skjermingMap = if (resolvedIdents.isNotEmpty()) {
-                skjermingService.skjermetBulk(foedselsnrList = resolvedIdents)
-            } else {
-                emptyMap()
-            }
+            val skjermingMap =
+                if (resolvedIdents.isNotEmpty()) {
+                    skjermingService.skjermetBulk(foedselsnrList = resolvedIdents)
+                } else {
+                    emptyMap()
+                }
 
             val missingFromSkjerming = resolvedIdents.filterNot { skjermingMap.containsKey(it) }
             if (missingFromSkjerming.isNotEmpty()) {
-                logger.warn("Skjerming bulk response missing ${missingFromSkjerming.size} of ${resolvedIdents.size} idents. See team-logs for details.")
+                logger.warn(
+                    "Skjerming bulk response missing ${missingFromSkjerming.size} of ${resolvedIdents.size} idents. See team-logs for details.",
+                )
                 teamLogger.warn("Skjerming bulk response missing idents: $missingFromSkjerming")
             }
 
@@ -103,29 +108,28 @@ fun getPersonWithAllInfo(fnr: String): PersonWithAllInfo {
                     teamLogger.warn("No person returned from PDL for ident=${result.ident}, code=${result.code}")
                     misses += result.ident
                 } else {
-                    hits += toPersonWithAllInfo(
-                        person = result.ident to pdlPerson,
-                        skjermet = skjermingMap[result.ident] ?: false,
-                    )
+                    hits +=
+                        toPersonWithAllInfo(
+                            person = result.ident to pdlPerson,
+                            skjermet = skjermingMap[result.ident] ?: false,
+                        )
                 }
             }
             PersonBulkResponse(hits = hits, misses = misses)
         }
-    }
 
     @Cacheable(AKTOER_ID_TO_FNR)
     @Retryable
-    fun getFoedselsnummerFromIdent(ident: String): String {
-        return pdlFacade.getFoedselsnummerFromIdent(ident = ident)
-    }
+    fun getFoedselsnummerFromIdent(ident: String): String = pdlFacade.getFoedselsnummerFromIdent(ident = ident)
 
     @Cacheable(IDENT_TO_AKTOER_ID)
     @Retryable
-    fun getAktoerIdFromIdent(ident: String): String {
-        return pdlFacade.getAktoerIdFromIdent(ident = ident)
-    }
+    fun getAktoerIdFromIdent(ident: String): String = pdlFacade.getAktoerIdFromIdent(ident = ident)
 
-    fun evictPerson(fnr: String, protectionChange: Boolean) {
+    fun evictPerson(
+        fnr: String,
+        protectionChange: Boolean,
+    ) {
         val foundAndEvicted = cacheManager.getCache(PERSON)!!.evictIfPresent((fnr))
 
         if (foundAndEvicted) {
@@ -138,19 +142,28 @@ fun getPersonWithAllInfo(fnr: String): PersonWithAllInfo {
         }
     }
 
-    private fun representasjonIsValid(representasjonsgiverFnr: String, tema: Tema): Boolean {
+    private fun representasjonIsValid(
+        representasjonsgiverFnr: String,
+        tema: Tema,
+    ): Boolean {
         val usersRepresentasjonsforhold = reprApiService.kanRepresentere()
-        val vergemaalExists = usersRepresentasjonsforhold.vergemaal.any {
-            it.vergehaver == representasjonsgiverFnr && tema in it.skriverettigheter
-        }
-        val fullmaktExists = usersRepresentasjonsforhold.fullmakt.any {
-            it.fullmaktsgiver == representasjonsgiverFnr && tema in it.skriverettigheter
-        }
+        val vergemaalExists =
+            usersRepresentasjonsforhold.vergemaal.any {
+                it.vergehaver == representasjonsgiverFnr && tema in it.skriverettigheter
+            }
+        val fullmaktExists =
+            usersRepresentasjonsforhold.fullmakt.any {
+                it.fullmaktsgiver == representasjonsgiverFnr && tema in it.skriverettigheter
+            }
 
         return vergemaalExists || fullmaktExists
     }
 
-    class FullmaktMissingAccessException(msg: String) : RuntimeException(msg)
+    class FullmaktMissingAccessException(
+        msg: String,
+    ) : RuntimeException(msg)
 
-    class FullmaktInputException(msg: String) : RuntimeException(msg)
+    class FullmaktInputException(
+        msg: String,
+    ) : RuntimeException(msg)
 }

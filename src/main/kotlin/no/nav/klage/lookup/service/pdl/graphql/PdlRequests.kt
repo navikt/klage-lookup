@@ -24,32 +24,33 @@ data class IdentVariables(
 fun hentPersonQuery(ident: String): PersonGraphqlQuery {
     val query =
         PersonGraphqlQuery::class.java.getResource("/pdl/hentPerson.graphql").cleanForGraphql()
-    return PersonGraphqlQuery(query, IdentVariables(ident))
+    return PersonGraphqlQuery(query = query, variables = IdentVariables(ident))
 }
 
 fun hentPersonBulkQuery(identList: List<String>): PersonBulkGraphqlQuery {
     val query =
         PersonBulkGraphqlQuery::class.java.getResource("/pdl/hentPersonBolk.graphql").cleanForGraphql()
-    return PersonBulkGraphqlQuery(query, IdenterVariables(identer = identList))
+    return PersonBulkGraphqlQuery(query = query, variables = IdenterVariables(identer = identList))
 }
 
-fun hentFolkeregisterIdentQuery(ident: String): PersonGraphqlQuery {
-    return hentIdenterQuery(ident = ident, identType = IdentType.FOLKEREGISTERIDENT)
-}
+fun hentFolkeregisterIdentQuery(ident: String): PersonGraphqlQuery =
+    hentIdenterQuery(ident = ident, identType = IdentType.FOLKEREGISTERIDENT)
 
-fun hentAktoerIdQuery(ident: String): PersonGraphqlQuery {
-    return hentIdenterQuery(ident = ident, identType = IdentType.AKTORID)
-}
+fun hentAktoerIdQuery(ident: String): PersonGraphqlQuery = hentIdenterQuery(ident = ident, identType = IdentType.AKTORID)
 
-private fun hentIdenterQuery(ident: String, identType: IdentType): PersonGraphqlQuery {
+private fun hentIdenterQuery(
+    ident: String,
+    identType: IdentType,
+): PersonGraphqlQuery {
     val query =
         PersonGraphqlQuery::class.java.getResource("/pdl/hentIdenter.graphql").cleanForGraphql()
     return PersonGraphqlQuery(
         query = query,
-        variables = IdentVariables(
-            ident = ident,
-            grupper = arrayOf(identType),
-        )
+        variables =
+            IdentVariables(
+                ident = ident,
+                grupper = arrayOf(identType),
+            ),
     )
 }
 

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service
 class PersongalleriService(
     private val fpsakService: FpsakService,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -26,5 +25,4 @@ class PersongalleriService(
         val foedselsnummerList = fpsakService.getPersongalleriFnrListForSak(saksnummer = sak.sakId)
         return PersongalleriResponse(foedselsnummerList = foedselsnummerList)
     }
-
 }

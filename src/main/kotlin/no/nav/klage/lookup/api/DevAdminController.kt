@@ -8,7 +8,11 @@ import no.nav.klage.lookup.service.SaksbehandlerService
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.context.annotation.Profile
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @Profile("dev")
 @RestController
@@ -18,9 +22,8 @@ class DevAdminController(
     private val cacheService: CacheService,
     private val tokenUtil: TokenUtil,
     private val entraProxyService: EntraProxyService,
-    private val saksbehandlerService: SaksbehandlerService
+    private val saksbehandlerService: SaksbehandlerService,
 ) {
-
     @GetMapping("/evict-cache")
     fun evictCache(
         @RequestParam(value = "cacheName", required = false) cacheName: String?,
@@ -42,20 +45,15 @@ class DevAdminController(
     @GetMapping("/sluttdato/{navIdent}")
     fun getSluttdatoTest(
         @PathVariable navIdent: String,
-    ): BatchedSluttdatoResponse {
-        return saksbehandlerService.getSluttdatoForUsers(navIdentList = listOf(navIdent))
-    }
+    ): BatchedSluttdatoResponse = saksbehandlerService.getSluttdatoForUsers(navIdentList = listOf(navIdent))
 
     @GetMapping("/mygroups")
-    fun getUserGroups(): List<EntraProxyRolle> {
-        return entraProxyService.getUsersGroups(tokenUtil.getIdent()!!)
-    }
+    fun getUserGroups(): List<EntraProxyRolle> = entraProxyService.getUsersGroups(tokenUtil.getIdent()!!)
 
     @GetMapping("/mytokens")
-    fun getTokens(): Map<String, String> {
-        return mapOf(
+    fun getTokens(): Map<String, String> =
+        mapOf(
             "getSaksbehandlerAccessTokenWithEntraProxyScope" to tokenUtil.getSaksbehandlerAccessTokenWithEntraProxyScope(),
             "getAppAccessTokenWithEntraProxyScope" to tokenUtil.getAppAccessTokenWithEntraProxyScope(),
         )
-    }
 }

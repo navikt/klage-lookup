@@ -4,7 +4,11 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import no.nav.klage.lookup.api.external.repr.*
+import no.nav.klage.lookup.api.external.repr.FullmaktsforholdDto
+import no.nav.klage.lookup.api.external.repr.RepresentasjonsforholdDto
+import no.nav.klage.lookup.api.external.repr.RepresentasjonsforholdView
+import no.nav.klage.lookup.api.external.repr.VergemaalsforholdDto
+import no.nav.klage.lookup.api.external.repr.toRepresentasjonsforholdView
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.KAN_REPRESENTERE
 import no.nav.klage.lookup.config.reprapi.ReprApiClient
 import no.nav.klage.lookup.util.TokenUtil
@@ -19,37 +23,40 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 class ReprApiServiceTest {
-
     private val reprApiClient = mockk<ReprApiClient>()
     private val tokenUtil = mockk<TokenUtil>()
     private val meterRegistry = SimpleMeterRegistry()
 
-    private val reprApiService = ReprApiService(
-        reprApiClient = reprApiClient,
-        tokenUtil = tokenUtil,
-        meterRegistry = meterRegistry,
-    )
+    private val reprApiService =
+        ReprApiService(
+            reprApiClient = reprApiClient,
+            tokenUtil = tokenUtil,
+            meterRegistry = meterRegistry,
+        )
 
     @Test
     fun `kanRepresentere uses token exchange from TokenX with repr-api scope`() {
-        val expected = RepresentasjonsforholdDto(
-            fullmakt = listOf(
-                FullmaktsforholdDto(
-                    fullmaktsgiver = "12345678901",
-                    fullmektig = "10987654321",
-                    leserettigheter = setOf("SYK"),
-                    skriverettigheter = setOf("SYK"),
-                )
-            ),
-            vergemaal = listOf(
-                VergemaalsforholdDto(
-                    vergehaver = "12345678901",
-                    verge = "10987654321",
-                    leserettigheter = setOf("SYK"),
-                    skriverettigheter = setOf("SYK"),
-                )
-            ),
-        )
+        val expected =
+            RepresentasjonsforholdDto(
+                fullmakt =
+                    listOf(
+                        FullmaktsforholdDto(
+                            fullmaktsgiver = "12345678901",
+                            fullmektig = "10987654321",
+                            leserettigheter = setOf("SYK"),
+                            skriverettigheter = setOf("SYK"),
+                        ),
+                    ),
+                vergemaal =
+                    listOf(
+                        VergemaalsforholdDto(
+                            vergehaver = "12345678901",
+                            verge = "10987654321",
+                            leserettigheter = setOf("SYK"),
+                            skriverettigheter = setOf("SYK"),
+                        ),
+                    ),
+            )
 
         every { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() } returns "token-x-obo"
         every { reprApiClient.kanRepresentere("Bearer token-x-obo") } returns expected
@@ -69,29 +76,33 @@ class ReprApiServiceTest {
             val tokenUtil = context.getBean(TokenUtil::class.java)
             val cacheManager = context.getBean(CacheManager::class.java)
 
-            val expectedFirstSubjectResponse = RepresentasjonsforholdDto(
-                fullmakt = listOf(
-                    FullmaktsforholdDto(
-                        fullmaktsgiver = "12345678901",
-                        fullmektig = "10987654321",
-                        leserettigheter = setOf("SYK"),
-                        skriverettigheter = setOf("SYK"),
-                    )
-                ),
-                vergemaal = emptyList(),
-            )
+            val expectedFirstSubjectResponse =
+                RepresentasjonsforholdDto(
+                    fullmakt =
+                        listOf(
+                            FullmaktsforholdDto(
+                                fullmaktsgiver = "12345678901",
+                                fullmektig = "10987654321",
+                                leserettigheter = setOf("SYK"),
+                                skriverettigheter = setOf("SYK"),
+                            ),
+                        ),
+                    vergemaal = emptyList(),
+                )
 
-            val expectedSecondSubjectResponse = RepresentasjonsforholdDto(
-                fullmakt = emptyList(),
-                vergemaal = listOf(
-                    VergemaalsforholdDto(
-                        vergehaver = "01987654321",
-                        verge = "12012345678",
-                        leserettigheter = setOf("FOR"),
-                        skriverettigheter = emptySet(),
-                    )
-                ),
-            )
+            val expectedSecondSubjectResponse =
+                RepresentasjonsforholdDto(
+                    fullmakt = emptyList(),
+                    vergemaal =
+                        listOf(
+                            VergemaalsforholdDto(
+                                vergehaver = "01987654321",
+                                verge = "12012345678",
+                                leserettigheter = setOf("FOR"),
+                                skriverettigheter = emptySet(),
+                            ),
+                        ),
+                )
 
             every { tokenUtil.getSubjectFromTokenXToken() } returns "12345678901"
             every { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() } returns "token-x-obo-1"
@@ -104,8 +115,9 @@ class ReprApiServiceTest {
             assertThat(secondResponse).isEqualTo(expectedFirstSubjectResponse.toRepresentasjonsforholdView())
 
             assertThat(
-                cacheManager.getCache(KAN_REPRESENTERE)
-                    ?.get<RepresentasjonsforholdView>("12345678901")
+                cacheManager
+                    .getCache(KAN_REPRESENTERE)
+                    ?.get<RepresentasjonsforholdView>("12345678901"),
             ).isEqualTo(expectedFirstSubjectResponse.toRepresentasjonsforholdView())
 
             verify(exactly = 1) { client.kanRepresentere("Bearer token-x-obo-1") }
@@ -121,8 +133,9 @@ class ReprApiServiceTest {
             assertThat(fourthResponse).isEqualTo(expectedSecondSubjectResponse.toRepresentasjonsforholdView())
 
             assertThat(
-                cacheManager.getCache(KAN_REPRESENTERE)
-                    ?.get<RepresentasjonsforholdView>("01987654321")
+                cacheManager
+                    .getCache(KAN_REPRESENTERE)
+                    ?.get<RepresentasjonsforholdView>("01987654321"),
             ).isEqualTo(expectedSecondSubjectResponse.toRepresentasjonsforholdView())
 
             verify(exactly = 1) { client.kanRepresentere("Bearer token-x-obo-2") }
@@ -160,4 +173,3 @@ class ReprApiServiceTest {
         )
     }
 }
-

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-
 @ProtectedWithClaims(issuer = SecurityConfiguration.TOKEN_X, claimMap = ["acr=Level4"])
 @RestController
 @RequestMapping("/external")
@@ -20,11 +19,9 @@ class ExternalPersonController(
     @PostMapping("/person")
     fun getPerson(
         @RequestBody input: ExternalPersonRequest,
-    ): Person {
-        return personService.getPerson(
+    ): Person =
+        personService.getPerson(
             fnr = input.fnr,
-            tema = input.tema
+            tema = input.tema,
         )
-    }
 }
-

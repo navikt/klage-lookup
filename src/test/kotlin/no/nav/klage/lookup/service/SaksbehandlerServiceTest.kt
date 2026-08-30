@@ -16,38 +16,38 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class SaksbehandlerServiceTest {
-
     private val tokenUtil = mockk<TokenUtil>()
     private val microsoftGraphService = mockk<MicrosoftGraphService>(relaxed = true)
     private val entraProxyService = mockk<EntraProxyService>()
     private val nomFacade = mockk<NomFacade>()
 
-    private val saksbehandlerService = SaksbehandlerService(
-        tokenUtil = tokenUtil,
-        microsoftGraphService = microsoftGraphService,
-        entraProxyService = entraProxyService,
-        nomFacade = nomFacade,
-        kabalOppgavestyringAlleEnheterRoleId = "kabalOppgavestyringAlleEnheterRoleId",
-        kabalMaltekstredigeringRoleId = "kabalMaltekstredigeringRoleId",
-        kabalSaksbehandlerRoleId = "kabalSaksbehandlerRoleId",
-        kabalFagtekstredigeringRoleId = "kabalFagtekstredigeringRoleId",
-        kabalInnsynEgenEnhetRoleId = "kabalInnsynEgenEnhetRoleId",
-        kabalTilgangsstyringEgenEnhetRoleId = "kabalTilgangsstyringEgenEnhetRoleId",
-        fortroligRoleId = "fortroligRoleId",
-        strengtFortroligRoleId = "strengtFortroligRoleId",
-        egenAnsattRoleId = "egenAnsattRoleId",
-        kabalAdminRoleId = "kabalAdminRoleId",
-        kabalROLRoleId = "kabalROLRoleId",
-        kabalKROLRoleId = "kabalKROLRoleId",
-        kabalSvarbrevInnstillingerRoleId = "kabalSvarbrevInnstillingerRoleId",
-        alleINavKlageinstansRoleId = "alleINavKlageinstansRoleId",
-        kakaKvalitetsvurderingRoleId = "kakaKvalitetsvurderingRoleId",
-        kakaKvalitetstilbakemeldingRoleId = "kakaKvalitetstilbakemeldingRoleId",
-        kakaTotalstatistikkRoleId = "kakaTotalstatistikkRoleId",
-        kakaLederstatistikkRoleId = "kakaLederstatistikkRoleId",
-        kakaExcelUttrekkMedFritekstRoleId = "kakaExcelUttrekkMedFritekstRoleId",
-        kakaExcelUttrekkUtenFritekstRoleId = "kakaExcelUttrekkUtenFritekstRoleId",
-    )
+    private val saksbehandlerService =
+        SaksbehandlerService(
+            tokenUtil = tokenUtil,
+            microsoftGraphService = microsoftGraphService,
+            entraProxyService = entraProxyService,
+            nomFacade = nomFacade,
+            kabalOppgavestyringAlleEnheterRoleId = "kabalOppgavestyringAlleEnheterRoleId",
+            kabalMaltekstredigeringRoleId = "kabalMaltekstredigeringRoleId",
+            kabalSaksbehandlerRoleId = "kabalSaksbehandlerRoleId",
+            kabalFagtekstredigeringRoleId = "kabalFagtekstredigeringRoleId",
+            kabalInnsynEgenEnhetRoleId = "kabalInnsynEgenEnhetRoleId",
+            kabalTilgangsstyringEgenEnhetRoleId = "kabalTilgangsstyringEgenEnhetRoleId",
+            fortroligRoleId = "fortroligRoleId",
+            strengtFortroligRoleId = "strengtFortroligRoleId",
+            egenAnsattRoleId = "egenAnsattRoleId",
+            kabalAdminRoleId = "kabalAdminRoleId",
+            kabalROLRoleId = "kabalROLRoleId",
+            kabalKROLRoleId = "kabalKROLRoleId",
+            kabalSvarbrevInnstillingerRoleId = "kabalSvarbrevInnstillingerRoleId",
+            alleINavKlageinstansRoleId = "alleINavKlageinstansRoleId",
+            kakaKvalitetsvurderingRoleId = "kakaKvalitetsvurderingRoleId",
+            kakaKvalitetstilbakemeldingRoleId = "kakaKvalitetstilbakemeldingRoleId",
+            kakaTotalstatistikkRoleId = "kakaTotalstatistikkRoleId",
+            kakaLederstatistikkRoleId = "kakaLederstatistikkRoleId",
+            kakaExcelUttrekkMedFritekstRoleId = "kakaExcelUttrekkMedFritekstRoleId",
+            kakaExcelUttrekkUtenFritekstRoleId = "kakaExcelUttrekkUtenFritekstRoleId",
+        )
 
     @Test
     fun `getUserInfoBatched returns hits and misses`() {
@@ -63,11 +63,12 @@ class SaksbehandlerServiceTest {
                 fornavn = "Fornavn",
                 etternavn = "Etternavn",
                 sammensattNavn = "Fornavn Etternavn",
-                enhet = no.nav.klage.lookup.api.user.Enhet(
-                    enhetNr = "4200",
-                    enhetNavn = "Klageenheten",
-                ),
-            )
+                enhet =
+                    no.nav.klage.lookup.api.user.Enhet(
+                        enhetNr = "4200",
+                        enhetNavn = "Klageenheten",
+                    ),
+            ),
         )
         assertThat(result.misses).containsExactly("B456")
     }
@@ -91,10 +92,11 @@ class SaksbehandlerServiceTest {
     @Test
     fun `getGroupsForUsersBatched returns hits and misses`() {
         every { tokenUtil.getIdent() } returns null
-        every { entraProxyService.getUsersGroups("A123") } returns listOf(
-            EntraProxyRolle(AzureGroup.KABAL_ADMIN.reference),
-            EntraProxyRolle("unknown-role"),
-        )
+        every { entraProxyService.getUsersGroups("A123") } returns
+            listOf(
+                EntraProxyRolle(AzureGroup.KABAL_ADMIN.reference),
+                EntraProxyRolle("unknown-role"),
+            )
         every { entraProxyService.getUsersGroups("B456") } throws RuntimeException("Not found")
 
         val result = saksbehandlerService.getGroupsForUsersBatched(listOf("A123", "B456"))
@@ -103,7 +105,7 @@ class SaksbehandlerServiceTest {
             BatchedGroupsHitResponse(
                 navIdent = "A123",
                 groupIds = listOf(AzureGroup.KABAL_ADMIN.id),
-            )
+            ),
         )
         assertThat(result.misses).containsExactly("B456")
     }
@@ -120,7 +122,7 @@ class SaksbehandlerServiceTest {
             BatchedGroupsHitResponse(
                 navIdent = "A123",
                 groupIds = emptyList(),
-            )
+            ),
         )
         assertThat(result.misses).containsExactly("B456")
 
@@ -129,18 +131,17 @@ class SaksbehandlerServiceTest {
         confirmVerified(entraProxyService)
     }
 
-    private fun createAnsatt(navIdent: String): EntraProxyUtvidetAnsatt {
-        return EntraProxyUtvidetAnsatt(
+    private fun createAnsatt(navIdent: String): EntraProxyUtvidetAnsatt =
+        EntraProxyUtvidetAnsatt(
             navIdent = navIdent,
             visningNavn = "Fornavn Etternavn",
             fornavn = "Fornavn",
             etternavn = "Etternavn",
-            enhet = EntraProxyEnhet(
-                enhetnummer = "4200",
-                navn = "Klageenheten",
-            ),
+            enhet =
+                EntraProxyEnhet(
+                    enhetnummer = "4200",
+                    navn = "Klageenheten",
+                ),
             tIdent = "T123456",
         )
-    }
 }
-

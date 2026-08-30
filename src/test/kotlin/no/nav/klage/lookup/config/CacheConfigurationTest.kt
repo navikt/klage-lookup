@@ -3,7 +3,12 @@ package no.nav.klage.lookup.config
 import no.nav.klage.lookup.config.entraproxy.EntraProxyEnhet
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.MethodOrderer
+import org.junit.jupiter.api.Order
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
+import org.junit.jupiter.api.assertNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.redis.test.autoconfigure.DataRedisTest
 import org.springframework.cache.get
@@ -23,11 +28,11 @@ import org.testcontainers.utility.DockerImageName
 @Import(CacheConfiguration::class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class CacheConfigurationTest {
-
     companion object {
         @Container
-        val redis: GenericContainer<*> = GenericContainer(DockerImageName.parse("valkey/valkey:8"))
-            .withExposedPorts(6379)
+        val redis: GenericContainer<*> =
+            GenericContainer(DockerImageName.parse("valkey/valkey:8"))
+                .withExposedPorts(6379)
 
         @JvmStatic
         @DynamicPropertySource
@@ -99,18 +104,20 @@ class CacheConfigurationTest {
         assertThat(cache).isNotNull
 
         val key = "testKey"
-        val value = EntraProxyUtvidetAnsatt(
-            navIdent = "navIdent",
-            visningNavn = "visningNavn",
-            fornavn = "fornavn",
-            etternavn = "etternavn",
-            epost = "epost",
-            enhet = EntraProxyEnhet(
-                enhetnummer = "enhetnummer",
-                navn = "navn"
-            ),
-            tIdent = "tIdent"
-        )
+        val value =
+            EntraProxyUtvidetAnsatt(
+                navIdent = "navIdent",
+                visningNavn = "visningNavn",
+                fornavn = "fornavn",
+                etternavn = "etternavn",
+                epost = "epost",
+                enhet =
+                    EntraProxyEnhet(
+                        enhetnummer = "enhetnummer",
+                        navn = "navn",
+                    ),
+                tIdent = "tIdent",
+            )
         cache!!.putIfAbsent(key, value)
         assertThat(cache.get<EntraProxyUtvidetAnsatt>(key)).isEqualTo(value)
     }
