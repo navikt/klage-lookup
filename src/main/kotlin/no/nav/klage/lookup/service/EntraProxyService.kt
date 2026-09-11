@@ -3,10 +3,12 @@ package no.nav.klage.lookup.service
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.GROUP_MEMBERS
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USERS_GROUPS
+import no.nav.klage.lookup.config.CacheConfiguration.Companion.USER_ENHETER
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.USER_INFO
 import no.nav.klage.lookup.config.UserNotFoundException
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
 import no.nav.klage.lookup.config.entraproxy.EntraProxyClient
+import no.nav.klage.lookup.config.entraproxy.EntraProxyEnhet
 import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import no.nav.klage.lookup.util.TokenUtil
@@ -87,6 +89,24 @@ class EntraProxyService(
             }
 
         return userInfo ?: throw UserNotFoundException("User info for navIdent '$navIdent' not found")
+    }
+
+    @Cacheable(USER_ENHETER)
+    @Retryable
+    fun getEnheterForAnsatt(navIdent: String): List<EntraProxyEnhet> {
+        val bearerToken = "Bearer ${tokenUtil.getAppAccessTokenWithEntraProxyScope()}"
+
+        return try {
+            meterRegistry.timedCall(timerName = ENTRAPROXY_TIMER, method = "getEnheterForAnsatt") {
+                entraProxyClient.getEnheterForAnsatt(
+                    bearerToken = bearerToken,
+                    navIdent = navIdent,
+                )
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to retrieve enheter for navIdent '$navIdent'", e)
+            throw e
+        }
     }
 
     @Cacheable(USERS_GROUPS)

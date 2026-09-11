@@ -1,10 +1,12 @@
 package no.nav.klage.lookup.service
 
 import no.nav.klage.kodeverk.AzureGroup
+import no.nav.klage.lookup.api.user.BatchedEnheterResponse
 import no.nav.klage.lookup.api.user.BatchedGroupsHitResponse
 import no.nav.klage.lookup.api.user.BatchedGroupsResponse
 import no.nav.klage.lookup.api.user.BatchedSluttdatoResponse
 import no.nav.klage.lookup.api.user.Enhet
+import no.nav.klage.lookup.api.user.EnheterResponse
 import no.nav.klage.lookup.api.user.ExtendedUserResponse
 import no.nav.klage.lookup.api.user.ExtendedUsersResponse
 import no.nav.klage.lookup.api.user.GroupsResponse
@@ -12,6 +14,7 @@ import no.nav.klage.lookup.api.user.SluttdatoResponse
 import no.nav.klage.lookup.api.user.UserResponse
 import no.nav.klage.lookup.api.user.UsersResponse
 import no.nav.klage.lookup.config.entraproxy.EntraProxyAnsatt
+import no.nav.klage.lookup.config.entraproxy.EntraProxyEnhet
 import no.nav.klage.lookup.config.entraproxy.EntraProxyUtvidetAnsatt
 import no.nav.klage.lookup.config.microsoftgraph.MicrosoftGraphUser
 import no.nav.klage.lookup.service.nom.NomErrorException
@@ -143,6 +146,26 @@ class SaksbehandlerService(
         )
     }
 
+    fun getEnheterForUser(navIdent: String): EnheterResponse {
+        logger.debug("Getting enheter for user with NAVident '{}'", navIdent)
+        return EnheterResponse(
+            navIdent = navIdent,
+            enheter = entraProxyService.getEnheterForAnsatt(navIdent = navIdent).map { it.toEnhet() },
+        )
+    }
+
+    fun getEnheterForUsersBatched(navIdentList: List<String>): BatchedEnheterResponse {
+        val lookupResults =
+            navIdentList
+                .distinct()
+                .associateWith { navIdent -> runCatching { getEnheterForUser(navIdent) } }
+
+        return BatchedEnheterResponse(
+            hits = lookupResults.values.mapNotNull { it.getOrNull() },
+            misses = lookupResults.filterValues { it.isFailure }.keys.toList(),
+        )
+    }
+
     fun getUsersInEnhet(enhetsnummer: String): UsersResponse =
         UsersResponse(
             microsoftGraphService
@@ -176,6 +199,12 @@ class SaksbehandlerService(
         SluttdatoResponse(
             navIdent = navident,
             sluttdato = sluttdato,
+        )
+
+    private fun EntraProxyEnhet.toEnhet(): Enhet =
+        Enhet(
+            enhetNr = enhetnummer,
+            enhetNavn = navn,
         )
 
     private fun EntraProxyUtvidetAnsatt.toUserResponse(): ExtendedUserResponse =

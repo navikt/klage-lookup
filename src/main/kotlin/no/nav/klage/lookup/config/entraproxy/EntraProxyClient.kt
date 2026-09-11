@@ -24,4 +24,10 @@ interface EntraProxyClient {
         @RequestHeader(AUTHORIZATION) bearerToken: String,
         @PathVariable navIdent: String,
     ): EntraProxyUtvidetAnsatt?
+
+    @GetExchange("/api/v1/enhet/ansatt/{navIdent}")
+    fun getEnheterForAnsatt(
+        @RequestHeader(AUTHORIZATION) bearerToken: String,
+        @PathVariable navIdent: String,
+    ): List<EntraProxyEnhet>
 }

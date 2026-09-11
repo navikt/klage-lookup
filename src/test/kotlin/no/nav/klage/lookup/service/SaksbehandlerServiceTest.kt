@@ -6,6 +6,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.nav.klage.kodeverk.AzureGroup
 import no.nav.klage.lookup.api.user.BatchedGroupsHitResponse
+import no.nav.klage.lookup.api.user.Enhet
+import no.nav.klage.lookup.api.user.EnheterResponse
 import no.nav.klage.lookup.api.user.ExtendedUserResponse
 import no.nav.klage.lookup.config.entraproxy.EntraProxyEnhet
 import no.nav.klage.lookup.config.entraproxy.EntraProxyRolle
@@ -128,6 +130,45 @@ class SaksbehandlerServiceTest {
 
         verify(exactly = 1) { entraProxyService.getUsersGroups("A123") }
         verify(exactly = 1) { entraProxyService.getUsersGroups("B456") }
+        confirmVerified(entraProxyService)
+    }
+
+    @Test
+    fun `getEnheterForUsersBatched returns all enheter per user, plus misses`() {
+        every { entraProxyService.getEnheterForAnsatt("A123") } returns
+            listOf(
+                EntraProxyEnhet(enhetnummer = "4291", navn = "Klageinstans Oslo"),
+                EntraProxyEnhet(enhetnummer = "4703", navn = "Nav Hjelpemiddelsentral Oslo"),
+            )
+        every { entraProxyService.getEnheterForAnsatt("B456") } throws RuntimeException("Not found")
+
+        val result = saksbehandlerService.getEnheterForUsersBatched(listOf("A123", "B456"))
+
+        assertThat(result.hits).containsExactly(
+            EnheterResponse(
+                navIdent = "A123",
+                enheter =
+                    listOf(
+                        Enhet(enhetNr = "4291", enhetNavn = "Klageinstans Oslo"),
+                        Enhet(enhetNr = "4703", enhetNavn = "Nav Hjelpemiddelsentral Oslo"),
+                    ),
+            ),
+        )
+        assertThat(result.misses).containsExactly("B456")
+    }
+
+    @Test
+    fun `getEnheterForUsersBatched deduplicates input before lookup`() {
+        every { entraProxyService.getEnheterForAnsatt("A123") } returns emptyList()
+
+        val result = saksbehandlerService.getEnheterForUsersBatched(listOf("A123", "A123"))
+
+        assertThat(result.hits).containsExactly(
+            EnheterResponse(navIdent = "A123", enheter = emptyList()),
+        )
+        assertThat(result.misses).isEmpty()
+
+        verify(exactly = 1) { entraProxyService.getEnheterForAnsatt("A123") }
         confirmVerified(entraProxyService)
     }
 

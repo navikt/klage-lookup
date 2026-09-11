@@ -56,6 +56,24 @@ class UserController(
             navIdentList = input.navIdentList,
         )
 
+    @Operation(summary = "Get all enheter for user")
+    @GetMapping("/users/{navIdent}/enheter")
+    fun getEnheterForUser(
+        @PathVariable navIdent: String,
+    ): EnheterResponse =
+        saksbehandlerService.getEnheterForUser(
+            navIdent = navIdent,
+        )
+
+    @Operation(summary = "Get all enheter for users")
+    @PostMapping("/users/enheter")
+    fun getEnheterForUsersBatched(
+        @RequestBody input: BatchedUserRequest,
+    ): BatchedEnheterResponse =
+        saksbehandlerService.getEnheterForUsersBatched(
+            navIdentList = input.navIdentList,
+        )
+
     @Operation(summary = "Get groups for user")
     @GetMapping("/users/{navIdent}/groups")
     fun getGroupsForUser(
