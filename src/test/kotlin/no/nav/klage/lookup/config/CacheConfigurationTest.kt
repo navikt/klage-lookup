@@ -69,6 +69,7 @@ class CacheConfigurationTest {
             CacheConfiguration.KAN_REPRESENTERE,
             CacheConfiguration.USERS_GROUPS,
             CacheConfiguration.USER_INFO,
+            CacheConfiguration.USER_ENHETER,
             CacheConfiguration.USER_SLUTTDATO,
             CacheConfiguration.ANSATTE_IN_ENHET,
             CacheConfiguration.GROUP_MEMBERS,
