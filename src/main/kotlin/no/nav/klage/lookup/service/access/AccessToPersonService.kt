@@ -62,25 +62,34 @@ class AccessToPersonService(
                 }
             }
         } catch (ex: RestClientResponseException) {
-            if (ex.statusCode == HttpStatus.FORBIDDEN) {
-                val reason =
-                    try {
-                        val errorResponse =
-                            jacksonObjectMapper().readValue(
-                                ex.responseBodyAsString,
-                                TilgangsmaskinenErrorResponse::class.java,
-                            )
-                        errorResponse.begrunnelse
-                    } catch (parseEx: Exception) {
-                        logger.warn("Could not parse Tilgangsmaskinen error. See team-logs for details.")
-                        teamLogger.warn("Could not parse Tilgangsmaskinen error.", parseEx)
-                        "Kunne ikke verifisere tilgang - kontakt Team Klage."
-                    }
-                deniedReasons.add(reason)
-            } else {
-                logger.error("Unexpected error while calling Tilgangsmaskinen: ${ex.statusCode}")
-                teamLogger.error("Unexpected error while calling Tilgangsmaskinen.", ex)
-                throw ex
+            when (ex.statusCode) {
+                HttpStatus.FORBIDDEN -> {
+                    val reason =
+                        try {
+                            val errorResponse =
+                                jacksonObjectMapper().readValue(
+                                    ex.responseBodyAsString,
+                                    TilgangsmaskinenErrorResponse::class.java,
+                                )
+                            errorResponse.begrunnelse
+                        } catch (parseEx: Exception) {
+                            logger.warn("Could not parse Tilgangsmaskinen error. See team-logs for details.")
+                            teamLogger.warn("Could not parse Tilgangsmaskinen error.", parseEx)
+                            "Kunne ikke verifisere tilgang - kontakt Team Klage."
+                        }
+                    deniedReasons.add(reason)
+                }
+
+                HttpStatus.NOT_FOUND -> {
+                    logger.error("User not found in Tilgangsmaskinen: ${ex.statusCode}")
+                    deniedReasons.add("Bruker ikke funnet i Tilgangsmaskinen")
+                }
+
+                else -> {
+                    logger.error("Unexpected error while calling Tilgangsmaskinen: ${ex.statusCode}")
+                    teamLogger.error("Unexpected error while calling Tilgangsmaskinen.", ex)
+                    throw ex
+                }
             }
         }
 
