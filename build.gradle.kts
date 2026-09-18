@@ -9,11 +9,11 @@ val springMockkVersion = "5.0.1"
 val mockkVersion = "1.14.11"
 val tokenValidationVersion = "6.0.12"
 val logstashVersion = "9.0"
-val springDocVersion = "3.1.0"
+val springDocVersion = "3.1.1"
 val confluentVersion = "8.2.0"
 
 plugins {
-    val kotlinVersion = "2.4.10"
+    val kotlinVersion = "2.4.20"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     id("org.springframework.boot") version "4.1.1"
