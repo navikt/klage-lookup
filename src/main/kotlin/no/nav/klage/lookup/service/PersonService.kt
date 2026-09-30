@@ -146,7 +146,7 @@ class PersonService(
         representasjonsgiverFnr: String,
         tema: Tema,
     ): Boolean {
-        val usersRepresentasjonsforhold = reprApiService.kanRepresentere()
+        val usersRepresentasjonsforhold = reprApiService.externalKanRepresentere()
         val vergemaalExists =
             usersRepresentasjonsforhold.vergemaal.any {
                 it.vergehaver == representasjonsgiverFnr && tema in it.skriverettigheter

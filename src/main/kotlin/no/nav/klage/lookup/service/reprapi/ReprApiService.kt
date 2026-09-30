@@ -4,6 +4,8 @@ import io.micrometer.core.instrument.MeterRegistry
 import no.nav.klage.lookup.api.external.repr.RepresentasjonsforholdView
 import no.nav.klage.lookup.api.external.repr.toRepresentasjonsforholdView
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.KAN_REPRESENTERE
+import no.nav.klage.lookup.config.CacheConfiguration.Companion.KAN_REPRESENTERES_AV
+import no.nav.klage.lookup.config.reprapi.IdentRequest
 import no.nav.klage.lookup.config.reprapi.ReprApiClient
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.timedCall
@@ -21,11 +23,21 @@ class ReprApiService(
     }
 
     @Cacheable(value = [KAN_REPRESENTERE], key = "@tokenUtil.getSubjectFromTokenXToken()")
-    fun kanRepresentere(): RepresentasjonsforholdView =
+    fun externalKanRepresentere(): RepresentasjonsforholdView =
         meterRegistry
-            .timedCall(timerName = REPR_API_TIMER, method = ::kanRepresentere.name) {
-                reprApiClient.kanRepresentere(
+            .timedCall(timerName = REPR_API_TIMER, method = ::externalKanRepresentere.name) {
+                reprApiClient.externalKanRepresentere(
                     bearerToken = "Bearer ${tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope()}",
+                )
+            }.toRepresentasjonsforholdView()
+
+    @Cacheable(KAN_REPRESENTERES_AV)
+    fun internalKanRepresenteresAv(ident: String): RepresentasjonsforholdView =
+        meterRegistry
+            .timedCall(timerName = REPR_API_TIMER, method = ::internalKanRepresenteresAv.name) {
+                reprApiClient.internalKanRepresenteresAv(
+                    bearerToken = "Bearer ${tokenUtil.getOnBehalfOfTokenWithReprApiScope()}",
+                    request = IdentRequest(ident = ident),
                 )
             }.toRepresentasjonsforholdView()
 }

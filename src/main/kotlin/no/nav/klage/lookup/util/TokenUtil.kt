@@ -113,6 +113,12 @@ class TokenUtil(
         return response.access_token!!
     }
 
+    fun getOnBehalfOfTokenWithReprApiScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["repr-api-onbehalfof"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
     fun getIdent(): String? =
         tokenValidationContextHolder
             .getTokenValidationContext()
