@@ -4,7 +4,7 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 val ktlintVersion = "1.8.0"
 val testContainersVersion = "2.0.5"
-val klageKodeverkVersion = "3.2.11"
+val klageKodeverkVersion = "3.3.37"
 val springMockkVersion = "5.0.1"
 val mockkVersion = "1.14.11"
 val tokenValidationVersion = "6.0.12"
