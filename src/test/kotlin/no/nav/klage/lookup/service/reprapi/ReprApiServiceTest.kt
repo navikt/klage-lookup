@@ -147,6 +147,36 @@ class ReprApiServiceTest {
         }
     }
 
+    @Test
+    fun `kanRepresenteresAv uses OBO token when caller is saksbehandler`() {
+        val expected = RepresentasjonsforholdDto(fullmakt = emptyList(), vergemaal = emptyList())
+
+        every { tokenUtil.getIdent() } returns "Z123456"
+        every { tokenUtil.getOnBehalfOfTokenWithReprApiScope() } returns "obo-token"
+        every { reprApiClient.internalKanRepresenteresAv("Bearer obo-token", any()) } returns expected
+
+        val actual = reprApiService.internalKanRepresenteresAv(ident = "12345678901")
+
+        assertThat(actual).isEqualTo(expected.toRepresentasjonsforholdView())
+        verify(exactly = 1) { tokenUtil.getOnBehalfOfTokenWithReprApiScope() }
+        verify(exactly = 0) { tokenUtil.getAppAccessTokenWithReprApiScope() }
+    }
+
+    @Test
+    fun `kanRepresenteresAv uses app access token when caller is a machine`() {
+        val expected = RepresentasjonsforholdDto(fullmakt = emptyList(), vergemaal = emptyList())
+
+        every { tokenUtil.getIdent() } returns null
+        every { tokenUtil.getAppAccessTokenWithReprApiScope() } returns "app-token"
+        every { reprApiClient.internalKanRepresenteresAv("Bearer app-token", any()) } returns expected
+
+        val actual = reprApiService.internalKanRepresenteresAv(ident = "12345678901")
+
+        assertThat(actual).isEqualTo(expected.toRepresentasjonsforholdView())
+        verify(exactly = 1) { tokenUtil.getAppAccessTokenWithReprApiScope() }
+        verify(exactly = 0) { tokenUtil.getOnBehalfOfTokenWithReprApiScope() }
+    }
+
     @Configuration
     @EnableCaching
     open class CachingTestConfig {

@@ -119,6 +119,12 @@ class TokenUtil(
         return response.access_token!!
     }
 
+    fun getAppAccessTokenWithReprApiScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["repr-api-maskintilmaskin"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
     fun getIdent(): String? =
         tokenValidationContextHolder
             .getTokenValidationContext()
