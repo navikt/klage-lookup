@@ -32,12 +32,21 @@ class ReprApiService(
             }.toRepresentasjonsforholdView()
 
     @Cacheable(KAN_REPRESENTERES_AV)
-    fun internalKanRepresenteresAv(ident: String): RepresentasjonsforholdView =
-        meterRegistry
+    fun internalKanRepresenteresAv(ident: String): RepresentasjonsforholdView {
+        val useObo = tokenUtil.getIdent() != null
+        val bearerToken =
+            if (useObo) {
+                "Bearer ${tokenUtil.getOnBehalfOfTokenWithReprApiScope()}"
+            } else {
+                "Bearer ${tokenUtil.getAppAccessTokenWithReprApiScope()}"
+            }
+
+        return meterRegistry
             .timedCall(timerName = REPR_API_TIMER, method = ::internalKanRepresenteresAv.name) {
                 reprApiClient.internalKanRepresenteresAv(
-                    bearerToken = "Bearer ${tokenUtil.getOnBehalfOfTokenWithReprApiScope()}",
+                    bearerToken = bearerToken,
                     request = IdentRequest(ident = ident),
                 )
             }.toRepresentasjonsforholdView()
+    }
 }
