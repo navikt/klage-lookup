@@ -153,7 +153,7 @@ class ReprApiServiceTest {
 
         every { tokenUtil.getIdent() } returns "Z123456"
         every { tokenUtil.getOnBehalfOfTokenWithReprApiScope() } returns "obo-token"
-        every { reprApiClient.internalKanRepresenteresAv("Bearer obo-token", any()) } returns expected
+        every { reprApiClient.internalKanRepresenteresAv(bearerToken = "Bearer obo-token", request = any()) } returns expected
 
         val actual = reprApiService.internalKanRepresenteresAv(ident = "12345678901")
 
@@ -168,7 +168,7 @@ class ReprApiServiceTest {
 
         every { tokenUtil.getIdent() } returns null
         every { tokenUtil.getAppAccessTokenWithReprApiScope() } returns "app-token"
-        every { reprApiClient.internalKanRepresenteresAv("Bearer app-token", any()) } returns expected
+        every { reprApiClient.internalKanRepresenteresAv(bearerToken = "Bearer app-token", request = any()) } returns expected
 
         val actual = reprApiService.internalKanRepresenteresAv(ident = "12345678901")
 
