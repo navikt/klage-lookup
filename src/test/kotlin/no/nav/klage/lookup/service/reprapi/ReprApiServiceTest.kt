@@ -59,13 +59,13 @@ class ReprApiServiceTest {
             )
 
         every { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() } returns "token-x-obo"
-        every { reprApiClient.kanRepresentere("Bearer token-x-obo") } returns expected
+        every { reprApiClient.externalKanRepresentere("Bearer token-x-obo") } returns expected
 
-        val actual = reprApiService.kanRepresentere()
+        val actual = reprApiService.externalKanRepresentere()
 
         assertThat(actual).isEqualTo(expected.toRepresentasjonsforholdView())
         verify(exactly = 1) { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() }
-        verify(exactly = 1) { reprApiClient.kanRepresentere("Bearer token-x-obo") }
+        verify(exactly = 1) { reprApiClient.externalKanRepresentere("Bearer token-x-obo") }
     }
 
     @Test
@@ -106,12 +106,12 @@ class ReprApiServiceTest {
 
             every { tokenUtil.getSubjectFromTokenXToken() } returns "12345678901"
             every { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() } returns "token-x-obo-1"
-            every { client.kanRepresentere("Bearer token-x-obo-1") } returns expectedFirstSubjectResponse
+            every { client.externalKanRepresentere("Bearer token-x-obo-1") } returns expectedFirstSubjectResponse
 
-            val firstResponse = service.kanRepresentere()
+            val firstResponse = service.externalKanRepresentere()
             assertThat(firstResponse).isEqualTo(expectedFirstSubjectResponse.toRepresentasjonsforholdView())
 
-            val secondResponse = service.kanRepresentere()
+            val secondResponse = service.externalKanRepresentere()
             assertThat(secondResponse).isEqualTo(expectedFirstSubjectResponse.toRepresentasjonsforholdView())
 
             assertThat(
@@ -120,16 +120,16 @@ class ReprApiServiceTest {
                     ?.get<RepresentasjonsforholdView>("12345678901"),
             ).isEqualTo(expectedFirstSubjectResponse.toRepresentasjonsforholdView())
 
-            verify(exactly = 1) { client.kanRepresentere("Bearer token-x-obo-1") }
+            verify(exactly = 1) { client.externalKanRepresentere("Bearer token-x-obo-1") }
 
             every { tokenUtil.getSubjectFromTokenXToken() } returns "01987654321"
             every { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() } returns "token-x-obo-2"
-            every { client.kanRepresentere("Bearer token-x-obo-2") } returns expectedSecondSubjectResponse
+            every { client.externalKanRepresentere("Bearer token-x-obo-2") } returns expectedSecondSubjectResponse
 
-            val thirdResponse = service.kanRepresentere()
+            val thirdResponse = service.externalKanRepresentere()
             assertThat(thirdResponse).isEqualTo(expectedSecondSubjectResponse.toRepresentasjonsforholdView())
 
-            val fourthResponse = service.kanRepresentere()
+            val fourthResponse = service.externalKanRepresentere()
             assertThat(fourthResponse).isEqualTo(expectedSecondSubjectResponse.toRepresentasjonsforholdView())
 
             assertThat(
@@ -138,9 +138,9 @@ class ReprApiServiceTest {
                     ?.get<RepresentasjonsforholdView>("01987654321"),
             ).isEqualTo(expectedSecondSubjectResponse.toRepresentasjonsforholdView())
 
-            verify(exactly = 1) { client.kanRepresentere("Bearer token-x-obo-2") }
+            verify(exactly = 1) { client.externalKanRepresentere("Bearer token-x-obo-2") }
 
-            every { client.kanRepresentere("Bearer token-x-obo-2") } returns expectedSecondSubjectResponse
+            every { client.externalKanRepresentere("Bearer token-x-obo-2") } returns expectedSecondSubjectResponse
 
             verify(exactly = 4) { tokenUtil.getSubjectFromTokenXToken() }
             verify(exactly = 2) { tokenUtil.getOnBehalfOfFromTokenXTokenWithReprApiScope() }

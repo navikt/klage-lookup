@@ -27,3 +27,4 @@ REGOPPSLAG_SCOPE: dev-fss.teamdokumenthandtering.regoppslag
 TENANT_ID: 966ac572-f5b7-4bbe-aa88-c76419c0f851
 
 REPR_API_AUDIENCE: dev-gcp:repr:repr-api
+REPR_API_SCOPE: dev-gcp.repr.repr-api

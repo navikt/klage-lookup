@@ -27,3 +27,5 @@ REGOPPSLAG_SCOPE: prod-fss.teamdokumenthandtering.regoppslag
 TENANT_ID: 62366534-1ec3-4962-8869-9b5535279d0b
 
 REPR_API_AUDIENCE: prod-gcp:repr:repr-api
+REPR_API_SCOPE: prod-gcp.repr.repr-api
+
