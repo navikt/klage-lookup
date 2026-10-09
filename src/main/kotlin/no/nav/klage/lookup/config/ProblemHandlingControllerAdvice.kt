@@ -101,6 +101,16 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
                 teamLogger.debug("Exception thrown to client: ${httpStatus.reasonPhrase}, $errorMessage", exception)
             }
 
+            exception is RegoppslagPersonDoedException -> {
+                ourLogger.debug("RegoppslagPersonDoedException thrown to client. See team-logs for more details.")
+                teamLogger.debug("Exception thrown to client: ${httpStatus.reasonPhrase}, $errorMessage", exception)
+            }
+
+            exception is RegoppslagUkjentAdresseException -> {
+                ourLogger.debug("RegoppslagUkjentAdresseException thrown to client. See team-logs for more details.")
+                teamLogger.debug("Exception thrown to client: ${httpStatus.reasonPhrase}, $errorMessage", exception)
+            }
+
             exception is EnhetNotFoundException -> {
                 ourLogger.debug("EnhetNotFoundException thrown to client. See team-logs for more details.")
                 teamLogger.debug("Exception thrown to client: ${httpStatus.reasonPhrase}, $errorMessage", exception)
