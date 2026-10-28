@@ -30,6 +30,7 @@ class SaksbehandlerServiceTest {
             entraProxyService = entraProxyService,
             nomFacade = nomFacade,
             kabalOppgavestyringAlleEnheterRoleId = "kabalOppgavestyringAlleEnheterRoleId",
+            kabalOppgavestyringAnketeamRoleId = "kabalOppgavestyringAnketeamRoleId",
             kabalMaltekstredigeringRoleId = "kabalMaltekstredigeringRoleId",
             kabalSaksbehandlerRoleId = "kabalSaksbehandlerRoleId",
             kabalFagtekstredigeringRoleId = "kabalFagtekstredigeringRoleId",

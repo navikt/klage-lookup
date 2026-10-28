@@ -34,6 +34,8 @@ class SaksbehandlerService(
     private val nomFacade: NomFacade,
     @Value($$"${KABAL_OPPGAVESTYRING_ALLE_ENHETER_ROLE_ID}")
     private val kabalOppgavestyringAlleEnheterRoleId: String,
+    @Value($$"${KABAL_OPPGAVESTYRING_ANKETEAM_ROLE_ID}")
+    private val kabalOppgavestyringAnketeamRoleId: String,
     @Value($$"${KABAL_MALTEKSTREDIGERING_ROLE_ID}")
     private val kabalMaltekstredigeringRoleId: String,
     @Value($$"${KABAL_SAKSBEHANDLING_ROLE_ID}")
@@ -247,6 +249,7 @@ class SaksbehandlerService(
     fun getAzureGroupFromGroupId(groupId: String): AzureGroup? =
         when (groupId) {
             kabalOppgavestyringAlleEnheterRoleId -> AzureGroup.KABAL_OPPGAVESTYRING_ALLE_ENHETER
+            kabalOppgavestyringAnketeamRoleId -> AzureGroup.KABAL_OPPGAVESTYRING_ANKETEAM
             kabalMaltekstredigeringRoleId -> AzureGroup.KABAL_MALTEKSTREDIGERING
             kabalSaksbehandlerRoleId -> AzureGroup.KABAL_SAKSBEHANDLING
             kabalFagtekstredigeringRoleId -> AzureGroup.KABAL_FAGTEKSTREDIGERING
