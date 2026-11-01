@@ -48,9 +48,6 @@
             <appender-ref ref="json"/>
         </logger>
 
-        <logger name="no.nav.security.token.support" level="info" additivity="false">
-            <appender-ref ref="team-logs"/>
-        </logger>
     </springProfile>
 
     <logger name="no.nav.klage" level="debug"/>

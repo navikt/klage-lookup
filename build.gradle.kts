@@ -8,7 +8,7 @@ val testContainersVersion = "2.0.5"
 val klageKodeverkVersion = "3.4.6"
 val springMockkVersion = "5.0.1"
 val mockkVersion = "1.14.11"
-val tokenValidationVersion = "6.0.12"
+val klageAuthVersion = "0.4.0"
 val logstashVersion = "9.0"
 val springDocVersion = "3.1.1"
 val confluentVersion = "8.2.0"
@@ -56,8 +56,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("no.nav.klage:klage-kodeverk:$klageKodeverkVersion")
-    implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
-    implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
+    implementation("no.nav.klage:klage-auth:$klageAuthVersion")
+    implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("io.micrometer:micrometer-registry-prometheus")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
@@ -68,9 +69,12 @@ dependencies {
         exclude(group = "org.junit.vintage")
         exclude(group = "org.mockito")
     }
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("no.nav.klage:klage-auth-test:$klageAuthVersion")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testContainersVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 }
 
 ktlint {

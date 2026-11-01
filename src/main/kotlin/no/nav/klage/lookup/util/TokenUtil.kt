@@ -1,146 +1,82 @@
 package no.nav.klage.lookup.util
 
-import no.nav.klage.lookup.config.SecurityConfiguration
-import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
-import no.nav.security.token.support.client.spring.ClientConfigurationProperties
-import no.nav.security.token.support.core.context.TokenValidationContextHolder
+import no.nav.klage.auth.TexasClient
+import no.nav.klage.auth.currentAzureToken
+import no.nav.klage.auth.currentTokenXToken
+import no.nav.klage.auth.groups
+import no.nav.klage.auth.navIdent
+import no.nav.klage.auth.pid
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
 class TokenUtil(
-    private val tokenValidationContextHolder: TokenValidationContextHolder,
-    private val clientConfigurationProperties: ClientConfigurationProperties,
-    private val oAuth2AccessTokenService: OAuth2AccessTokenService,
+    private val texasClient: TexasClient,
+    @Value($$"api://${TILGANGSMASKINEN_SCOPE}/.default")
+    private val tilgangsmaskinenScope: String,
+    @Value($$"api://${FPSAK_SCOPE}/.default")
+    private val fpsakScope: String,
+    @Value($$"api://${ENTRA_PROXY_SCOPE}/.default")
+    private val entraProxyScope: String,
+    @Value($$"api://${PDL_SCOPE}/.default")
+    private val pdlScope: String,
+    @Value($$"api://${SKJERMING_PIP_SCOPE}/.default")
+    private val skjermingPipScope: String,
+    @Value($$"api://${KABAL_API_SCOPE}/.default")
+    private val kabalApiScope: String,
+    @Value($$"api://${NOM_SCOPE}/.default")
+    private val nomScope: String,
+    @Value($$"api://${REGOPPSLAG_SCOPE}/.default")
+    private val regoppslagScope: String,
+    @Value($$"api://${REPR_API_SCOPE}/.default")
+    private val reprApiScope: String,
+    @Value($$"${REPR_API_AUDIENCE}")
+    private val reprApiAudience: String,
 ) {
     companion object {
-        @Suppress("JAVA_CLASS_ON_COMPANION")
-        private val logger = getLogger(javaClass.enclosingClass)
+        private const val MICROSOFT_GRAPH_SCOPE = "https://graph.microsoft.com/.default"
     }
 
+    /** The fødselsnummer of the logged in citizen. Only on the request thread of a TokenX request. */
     fun getSubjectFromTokenXToken(): String =
-        tokenValidationContextHolder
-            .getTokenValidationContext()
-            .getClaims(SecurityConfiguration.TOKEN_X)
-            .getStringClaim("pid")
+        currentTokenXToken()?.pid ?: throw IllegalStateException("No logged in citizen in this request.")
 
-    fun getSaksbehandlerAccessTokenWithTilgangsmaskinenScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["tilgangsmaskinen-onbehalfof"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getSaksbehandlerAccessTokenWithTilgangsmaskinenScope(): String = texasClient.onBehalfOfCurrentUser(tilgangsmaskinenScope)
 
-    fun getAppAccessTokenWithTilgangsmaskinenScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["tilgangsmaskinen-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithTilgangsmaskinenScope(): String = texasClient.machineToMachineToken(tilgangsmaskinenScope)
 
-    fun getAppAccessTokenWithFpsakScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["fpsak-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithFpsakScope(): String = texasClient.machineToMachineToken(fpsakScope)
 
-    fun getSaksbehandlerAccessTokenWithEntraProxyScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["entraproxy-onbehalfof"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getSaksbehandlerAccessTokenWithEntraProxyScope(): String = texasClient.onBehalfOfCurrentUser(entraProxyScope)
 
-    fun getAppAccessTokenWithEntraProxyScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["entraproxy-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithEntraProxyScope(): String = texasClient.machineToMachineToken(entraProxyScope)
 
-    fun getSaksbehandlerAccessTokenWithMicrosoftGraphScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["azure-onbehalfof"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getSaksbehandlerAccessTokenWithMicrosoftGraphScope(): String = texasClient.onBehalfOfCurrentUser(MICROSOFT_GRAPH_SCOPE)
 
-    fun getAppAccessTokenWithMicrosoftGraphScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["azure-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithMicrosoftGraphScope(): String = texasClient.machineToMachineToken(MICROSOFT_GRAPH_SCOPE)
 
-    fun getSaksbehandlerAccessTokenWithPdlScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["pdl-onbehalfof"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getSaksbehandlerAccessTokenWithPdlScope(): String = texasClient.onBehalfOfCurrentUser(pdlScope)
 
-    fun getAppAccessTokenWithPdlScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["pdl-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithPdlScope(): String = texasClient.machineToMachineToken(pdlScope)
 
-    fun getAppAccessTokenWithSkjermingPipScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["skjerming-pip-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithSkjermingPipScope(): String = texasClient.machineToMachineToken(skjermingPipScope)
 
-    fun getAppAccessTokenWithKabalApiScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["kabal-api-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithKabalApiScope(): String = texasClient.machineToMachineToken(kabalApiScope)
 
-    fun getAppAccessTokenWithNomScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["nom-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithNomScope(): String = texasClient.machineToMachineToken(nomScope)
 
-    fun getOnBehalfOfTokenWithRegoppslagScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["regoppslag-onbehalfof"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getOnBehalfOfTokenWithRegoppslagScope(): String = texasClient.onBehalfOfCurrentUser(regoppslagScope)
 
-    fun getAppAccessTokenWithRegoppslagScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["regoppslag-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithRegoppslagScope(): String = texasClient.machineToMachineToken(regoppslagScope)
 
-    fun getOnBehalfOfFromTokenXTokenWithReprApiScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["repr-api-token-x-onbehalfof"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getOnBehalfOfFromTokenXTokenWithReprApiScope(): String = texasClient.tokenXExchangeForCurrentUser(reprApiAudience)
 
-    fun getOnBehalfOfTokenWithReprApiScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["repr-api-onbehalfof"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getOnBehalfOfTokenWithReprApiScope(): String = texasClient.onBehalfOfCurrentUser(reprApiScope)
 
-    fun getAppAccessTokenWithReprApiScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["repr-api-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithReprApiScope(): String = texasClient.machineToMachineToken(reprApiScope)
 
-    fun getIdent(): String? =
-        tokenValidationContextHolder
-            .getTokenValidationContext()
-            .getJwtToken(SecurityConfiguration.ISSUER_AAD)
-            ?.jwtTokenClaims
-            ?.get("NAVident")
-            ?.toString()
+    /** NAVident of the logged in Nav employee, or null for machine-to-machine and TokenX requests. */
+    fun getIdent(): String? = currentAzureToken()?.navIdent
 
-    @Suppress("UNCHECKED_CAST")
-    fun getGroups(): List<String> {
-        val groupsClaim =
-            tokenValidationContextHolder
-                .getTokenValidationContext()
-                .getJwtToken(SecurityConfiguration.ISSUER_AAD)
-                ?.jwtTokenClaims
-                ?.get("groups") ?: emptyList<String>()
-        return groupsClaim as List<String>
-    }
+    fun getGroups(): List<String> = currentAzureToken()?.groups.orEmpty()
 }
