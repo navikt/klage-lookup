@@ -6,7 +6,6 @@ import no.nav.klage.lookup.service.CacheService
 import no.nav.klage.lookup.service.EntraProxyService
 import no.nav.klage.lookup.service.SaksbehandlerService
 import no.nav.klage.lookup.util.TokenUtil
-import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.context.annotation.Profile
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController
 @Profile("dev")
 @RestController
 @RequestMapping("/dev/admin")
-@Unprotected
 class DevAdminController(
     private val cacheService: CacheService,
     private val tokenUtil: TokenUtil,
