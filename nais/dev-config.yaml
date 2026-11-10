@@ -59,4 +59,4 @@ adRoles:
 
 envs:
   - name: JAVA_TOOL_OPTIONS
-    value: "-Xms1m -Xmx2048m --enable-native-access=ALL-UNNAMED -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    value: "-Xms1m -Xmx2048m --enable-native-access=ALL-UNNAMED -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 --sun-misc-unsafe-memory-access=allow"

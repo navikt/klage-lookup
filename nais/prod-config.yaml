@@ -57,4 +57,4 @@ adRoles:
 
 envs:
   - name: JAVA_TOOL_OPTIONS
-    value: "-Xms256m -Xmx2048m --enable-native-access=ALL-UNNAMED"
+    value: "-Xms256m -Xmx2048m --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow"
