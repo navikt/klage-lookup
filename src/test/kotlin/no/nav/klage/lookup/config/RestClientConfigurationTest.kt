@@ -28,7 +28,7 @@ class RestClientConfigurationTest {
         contextRunner().run { context ->
             assertThat(context).hasNotFailed()
             val settings = context.getBean(HttpClientSettings::class.java)
-            assertThat(settings.connectTimeout).isEqualTo(Duration.ofSeconds(2))
+            assertThat(settings.connectTimeout).isEqualTo(Duration.ofSeconds(3))
             assertThat(settings.readTimeout).isEqualTo(Duration.ofSeconds(5))
             assertThat(context.getBean(CountingRestClientCustomizer::class.java).invocations.get()).isEqualTo(10)
         }
@@ -38,13 +38,13 @@ class RestClientConfigurationTest {
     fun `timeout settings can be overridden by the environment`() {
         contextRunner()
             .withPropertyValues(
-                "spring.http.clients.connect-timeout=3s",
-                "spring.http.clients.read-timeout=5s",
+                "spring.http.clients.connect-timeout=4s",
+                "spring.http.clients.read-timeout=7s",
             ).run { context ->
                 assertThat(context).hasNotFailed()
                 val settings = context.getBean(HttpClientSettings::class.java)
-                assertThat(settings.connectTimeout).isEqualTo(Duration.ofSeconds(3))
-                assertThat(settings.readTimeout).isEqualTo(Duration.ofSeconds(5))
+                assertThat(settings.connectTimeout).isEqualTo(Duration.ofSeconds(4))
+                assertThat(settings.readTimeout).isEqualTo(Duration.ofSeconds(7))
             }
     }
 
