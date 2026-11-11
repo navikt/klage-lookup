@@ -12,6 +12,7 @@ import org.springframework.web.service.invoker.createClient
 class PdlConfig {
     @Bean
     fun pdlClient(
+        restClientBuilder: RestClient.Builder,
         @Value($$"${PDL_BASE_URL}")
         pdlUrl: String,
         @Value($$"${BEHANDLINGSNUMMER}")
@@ -19,8 +20,7 @@ class PdlConfig {
     ): PdlClient {
         // https://behandlingskatalog.ansatt.nav.no/process/system/KABAL/478cac88-3dde-4abe-aab9-c0bb5c06c083?
         val restClient =
-            RestClient
-                .builder()
+            restClientBuilder
                 .baseUrl(pdlUrl)
                 .defaultHeader("TEMA", "KLA")
                 .defaultHeader("behandlingsnummer", behandlingsnummer)

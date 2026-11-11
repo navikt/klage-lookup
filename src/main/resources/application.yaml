@@ -1,6 +1,10 @@
 spring:
   application:
     name: klage-lookup
+  http:
+    clients:
+      connect-timeout: 3s
+      read-timeout: 5s
   web:
     error:
       include-message: never

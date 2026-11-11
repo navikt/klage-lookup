@@ -12,10 +12,11 @@ import org.springframework.web.service.invoker.createClient
 class FpsakConfig {
     @Bean
     fun fpsakClient(
+        restClientBuilder: RestClient.Builder,
         @Value($$"${FPSAK_BASE_URL}")
         fpsakUrl: String,
     ): FpsakClient {
-        val restClient = RestClient.create(fpsakUrl)
+        val restClient = restClientBuilder.baseUrl(fpsakUrl).build()
 
         // Create factory for client proxies
         val proxyFactory =

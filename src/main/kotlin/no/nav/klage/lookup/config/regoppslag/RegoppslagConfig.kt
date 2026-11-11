@@ -12,14 +12,14 @@ import org.springframework.web.service.invoker.createClient
 class RegoppslagConfig {
     @Bean
     fun regoppslagClient(
+        restClientBuilder: RestClient.Builder,
         @Value($$"${REGOPPSLAG_URL}")
         regoppslagUrl: String,
         @Value($$"${BEHANDLINGSNUMMER}")
         behandlingsnummer: String,
     ): RegoppslagClient {
         val restClient =
-            RestClient
-                .builder()
+            restClientBuilder
                 .baseUrl(regoppslagUrl)
                 .defaultHeader("behandlingsnummer", behandlingsnummer)
                 .build()
