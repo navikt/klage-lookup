@@ -12,10 +12,14 @@ import org.springframework.web.service.invoker.createClient
 class TilgangsmaskinenConfig {
     @Bean
     fun tilgangsmaskinenClient(
+        restClientBuilder: RestClient.Builder,
         @Value($$"${TILGANGSMASKINEN_BASE_URL}")
         tilgangsmaskinenUrl: String,
-    ): TilgangsmaskinenService {
-        val restClient = RestClient.create(tilgangsmaskinenUrl)
+    ): TilgangsmaskinenClient {
+        val restClient =
+            restClientBuilder
+                .baseUrl(tilgangsmaskinenUrl)
+                .build()
 
         // Create factory for client proxies
         val proxyFactory =
@@ -24,6 +28,6 @@ class TilgangsmaskinenConfig {
                 .exchangeAdapter(RestClientAdapter.create(restClient))
                 .build()
 
-        return proxyFactory.createClient<TilgangsmaskinenService>()
+        return proxyFactory.createClient<TilgangsmaskinenClient>()
     }
 }

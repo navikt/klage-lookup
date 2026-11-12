@@ -12,10 +12,11 @@ import org.springframework.web.service.invoker.createClient
 class ReprApiConfig {
     @Bean
     fun reprApiClient(
+        restClientBuilder: RestClient.Builder,
         @Value($$"${REPR_API_BASE_URL}")
         reprApiBaseUrl: String,
     ): ReprApiClient {
-        val restClient = RestClient.create(reprApiBaseUrl)
+        val restClient = restClientBuilder.baseUrl(reprApiBaseUrl).build()
 
         val proxyFactory =
             HttpServiceProxyFactory

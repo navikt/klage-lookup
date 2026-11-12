@@ -2,8 +2,8 @@ package no.nav.klage.lookup.service.access
 
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.klage.lookup.config.CacheConfiguration.Companion.ACCESS_TO_PERSON
+import no.nav.klage.lookup.config.tilgangsmaskinen.TilgangsmaskinenClient
 import no.nav.klage.lookup.config.tilgangsmaskinen.TilgangsmaskinenErrorResponse
-import no.nav.klage.lookup.config.tilgangsmaskinen.TilgangsmaskinenService
 import no.nav.klage.lookup.util.TokenUtil
 import no.nav.klage.lookup.util.getLogger
 import no.nav.klage.lookup.util.getTeamLogger
@@ -17,7 +17,7 @@ import tools.jackson.module.kotlin.jacksonObjectMapper
 
 @Service
 class AccessToPersonService(
-    private val tilgangsmaskinenService: TilgangsmaskinenService,
+    private val tilgangsmaskinenClient: TilgangsmaskinenClient,
     private val tokenUtil: TokenUtil,
     private val meterRegistry: MeterRegistry,
 ) {
@@ -47,14 +47,14 @@ class AccessToPersonService(
         try {
             if (useObo) {
                 meterRegistry.timedCall(timerName = TILGANGSMASKINEN_TIMER, method = "validateAccessWithObo") {
-                    tilgangsmaskinenService.validateAccessWithObo(
+                    tilgangsmaskinenClient.validateAccessWithObo(
                         oboBearerToken = bearerToken,
                         brukerId = brukerId,
                     )
                 }
             } else {
                 meterRegistry.timedCall(timerName = TILGANGSMASKINEN_TIMER, method = "validateAccess") {
-                    tilgangsmaskinenService.validateAccess(
+                    tilgangsmaskinenClient.validateAccess(
                         clientBearerToken = bearerToken,
                         brukerId = brukerId,
                         navIdent = navIdent,

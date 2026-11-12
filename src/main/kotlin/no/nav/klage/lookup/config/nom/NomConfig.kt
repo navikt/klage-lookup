@@ -12,12 +12,12 @@ import org.springframework.web.service.invoker.createClient
 class NomConfig {
     @Bean
     fun nomWebClient(
+        restClientBuilder: RestClient.Builder,
         @Value($$"${NOM_BASE_URL}")
         nomUrl: String,
     ): NomClient {
         val restClient =
-            RestClient
-                .builder()
+            restClientBuilder
                 .baseUrl(nomUrl)
                 .build()
 
