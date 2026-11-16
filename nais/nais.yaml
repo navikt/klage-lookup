@@ -46,10 +46,10 @@ spec:
     failureThreshold: 3
   resources:
     limits:
-      memory: 1500Mi
+      memory: 2000Mi
     requests:
-      cpu: 40m
-      memory: 1300Mi
+      cpu: 200m
+      memory: 1500Mi
   {{#if ingresses}}
   ingresses:
   {{#each ingresses as |ingress|}}
