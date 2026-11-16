@@ -10,8 +10,6 @@ import no.nav.klage.lookup.util.TokenUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus
-import org.springframework.web.server.ResponseStatusException
 
 class AccessToPersonControllerTest {
     private val accessToPersonBatchService = mockk<AccessToPersonBatchService>()
@@ -31,9 +29,7 @@ class AccessToPersonControllerTest {
         every { tokenUtil.getIdent() } returns "INNLOGGET"
 
         assertThatThrownBy { controller.getNavIdentsAccessToUser(input) }
-            .isInstanceOfSatisfying(ResponseStatusException::class.java) {
-                assertThat(it.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
-            }
+            .isInstanceOf(MissingAppTokenException::class.java)
         verify(exactly = 0) { accessToPersonBatchService.getNavIdentsAccessToUser(brukerId = any(), navIdentList = any()) }
     }
 
