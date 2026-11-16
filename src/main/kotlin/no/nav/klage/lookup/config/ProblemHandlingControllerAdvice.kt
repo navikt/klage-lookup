@@ -1,5 +1,6 @@
 package no.nav.klage.lookup.config
 
+import no.nav.klage.lookup.api.access.MissingAppTokenException
 import no.nav.klage.lookup.service.PersonService
 import no.nav.klage.lookup.service.nom.NomAnsattNotFoundException
 import no.nav.klage.lookup.service.pdl.PDLPersonNotFoundException
@@ -68,6 +69,9 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
     @ExceptionHandler
     fun handleFullmaktMissingAccessException(ex: PersonService.FullmaktMissingAccessException): ProblemDetail =
         create(httpStatus = HttpStatus.FORBIDDEN, ex = ex)
+
+    @ExceptionHandler
+    fun handleMissingAccessException(ex: MissingAppTokenException): ProblemDetail = create(httpStatus = HttpStatus.FORBIDDEN, ex = ex)
 
     @ExceptionHandler
     fun handleFullmaktInputException(ex: PersonService.FullmaktInputException): ProblemDetail =
