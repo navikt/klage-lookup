@@ -50,10 +50,12 @@ spec:
     requests:
       cpu: 40m
       memory: 1300Mi
+  {{#if ingresses}}
   ingresses:
   {{#each ingresses as |ingress|}}
     - {{ingress}}
   {{/each}}
+  {{/if}}
   replicas:
     min: {{replicasMin}}
     max: {{replicasMax}}
@@ -95,7 +97,6 @@ spec:
   valkey:
     - instance: lookup
       access: readwrite
-  envFrom:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: {{springProfile}}
