@@ -46,14 +46,16 @@ spec:
     failureThreshold: 3
   resources:
     limits:
-      memory: 1500Mi
+      memory: 2000Mi
     requests:
-      cpu: 40m
-      memory: 1300Mi
+      cpu: 200m
+      memory: 1500Mi
+  {{#if ingresses}}
   ingresses:
   {{#each ingresses as |ingress|}}
     - {{ingress}}
   {{/each}}
+  {{/if}}
   replicas:
     min: {{replicasMin}}
     max: {{replicasMax}}
@@ -95,7 +97,6 @@ spec:
   valkey:
     - instance: lookup
       access: readwrite
-  envFrom:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: {{springProfile}}

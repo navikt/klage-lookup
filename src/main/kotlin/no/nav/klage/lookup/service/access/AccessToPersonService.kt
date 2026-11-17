@@ -33,10 +33,36 @@ class AccessToPersonService(
     fun getNavIdentAccessToUser(
         brukerId: String,
         navIdent: String,
+    ): Access =
+        checkAccess(
+            brukerId = brukerId,
+            navIdent = navIdent,
+            useObo = tokenUtil.getIdent() != null,
+        )
+
+    /**
+     * Always checks the access of the given navIdent with the app token, never the logged in user's.
+     * Shares cache entries with [getNavIdentAccessToUser], same cache and same key (brukerId, navIdent).
+     */
+    @Cacheable(ACCESS_TO_PERSON)
+    @Retryable
+    fun getNavIdentAccessToUserWithAppToken(
+        brukerId: String,
+        navIdent: String,
+    ): Access =
+        checkAccess(
+            brukerId = brukerId,
+            navIdent = navIdent,
+            useObo = false,
+        )
+
+    private fun checkAccess(
+        brukerId: String,
+        navIdent: String,
+        useObo: Boolean,
     ): Access {
         val deniedReasons = mutableSetOf<String>()
 
-        val useObo = tokenUtil.getIdent() != null
         val bearerToken =
             if (useObo) {
                 "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithTilgangsmaskinenScope()}"
