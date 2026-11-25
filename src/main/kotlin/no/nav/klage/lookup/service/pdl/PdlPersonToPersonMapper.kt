@@ -41,6 +41,7 @@ fun toPersonWithAllInfo(
             person.second.sikkerhetstiltak
                 .firstOrNull()
                 ?.mapToSikkerhetstiltak(),
+        falskId = person.second.falskIdentitet?.erFalsk == true,
         egenAnsatt = skjermet,
     )
 }

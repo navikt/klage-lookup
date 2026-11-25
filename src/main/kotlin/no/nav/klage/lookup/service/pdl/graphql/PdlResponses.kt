@@ -54,6 +54,7 @@ data class PdlPerson(
     val vergemaalEllerFremtidsfullmakt: List<VergemaalEllerFremtidsfullmakt>,
     val doedsfall: List<Doedsfall>,
     val sikkerhetstiltak: List<Sikkerhetstiltak>,
+    val falskIdentitet: FalskIdentitet?,
 ) {
     data class Adressebeskyttelse(
         val gradering: GraderingType,
@@ -99,6 +100,10 @@ data class PdlPerson(
         val beskrivelse: String,
         val gyldigFraOgMed: LocalDate,
         val gyldigTilOgMed: LocalDate,
+    )
+
+    data class FalskIdentitet(
+        val erFalsk: Boolean,
     )
 
     enum class Tiltakstype {
