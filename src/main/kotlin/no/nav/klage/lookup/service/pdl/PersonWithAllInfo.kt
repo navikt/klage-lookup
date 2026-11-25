@@ -17,6 +17,7 @@ data class PersonWithAllInfo(
     val egenAnsatt: Boolean,
     val vergemaalEllerFremtidsfullmakt: Boolean,
     val sikkerhetstiltak: Sikkerhetstiltak?,
+    val falskId: Boolean,
 ) : Serializable {
     companion object {
         private const val serialVersionUID: Long = 1L

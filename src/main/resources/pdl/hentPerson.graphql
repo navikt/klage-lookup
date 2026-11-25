@@ -31,6 +31,9 @@ query($ident: ID!){
             beskrivelse
             gyldigFraOgMed
             gyldigTilOgMed
+        },
+        falskIdentitet {
+            erFalsk
         }
     }
 }

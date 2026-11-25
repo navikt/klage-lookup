@@ -33,6 +33,9 @@ query($identer: [ID!]!){
                 beskrivelse
                 gyldigFraOgMed
                 gyldigTilOgMed
+            },
+            falskIdentitet {
+                erFalsk
             }
         }
         code
