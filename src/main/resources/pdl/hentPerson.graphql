@@ -34,6 +34,14 @@ query($ident: ID!){
         },
         falskIdentitet {
             erFalsk
+            rettIdentitetVedOpplysninger {
+                personnavn {
+                    fornavn
+                    mellomnavn
+                    etternavn
+                }
+                kjoenn
+            }
         }
     }
 }

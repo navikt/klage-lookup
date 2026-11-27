@@ -104,7 +104,19 @@ data class PdlPerson(
 
     data class FalskIdentitet(
         val erFalsk: Boolean,
-    )
+        val rettIdentitetVedOpplysninger: RettIdentitetVedOpplysninger?,
+    ) {
+        data class RettIdentitetVedOpplysninger(
+            val personnavn: Personnavn,
+            val kjoenn: Kjoenn.KjoennType?,
+        ) {
+            data class Personnavn(
+                val fornavn: String,
+                val mellomnavn: String?,
+                val etternavn: String,
+            )
+        }
+    }
 
     enum class Tiltakstype {
         FYUS,

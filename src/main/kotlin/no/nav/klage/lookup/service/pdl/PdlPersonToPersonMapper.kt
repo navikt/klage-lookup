@@ -27,11 +27,7 @@ fun toPersonWithAllInfo(
             person.second.adressebeskyttelse
                 .firstOrNull()
                 ?.gradering == PdlPerson.Adressebeskyttelse.GraderingType.FORTROLIG,
-        kjoenn =
-            person.second.kjoenn
-                .firstOrNull()
-                ?.kjoenn
-                ?.name,
+        kjoenn = preferredKjoenn(person.second),
         vergemaalEllerFremtidsfullmakt = person.second.vergemaalEllerFremtidsfullmakt.isNotEmpty(),
         doed =
             person.second.doedsfall
@@ -57,17 +53,46 @@ fun PdlPerson.toPerson(fnr: String): Person {
     )
 }
 
-private fun preferredName(person: PdlPerson): PdlPerson.Navn? {
+private data class ResolvedNavn(
+    val fornavn: String,
+    val mellomnavn: String?,
+    val etternavn: String,
+)
+
+private fun preferredName(person: PdlPerson): ResolvedNavn? {
     val preferredName =
         if (person.navn.size == 1) {
             person.navn.first()
         } else {
             person.navn.firstOrNull { it.metadata.master.uppercase() == "PDL" } ?: person.navn.firstOrNull()
         }
-    return preferredName
+    if (preferredName != null) {
+        return ResolvedNavn(
+            fornavn = preferredName.fornavn,
+            mellomnavn = preferredName.mellomnavn,
+            etternavn = preferredName.etternavn,
+        )
+    }
+    return person.rettIdentitetVedOpplysninger()?.personnavn?.let {
+        ResolvedNavn(
+            fornavn = it.fornavn,
+            mellomnavn = it.mellomnavn,
+            etternavn = it.etternavn,
+        )
+    }
 }
 
-private fun PdlPerson.Navn.sammensattNavn(): String =
+private fun preferredKjoenn(person: PdlPerson): String? =
+    person.kjoenn
+        .firstOrNull()
+        ?.kjoenn
+        ?.name
+        ?: person.rettIdentitetVedOpplysninger()?.kjoenn?.name
+
+private fun PdlPerson.rettIdentitetVedOpplysninger(): PdlPerson.FalskIdentitet.RettIdentitetVedOpplysninger? =
+    falskIdentitet?.takeIf { it.erFalsk }?.rettIdentitetVedOpplysninger
+
+private fun ResolvedNavn.sammensattNavn(): String =
     if (mellomnavn != null) {
         "$fornavn $mellomnavn $etternavn"
     } else {
