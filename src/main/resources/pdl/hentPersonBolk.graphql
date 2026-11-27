@@ -36,6 +36,14 @@ query($identer: [ID!]!){
             },
             falskIdentitet {
                 erFalsk
+                rettIdentitetVedOpplysninger {
+                    personnavn {
+                        fornavn
+                        mellomnavn
+                        etternavn
+                    }
+                    kjoenn
+                }
             }
         }
         code
